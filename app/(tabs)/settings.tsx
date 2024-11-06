@@ -1,12 +1,12 @@
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 
-export default function Budget() {
+export default function Settings() {
   return (
     <SafeAreaView>
       <View style={styles.container}>
         <View>
-          <ThemedText>Budget</ThemedText>
+          <ThemedText>Settings</ThemedText>
         </View>
       </View>
     </SafeAreaView>
