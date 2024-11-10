@@ -1,9 +1,9 @@
 import RNPickerSelect from 'react-native-picker-select';
-import { ThemedText } from '@/components/ThemedText';
 import { useState } from 'react';
-import { View } from 'react-native';
-import { TextInput } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { ThemedText } from './themed-text';
+import { useColorScheme } from 'react-native';
+import { styles as touchableBoxStyleSheet } from './touchable-box';
 
 type SelectItem = {
   label: string;
@@ -16,10 +16,10 @@ type SelectProps = Readonly<{
 }>;
 
 const Select = (props: SelectProps) => {
+  const colorScheme = useColorScheme() || 'light';
   const [selectedItem, setSelectedItem] = useState(props.items[0]);
   const [isActive, setIsActive] = useState(false);
   const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({}, 'systemGrey6');
-  const textColor = useThemeColor({}, 'text');
 
   const handleChange = (selectedValue: string) => {
     if (selectedValue === null) return;
@@ -34,21 +34,17 @@ const Select = (props: SelectProps) => {
       onValueChange={handleChange}
       items={props.items}
       value={selectedItem.value}
-    >
-      <TextInput
-        style={{
-          paddingTop: 15,
-          paddingRight: 20,
-          paddingBottom: 15,
-          paddingLeft: 20,
+      darkTheme={colorScheme === 'dark'}
+      touchableWrapperProps={{
+        style: {
           backgroundColor: bgColor,
-          borderRadius: 10,
-          color: textColor,
-        }}
-        value={selectedItem.label}
-        onResponderStart={() => setIsActive(true)}
-        onResponderRelease={() => setIsActive(false)}
-      />
+          ...touchableBoxStyleSheet.touchableBox
+        },
+        onPressIn: () => setIsActive(true),
+        onPressOut: () => setIsActive(false),
+      }}
+    >
+      <ThemedText style={{lineHeight: 17}}>{selectedItem.label}</ThemedText>
     </RNPickerSelect>
   );
 }

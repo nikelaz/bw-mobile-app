@@ -1,21 +1,13 @@
-import { StyleSheet, SafeAreaView, View } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
+import Container from '@/components/container';
+import ColLayout from '@/components/col-layout';
+import Heading from '@/components/heading';
 
 export default function Reporting() {
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <View>
-          <ThemedText>Reporting</ThemedText>
-        </View>
-      </View>
-    </SafeAreaView>
+    <Container>
+      <ColLayout>
+        <Heading>Reporting</Heading>
+      </ColLayout>
+    </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    height: '100%'
-  }
-});
