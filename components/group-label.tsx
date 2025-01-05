@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     textTransform: 'uppercase',
     fontSize: 12,
-    color: useThemeColor({}, 'systemGrey'),
+    // color: useThemeColor({}, 'systemGrey'),
     marginLeft: 15,
     marginRight: 15,
     marginBottom: 5,

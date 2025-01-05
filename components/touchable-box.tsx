@@ -23,7 +23,7 @@ type TouchableBoxProps = Readonly<{
 
 const TouchableBox = (props: TouchableBoxProps) => {
   const [isActive, setIsActive] = useState(false);
-  const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({}, 'systemGrey6');
+  const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
 
   const iconStyles = props.icon ? { ...styles.withIcon } : {};
   
@@ -118,7 +118,7 @@ export const styles = StyleSheet.create({
   groupSeparator: {
     width: '100%',
     height: 1,
-    backgroundColor: useThemeColor({}, 'systemGrey4'),
+    // backgroundColor: useThemeColor({}, 'systemGrey4'),
     position: 'absolute',
     bottom: 0,
     left: 15,
@@ -126,7 +126,7 @@ export const styles = StyleSheet.create({
   rowGroupSeparator: {
     width: 1,
     height: '100%',
-    backgroundColor: useThemeColor({}, 'systemGrey4'),
+    // backgroundColor: useThemeColor({}, 'systemGrey4'),
     position: 'absolute',
     right: 0,
     top: 15,

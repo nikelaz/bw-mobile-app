@@ -19,7 +19,7 @@ const Select = (props: SelectProps) => {
   const colorScheme = useColorScheme() || 'light';
   const [selectedItem, setSelectedItem] = useState(props.items[0]);
   const [isActive, setIsActive] = useState(false);
-  const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({}, 'systemGrey6');
+  const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
 
   const handleChange = (selectedValue: string) => {
     if (selectedValue === null) return;
