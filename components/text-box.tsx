@@ -5,7 +5,11 @@ import { TextInput, TextInputProps } from 'react-native';
 
 const TextBox = (props: TextInputProps) => {
   const [isActive, setIsActive] = useState(false);
-  const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
+  let bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
+
+  if (props.editable === false) {
+    bgColor = useThemeColor({ dark: 'black', light: 'background' }, 'background');
+  }
 
   return (
     <TextInput

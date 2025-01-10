@@ -47,7 +47,7 @@ export class CategoryBudgetViewModel {
     return categoryBudgetsByType;
   }
 
-  async updateCategoryBudget(categoryBudget: CategoryBudget) {
+  async update(categoryBudget: CategoryBudget) {
     if (!this.token) return;
 
     const reqOptions = {
@@ -76,7 +76,7 @@ export class CategoryBudgetViewModel {
     this.transactionsModel.refresh();
   }
 
-  async deleteCategoryBudget(categoryBudget: CategoryBudget) {
+  async delete(categoryBudget: CategoryBudget) {
     if (!this.token) return;
 
     const reqOptions = {
@@ -102,7 +102,7 @@ export class CategoryBudgetViewModel {
     this.transactionsModel.refresh();
   }
 
-  async createCategoryBudget(categoryBudget: CategoryBudget) {
+  async create(categoryBudget: CategoryBudget) {
     if (!this.token) return;
 
     const reqOptions = {
@@ -123,6 +123,7 @@ export class CategoryBudgetViewModel {
     }
 
     if (req.status !== 200 && !jsonResponse.message) {
+      console.log('jsonResponse', jsonResponse);
       throw new Error('An unexpected error occured. Please try again later.')
     }
 

@@ -4,15 +4,13 @@ import { ScrollView } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 const Container = (props: GenericChildrenProps) => (
-  <View style={{ minHeight: '100%', backgroundColor: useThemeColor({}, 'background') }}>
-    <SafeAreaView>
-      <ScrollView style={styles.scrollWrapper}>
-        <View style={styles.container}>
-          {props.children}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  </View>
+  <SafeAreaView style={{ backgroundColor: useThemeColor({}, 'background') }}>
+    <ScrollView style={styles.scrollWrapper}>
+      <View style={styles.container}>
+        {props.children}
+      </View>
+    </ScrollView>
+  </SafeAreaView>
 );
 
 const styles = StyleSheet.create({

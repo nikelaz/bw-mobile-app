@@ -31,7 +31,6 @@ export default function Budget() {
   const categoryBudgetModel = useCategoryBudgetModel();
   const currency = userModel.getCurrency();
   const currentBudget = budgetModel.currentBudget;
-  const categoryBudgetsByCategory = categoryBudgetModel.categoryBudgetsByType;
 
   return (
     <GatedView>
@@ -40,7 +39,7 @@ export default function Budget() {
           <ColLayout>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
               <Heading>Budget</Heading>
-              <Button color={useThemeColor({}, 'primary')} title="+ New Transaction" />
+              <Button color={useThemeColor({}, 'primary')} title="+ New Transaction" onPress={() => router.push(`/(tabs)/transactions/create?backText=Budget&backHref=${encodeURIComponent('/(tabs)/budget')}`)} />
             </View>
 
             {currentBudget ? (
@@ -76,86 +75,105 @@ export default function Budget() {
 
             {currentBudget ? (
               <>
-                {categoryBudgetsByCategory && categoryBudgetsByCategory[CategoryType.INCOME] && categoryBudgetsByCategory[CategoryType.INCOME].length > 0 ? (
-                  <ColLayout spacing="m">
-                    <Heading level={2}>Income</Heading>
-                    <View>
-                      {categoryBudgetsByCategory[CategoryType.INCOME].map((categoryBudget, index) => (
-                        <TouchableBox
-                          group={true}
-                          groupFirst={index === 0}
-                          groupLast={index === categoryBudgetsByCategory[CategoryType.INCOME].length - 1}
-                          arrow={true}
-                          additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
-                          key={categoryBudget.id}
-                          onPress={() => router.push(`/(tabs)/budget/details?id=${categoryBudget.id}`)}
-                        >
-                          {categoryBudget.category?.title}
-                        </TouchableBox>
-                      ))}   
-                    </View>
-                  </ColLayout>
-                ) : null}
+                <ColLayout spacing="m">
+                  {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME] && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length > 0 ? (
+                    <ColLayout spacing="m">
+                      <Heading level={2}>Income</Heading>
+                      <View>
+                        {categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].map((categoryBudget, index) => (
+                          <TouchableBox
+                            group={true}
+                            groupFirst={index === 0}
+                            groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length - 1}
+                            arrow={true}
+                            additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
+                            key={categoryBudget.id}
+                            onPress={() => router.push(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                          >
+                            {categoryBudget.category?.title}
+                          </TouchableBox>
+                        ))}   
+                      </View>
+                    </ColLayout>
+                  ) : null}
 
-                {categoryBudgetsByCategory && categoryBudgetsByCategory[CategoryType.EXPENSE] && categoryBudgetsByCategory[CategoryType.EXPENSE].length > 0 ? (
-                  <ColLayout spacing="m">
-                    <Heading level={2}>Expenses</Heading>
-                    <View>
-                      {categoryBudgetsByCategory[CategoryType.EXPENSE].map((categoryBudget, index) => (
-                        <TouchableBox
-                          group={true}
-                          groupFirst={index === 0}
-                          groupLast={index === categoryBudgetsByCategory[CategoryType.EXPENSE].length - 1}
-                          arrow={true}
-                          additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
-                          key={categoryBudget.id}
-                        >
-                          {categoryBudget.category?.title}
-                        </TouchableBox>
-                      ))}   
-                    </View>
-                  </ColLayout>
-                ) : null}
+                  <Button title="New Income" onPress={() => router.push(`/(tabs)/budget/category-budget-create?type=${CategoryType.INCOME}`)} />
+                </ColLayout>
 
-                {categoryBudgetsByCategory && categoryBudgetsByCategory[CategoryType.SAVINGS] && categoryBudgetsByCategory[CategoryType.SAVINGS].length > 0 ? (
-                  <ColLayout spacing="m">
-                    <Heading level={2}>Savings</Heading>
-                    <View>
-                      {categoryBudgetsByCategory[CategoryType.SAVINGS].map((categoryBudget, index) => (
-                        <TouchableBox
-                          group={true}
-                          groupFirst={index === 0}
-                          groupLast={index === categoryBudgetsByCategory[CategoryType.SAVINGS].length - 1}
-                          arrow={true}
-                          additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
-                          key={categoryBudget.id}
-                        >
-                          {categoryBudget.category?.title}
-                        </TouchableBox>
-                      ))}   
-                    </View>
-                  </ColLayout>
-                ) : null}
+                <ColLayout spacing="m">
+                  {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE] && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length > 0 ? (
+                    <ColLayout spacing="m">
+                      <Heading level={2}>Expenses</Heading>
+                      <View>
+                        {categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].map((categoryBudget, index) => (
+                          <TouchableBox
+                            group={true}
+                            groupFirst={index === 0}
+                            groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length - 1}
+                            arrow={true}
+                            additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
+                            key={categoryBudget.id}
+                            onPress={() => router.push(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                          >
+                            {categoryBudget.category?.title}
+                          </TouchableBox>
+                        ))}   
+                      </View>
+                    </ColLayout>
+                  ) : null}
 
-                {categoryBudgetsByCategory && categoryBudgetsByCategory[CategoryType.DEBT] && categoryBudgetsByCategory[CategoryType.DEBT].length > 0 ? (
-                  <ColLayout spacing="m">
-                    <Heading level={2}>Debt</Heading>
-                    <View>
-                      {categoryBudgetsByCategory[CategoryType.DEBT].map((categoryBudget, index) => (
-                        <TouchableBox
-                          group={true}
-                          groupFirst={index === 0}
-                          groupLast={index === categoryBudgetsByCategory[CategoryType.DEBT].length - 1}
-                          arrow={true}
-                          additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
-                          key={categoryBudget.id}
-                        >
-                          {categoryBudget.category?.title}
-                        </TouchableBox>
-                      ))}   
-                    </View>
-                  </ColLayout>
-                ) : null}
+                  <Button title="New Category" onPress={() => router.push(`/(tabs)/budget/category-budget-create?type=${CategoryType.EXPENSE}`)} />
+                </ColLayout>
+
+                <ColLayout spacing="m">
+                  {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS] && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length > 0 ? (
+                    <ColLayout spacing="m">
+                      <Heading level={2}>Savings</Heading>
+                      <View>
+                        {categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].map((categoryBudget, index) => (
+                          <TouchableBox
+                            group={true}
+                            groupFirst={index === 0}
+                            groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length - 1}
+                            arrow={true}
+                            additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
+                            key={categoryBudget.id}
+                            onPress={() => router.push(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                          >
+                            {categoryBudget.category?.title}
+                          </TouchableBox>
+                        ))}   
+                      </View>
+                    </ColLayout>
+                  ) : null}
+
+                  <Button title="New Loan" onPress={() => router.push(`/(tabs)/budget/category-budget-create?type=${CategoryType.SAVINGS}`)} />
+                </ColLayout>
+
+                <ColLayout spacing="m">
+                  {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT] && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length > 0 ? (
+                    <ColLayout spacing="m">
+                      <Heading level={2}>Debt</Heading>
+                      <View>
+                        {categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].map((categoryBudget, index) => (
+                          <TouchableBox
+                            group={true}
+                            groupFirst={index === 0}
+                            groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length - 1}
+                            arrow={true}
+                            additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
+                            key={categoryBudget.id}
+                            onPress={() => router.push(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                          >
+                            {categoryBudget.category?.title}
+                          </TouchableBox>
+                        ))}   
+                      </View>
+                    </ColLayout>
+                  ) : null}
+
+                  <Button title="New Fund" onPress={() => router.push(`/(tabs)/budget/category-budget-create?type=${CategoryType.DEBT}`)} />
+                </ColLayout>
               </>
             ) : null}
             

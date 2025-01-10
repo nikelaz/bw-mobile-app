@@ -1,14 +1,12 @@
 import type { Budget } from '@/types/budget';
+import parseBudgets from './parse-budgets';
 
 const findClosestBudgetDate = (referenceDate: Date, budgets: Array<Budget>): Budget | null => {
   if (budgets.length === 0) return null;
 
   const currentMonth = new Date().getMonth();
 
-  const budgetsCopy = budgets.map(budget => ({
-    ...budget,
-    month: new Date(budget.month),
-  }));
+  const budgetsCopy = parseBudgets(budgets);
 
   const exactBudget = budgetsCopy.find(budget => budget.month.getMonth() === currentMonth);
 

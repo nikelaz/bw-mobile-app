@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { Budget } from '@/types/budget';
 import { api } from '@/config';
 import findClosestBudgetDate from '@/helpers/find-closest-budget-date';
+import parseBudgets from '@/helpers/parse-budgets';
 
 export class BudgetViewModel {
   token: string;
@@ -18,9 +19,18 @@ export class BudgetViewModel {
 
   async refresh() {
     const budgets = await this.fetchBudgets();
-    this.setBudgets(budgets);
-    if (this.currentBudget === null) {
-      const initiallySelectedBudget = findClosestBudgetDate(new Date(), budgets);
+    const parsedBudgets = parseBudgets(budgets);
+
+    this.setBudgets(parsedBudgets);
+
+    const updatedCurrentBudget = parsedBudgets.find(budget => budget.id === this.currentBudget?.id);
+
+    if (updatedCurrentBudget) {
+      this.setCurrentBudget(updatedCurrentBudget);
+    }
+
+    if (this.currentBudget === null || !updatedCurrentBudget) {
+      const initiallySelectedBudget = findClosestBudgetDate(new Date(), parsedBudgets);
       this.setCurrentBudget(initiallySelectedBudget);
     }
   }

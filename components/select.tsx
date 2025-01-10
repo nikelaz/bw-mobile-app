@@ -13,11 +13,12 @@ type SelectItem = {
 type SelectProps = Readonly<{
   items: SelectItem[],
   onValueChange: (value: SelectItem) => void,
+  selectedItem: SelectItem,
 }>;
 
 const Select = (props: SelectProps) => {
   const colorScheme = useColorScheme() || 'light';
-  const [selectedItem, setSelectedItem] = useState(props.items[0]);
+  const [selectedItem, setSelectedItem] = useState(props.selectedItem || props.items[0]);
   const [isActive, setIsActive] = useState(false);
   const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
 

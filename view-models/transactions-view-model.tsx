@@ -4,11 +4,10 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { BudgetViewModel, useBudgetModel } from '@/view-models/budget-view-model';
 import { calculateTotalPages } from '@/helpers/pagination-utils';
 import type { Transaction } from '@/types/transaction';
-import { Budget } from '@/types/budget';
 import { api } from '@/config';
 
 export class TransactionsViewModel {
-  perPage = 6;
+  perPage = 11;
   token: string;
   budgetModel: BudgetViewModel;
   transactions: Array<Transaction>;
@@ -75,7 +74,7 @@ export class TransactionsViewModel {
     return jsonResponse;
   };
 
-  async createTransaction(transaction: Transaction) {
+  async create(transaction: Transaction) {
     if (!this.token) return;
   
     const reqOptions = {
@@ -99,10 +98,10 @@ export class TransactionsViewModel {
       throw new Error('An unexpected error occured. Please try again later.')
     }
   
-    return jsonResponse;
+    await this.refresh();
   };
 
-  async deleteTransaction(id: number) {
+  async delete(id: number) {
     if (!this.token) return;
   
     const reqOptions = {
@@ -124,10 +123,10 @@ export class TransactionsViewModel {
       throw new Error('An unexpected error occured. Please try again later.')
     }
   
-    return jsonResponse;
+    await this.refresh();
   };
 
-  async updateTransaction(transaction: Partial<Transaction>) {
+  async update(transaction: Partial<Transaction>) {
     if (!this.token) return;
   
     const reqOptions = {
@@ -151,7 +150,7 @@ export class TransactionsViewModel {
       throw new Error('An unexpected error occured. Please try again later.')
     }
   
-    return jsonResponse;
+    await this.refresh();
   };
 }
 

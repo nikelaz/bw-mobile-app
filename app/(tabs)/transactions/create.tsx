@@ -1,6 +1,6 @@
 import Container from '@/components/container';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { View, Button } from 'react-native';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
 import ColLayout from '@/components/col-layout';
@@ -9,12 +9,11 @@ import Select from '@/components/select';
 import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
 import { useTransactionsModel } from '@/view-models/transactions-view-model';
-import { Transaction } from '@/types/transaction';
 import { useBudgetModel } from '@/view-models/budget-view-model';
 import { CategoryBudget } from '@/types/category-budget';
 import months from '@/data/months';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
-import Dialog from '@/helpers/alert';
+import { HeaderBackButton } from '@react-navigation/elements';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   const categoriesMap: any = {};
@@ -32,94 +31,53 @@ const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   });
 };
 
-export default function TransactionDetails() {
+export default function TransactionCreate() {
   const transactionsModel = useTransactionsModel();
   const budgetModel = useBudgetModel();
   const params = useLocalSearchParams();
-  const id = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
+  const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Transactions';
+  const backHref: any = (Array.isArray(params.backHref) ? params.backHref[0] : params.backHref) || '/(tabs)/transactions';
+  // const id = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
   const router = useRouter();
-  const transaction = transactionsModel.transactions.find((transaction: Transaction) => transaction.id === id);
+  // const transaction = transactionsModel.transactions.find((transaction: Transaction) => transaction.id === id);
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(new Date(transaction?.date));
-  const [title, setTitle] = useState(transaction?.title);
-  const [amount, setAmount] = useState(transaction?.amount);
+  const [date, setDate] = useState(new Date());
+  const [title, setTitle] = useState('');
+  const [amount, setAmount] = useState('');
   const categoryOptions = getOptionsFromCategoryBudgets(budgetModel.currentBudget.categoryBudgets);
-  const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget.category.id) || categoryOptions[0]);
+  const [category, setCategory] = useState(categoryOptions[0]);
   
   const errorBoundary = useErrorBoundary();
 
-  const showConfirmDialog = () => {
-    return Alert.alert(
-      "Are your sure?",
-      "Are you sure you want to remove this transaction?",
-      [
-        // The "Yes" button
-        {
-          text: "Yes",
-          // onPress: () => {
-          //   setShowBox(false);
-          // },
-        },
-        // The "No" button
-        // Does nothing but dismiss the dialog when tapped
-        {
-          text: "No",
-        },
-      ]
-    );
-  };
-
-  const updateTransaction = async (passedDate?: Date, category?: any) => {
-    const updateObj: any = {
-      id,
-      title,
-      amount: parseFloat(amount),
-    };
-
-    if (passedDate) {
-      updateObj.date = passedDate.toISOString();
-    } else {
-      updateObj.date = date.toISOString()
-    }
-
-    if (category) {
-      updateObj.categoryBudget = {
-        id: parseInt(category.value),
-      };
-    }
-
+  const createTransaction = async () => {
     try {
-      await transactionsModel.update(updateObj);
+      await transactionsModel.create({
+        title,
+        date: date.toISOString(),
+        amount: parseFloat(amount),
+        categoryBudget: {
+          id: parseInt(category.value),
+        },
+      });
+      router.back();
     } catch (error) {
       errorBoundary(error);
     }
-  };
-
-  const deleteTransaction = async () => {
-    try {
-      await transactionsModel.delete(id);
-      router.push('/(tabs)/transactions');
-    } catch (error) {
-      errorBoundary(error);
-    }
-  };
-
-  const confirmDelete = () => {
-    Dialog.confirm(
-      'Delete Transaction',
-      `You are about to delete a transaction: \n${title} \nAre you sure?`,
-      'Delete',
-      () => deleteTransaction()
-    );
   }
 
-  if (!transaction) return 'Loading...';
+  const backButtonHandler = () => {
+    router.dismissTo('/(tabs)/transactions');
+    router.replace(backHref);
+  }
 
   return (
     <View>
       <Stack.Screen options={{
-        title: title,
+        title: 'Create New Transaction',
         headerBackTitle: 'Transactions',
+        headerLeft: () => (
+          <HeaderBackButton label={backText} onPress={backButtonHandler} />
+        )
       }} />
 
       <Container>
@@ -127,7 +85,7 @@ export default function TransactionDetails() {
           <ColLayout spacing="m">
             <View>
               <GroupLabel>Title</GroupLabel>
-              <TextBox value={title} onChangeText={setTitle} onBlur={() => updateTransaction()} />
+              <TextBox value={title} onChangeText={setTitle} />
             </View>
             <View>
               <GroupLabel>Date</GroupLabel>
@@ -139,7 +97,6 @@ export default function TransactionDetails() {
                 onConfirm={async (date) => {
                   setOpen(false);
                   setDate(date);
-                  updateTransaction(date);
                 }}
                 onCancel={() => {
                   setOpen(false);
@@ -151,7 +108,6 @@ export default function TransactionDetails() {
               <Select
                 onValueChange={(category) => {
                   setCategory(category);
-                  updateTransaction(undefined, category);
                 }}
                 items={categoryOptions}
                 selectedItem={category}
@@ -162,7 +118,7 @@ export default function TransactionDetails() {
               <TextBox value={amount} onChangeText={setAmount} />
             </View>
           </ColLayout>
-          <TouchableBox onPress={confirmDelete} icon="trash-bin">Delete Transaction</TouchableBox>   
+          <Button onPress={createTransaction} title="Save Changes" />  
         </ColLayout>
       </Container>
     </View>      

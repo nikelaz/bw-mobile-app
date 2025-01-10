@@ -58,16 +58,18 @@ export class UserViewModel {
     const req = await fetch(`${api}/users/login`, reqOptions);
     const jsonResponse = await req.json();
 
+    console.log('jsonResponse', jsonResponse);
+
     await Storage.setItem('token', jsonResponse.token);
     await Storage.setItem('user', JSON.stringify(jsonResponse.user));
-
-    this.token = jsonResponse.token;
-    this.user = jsonResponse.user;
-    this.currency = jsonResponse.user.currency;
 
     if (req.status !== 200) {
       throw new Error(jsonResponse.message);
     }
+
+    this.token = jsonResponse.token;
+    this.user = jsonResponse.user;
+    this.currency = jsonResponse.user.currency;
   };
 
   async signup(user: any) {
@@ -127,6 +129,87 @@ export class UserViewModel {
 
     return storedToken;
   };
+
+  async update(user: any) {
+    if (!this.token || !user) return;
+  
+    const reqOptions = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${this.token}`,
+      },
+      body: JSON.stringify({ user })
+    };
+  
+    const req = await fetch(`${api}/users`, reqOptions);
+  
+    const jsonResponse = await req.json();
+  
+    if (req.status !== 200 && jsonResponse.message) {
+      throw new Error(jsonResponse.message);
+    }
+  
+    if (req.status !== 200 && !jsonResponse.message) {
+      throw new Error('An unexpected error occured. Please try again later.')
+    }
+  
+    await Storage.setItem('user', JSON.stringify({
+      ...this.user,
+      ...user
+    }));
+
+    if (req.status !== 200) {
+      throw new Error(jsonResponse.message);
+    }
+
+    this.setUser({
+      ...this.user,
+      ...user
+    });
+
+    if (user.currency) {
+      this.setCurrency(user.currency);
+    }
+  };
+  
+  async changePassword(currentPassword: string, newPassword: string, repeatNewPassword: string) {
+    if (repeatNewPassword !== newPassword) {
+      throw new Error('The new passwords do not match');
+    }
+  
+    const reqOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.token}`
+      },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword
+      })
+    };
+  
+    let req;
+  
+    try {
+      req = await fetch(`${api}/users/change-password`, reqOptions);
+    } catch (error) {
+      throw new Error('An unexpected error occured. Try again later.');
+    }
+  
+    const jsonResponse = await req.json();
+
+    if (req.status !== 200 && jsonResponse.message) {
+      throw new Error(jsonResponse.message);
+    }
+  
+    if (req.status !== 200 && !jsonResponse.message) {
+      throw new Error('An unexpected error occured. Please try again later.')
+    }
+  
+    return jsonResponse;
+  };  
 }
 
 const UserModelContext = createContext<any>([null, null]);
