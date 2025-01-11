@@ -30,14 +30,14 @@ const TouchableBox = (props: TouchableBoxProps) => {
   const groupStyles: any = {};
 
   if (props.group) {
-    if (props.groupLast) {
+    if (props.groupLast && !props.groupFirst) {
       groupStyles.borderTopLeftRadius = 0;
       groupStyles.borderTopRightRadius = 0;
     }
-    else if (props.groupFirst) {
+    else if (props.groupFirst && !props.groupLast) {
       groupStyles.borderBottomLeftRadius = 0;
       groupStyles.borderBottomRightRadius = 0;
-    } else {
+    } else if (!props.groupFirst && !props.groupLast) {
       groupStyles.borderRadius = 0;
     }
   }
@@ -45,14 +45,14 @@ const TouchableBox = (props: TouchableBoxProps) => {
   const rowGroupStyles: any = {};
 
   if (props.rowGroup) {
-    if (props.rowGroupLast) {
+    if (props.rowGroupLast && !props.rowGroupFirst) {
       rowGroupStyles.borderTopLeftRadius = 0;
       rowGroupStyles.borderBottomLeftRadius = 0;
     }
-    else if (props.rowGroupFirst) {
+    else if (props.rowGroupFirst && !props.rowGroupLast) {
       rowGroupStyles.borderTopRightRadius = 0;
       rowGroupStyles.borderBottomRightRadius = 0;
-    } else {
+    } else if (!props.rowGroupFirst && !props.rowGroupLast) {
       rowGroupStyles.borderRadius = 0;
     }
   }

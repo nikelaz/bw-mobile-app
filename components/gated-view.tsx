@@ -1,24 +1,23 @@
 import { GenericChildrenProps } from '@/types/generics';
 import { useRootNavigationState, Redirect } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
+import { useUserModel } from '@/view-models/user-view-model';
 
 const GatedView = (props: GenericChildrenProps) => {
+  const userModel = useUserModel();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [token, setToken] = useState<string | null>(null);
   const rootNavigationState = useRootNavigationState();
+  const [localToken, setLocalToken] = useState(null);
 
   useEffect(() => {
-    const getToken = async () => {
-      const storedToken = await AsyncStorage.getItem('token');
-      setToken(storedToken);
+    (async () => {
+      const token = await userModel.getToken();
+      setLocalToken(token);
       setIsLoading(false);
-    };
+    })()
+  }, [setLocalToken, setIsLoading]);
 
-    getToken();
-  }, [setToken, setIsLoading]);
-
-  if (token) return props.children;
+  if (localToken) return props.children;
 
   if (isLoading || !rootNavigationState?.key) return null;
 

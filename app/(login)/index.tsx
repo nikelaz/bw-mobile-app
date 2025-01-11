@@ -20,7 +20,7 @@ export default function ChangePassword() {
   const login = async () => {
     try {
       await userModel.login(email, password);
-      router.navigate('/(tabs)');
+      router.navigate('/(tabs)/budget');
     } catch (error: any) {
       errorBoundary(error);
     }
