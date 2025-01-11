@@ -22,6 +22,7 @@
     "@react-navigation/stack": "^7.1.1",
     "expo": "~52.0.25",
     "expo-constants": "~17.0.4",
+    "expo-dev-client": "~5.0.9",
     "expo-font": "~13.0.3",
     "expo-linking": "~7.0.4",
     "expo-router": "~4.0.16",
@@ -33,7 +34,7 @@
     "react-dom": "18.3.1",
     "react-error-boundary": "^5.0.0",
     "react-native": "0.76.6",
-    "react-native-date-picker": "4.4.2",
+    "react-native-date-picker": "5.0.8",
     "react-native-error-boundary": "^1.2.7",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-picker-select": "^9.3.1",
@@ -42,8 +43,8 @@
     "react-native-screens": "~4.4.0",
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.10",
-    "zod": "^3.24.1",
-    "expo-dev-client": "~5.0.9"
+    "react-native-webview": "^13.12.5",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

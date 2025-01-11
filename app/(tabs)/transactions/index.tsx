@@ -12,6 +12,8 @@ import months from '@/data/months';
 import { Transaction } from '@/types/transaction';
 import { useUserModel } from '@/view-models/user-view-model';
 import LinkButton from '@/components/link-button';
+import TextBox from '@/components/text-box';
+import debounce from '@/helpers/debounce';
 
 export default function Transactions() {
   const budgetModel = useBudgetModel();
@@ -24,6 +26,11 @@ export default function Transactions() {
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
+
+  const changeHandler = (filter: string) => {
+    console.log('change handler', filter);
+    transactionsModel.setFilter(filter);
+  };
 
   return (
     <Container>
@@ -42,6 +49,8 @@ export default function Transactions() {
             {months[currentBudget.month.getMonth()]} {currentBudget.month.getFullYear()}
           </TouchableBox>
         ) : null}
+
+        <TextBox placeholder="Search" onChangeText={debounce(changeHandler)} />
 
         <View>
           {transactionsModel.transactions.map((transaction: Transaction, index: number) => (

@@ -24,7 +24,7 @@ const Select = (props: SelectProps) => {
 
   const handleChange = (selectedValue: string) => {
     if (selectedValue === null) return;
-    const selectedItem = props.items.find(item => item.value === selectedValue);
+    const selectedItem = props.items.find(item => item.value.toString() === selectedValue.toString());
     if (!selectedItem) return;
     setSelectedItem(selectedItem);
     props.onValueChange(selectedItem);

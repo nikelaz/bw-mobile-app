@@ -66,7 +66,7 @@ export default function CategoryBudgetDetails() {
     <View>
       <Stack.Screen options={{
         title: title,
-        headerBackTitle: 'Budget',
+        headerBackButtonDisplayMode: 'minimal',
       }} />
       <Container>
         <ColLayout spacing='l'>

@@ -36,11 +36,11 @@ export default function ChangePassword() {
         
         <View>
           <GroupLabel>Email</GroupLabel>
-          <TextBox value={email} onChangeText={setEmail} />
+          <TextBox autoComplete="email" textContentType="emailAddress" autoCorrect={false} inputMode="email" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
         </View>
         <View>
           <GroupLabel>Password</GroupLabel>
-          <TextBox value={password} onChangeText={setPassword} secureTextEntry={true} />
+          <TextBox autoComplete="off" textContentType="password" autoCorrect={false} autoCapitalize="none" value={password} onChangeText={setPassword} secureTextEntry={true} />
         </View>
         <View>
           <TouchableBox onPress={login} arrow={true}>Login</TouchableBox>

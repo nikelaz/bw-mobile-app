@@ -7,6 +7,7 @@ import TouchableBox from '@/components/touchable-box';
 import { Budget } from '@/types/budget';
 import months from '@/data/months';
 import BackButton from '@/components/back-button';
+import LinkBox from '@/components/link-box';
 
 export default function SelectBudget() {
   const budgetModel = useBudgetModel();
@@ -31,7 +32,6 @@ export default function SelectBudget() {
     <View>
       <Stack.Screen options={{
         title: 'Select Budget Period',
-        headerBackTitle: 'Budget',
         headerLeft: () => (
           <BackButton label={backText} onPress={backButtonHandler} />
         )
@@ -61,6 +61,8 @@ export default function SelectBudget() {
               )
             })}   
           </View>
+
+          <LinkBox icon="add-outline" href="/(tabs)/budget/create">Create New Budget</LinkBox>
         </ColLayout>
       </Container>
     </View>

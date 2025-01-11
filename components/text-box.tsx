@@ -16,7 +16,8 @@ const TextBox = (props: TextInputProps) => {
       style={{
         backgroundColor: bgColor,
         color: useThemeColor({}, 'text'),
-        ...touchableBoxStyleSheet.touchableBox
+        ...touchableBoxStyleSheet.touchableBox,
+        fontSize: 16
       }}
       {...props}
     />

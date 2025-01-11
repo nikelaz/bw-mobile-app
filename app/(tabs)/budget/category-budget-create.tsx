@@ -9,6 +9,7 @@ import { CategoryType } from '@/types/category';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import Button from '@/components/button';
+import GroupLabel from '@/components/group-label';
 
 const getCategoryPlaceholder = (type: CategoryType) => {
   switch (type) {
@@ -43,7 +44,7 @@ export default function CategoryBudgetCreate() {
   const categoryBudgetModel = useCategoryBudgetModel();
   const params = useLocalSearchParams();
   const router = useRouter();
-  const type = parseInt(params.type[0]) || CategoryType.EXPENSE;
+  const type = Array.isArray(params.type) ? parseInt(params.type[0]) : parseInt(params.type);
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [accAmount, setAccAmount] = useState('');
@@ -71,19 +72,28 @@ export default function CategoryBudgetCreate() {
     <View>
       <Stack.Screen options={{
         title: getScreenTitle(type),
-        headerBackTitle: 'Budget',
+        headerBackButtonDisplayMode: 'minimal',
       }} />
       <Container>
         <ColLayout spacing='l'>
-          <TextBox value={title} onChangeText={setTitle} placeholder={`Category (e.g. ${getCategoryPlaceholder(type)})`} />
-          <TextBox value={amount} onChangeText={setAmount} placeholder="Planned Amount" />
+          <View>
+            <GroupLabel>Title</GroupLabel>
+            <TextBox value={title} onChangeText={setTitle} placeholder={`e.g. ${getCategoryPlaceholder(type)}`} />
+          </View>
+
+          <View>
+            <GroupLabel>Planned Amount</GroupLabel>
+            <TextBox value={amount} onChangeText={setAmount} />
+          </View>
 
           {type === CategoryType.SAVINGS || type === CategoryType.DEBT ? (
-            <TextBox
-              value={accAmount}
-              onChangeText={setAccAmount}
-              placeholder={type === CategoryType.DEBT ? 'Leftover Debt' : 'Accumulated'}
-            />
+            <View>
+              <GroupLabel>{type === CategoryType.DEBT ? 'Leftover Debt' : 'Accumulated'}</GroupLabel>
+              <TextBox
+                value={accAmount}
+                onChangeText={setAccAmount}
+              />
+            </View>
           ) : null}
 
           <Button onPress={createCategoryBudget}>Save Changes</Button>

@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from './themed-text';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 
-type TouchableBoxProps = Readonly<{
+export interface TouchableBoxProps {
   children: React.ReactNode,
   icon?: any,
   arrow?: boolean,
@@ -19,7 +19,7 @@ type TouchableBoxProps = Readonly<{
   additionalText?: string,
   style?: any,
   size?: 's',
-}>;
+}
 
 const TouchableBox = (props: TouchableBoxProps) => {
   const [isActive, setIsActive] = useState(false);
@@ -109,7 +109,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 15,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 15
+    gap: 15,
   },
   withIcon: {
     paddingTop: 11.5,

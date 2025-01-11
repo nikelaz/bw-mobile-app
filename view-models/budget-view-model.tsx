@@ -34,6 +34,8 @@ export class BudgetViewModel {
       const initiallySelectedBudget = findClosestBudgetDate(new Date(), parsedBudgets);
       this.setCurrentBudget(initiallySelectedBudget);
     }
+
+    return parsedBudgets;
   }
 
   async fetchBudgets(): Promise<Array<Budget>> {
@@ -63,7 +65,7 @@ export class BudgetViewModel {
     return false;
   }
 
-  async createBudget(budget: Budget, copyFrom: Budget) {
+  async create(budget: Budget, copyFrom: Budget) {
     if (!this.token) return;
   
     const reqOptions = {
@@ -78,6 +80,8 @@ export class BudgetViewModel {
     const req = await fetch(`${api}/budgets`, reqOptions);
   
     const jsonResponse = await req.json();
+
+    console.log('jsonResponse', jsonResponse);
   
     if (req.status !== 200 && jsonResponse.message) {
       throw new Error(jsonResponse.message);
@@ -87,7 +91,9 @@ export class BudgetViewModel {
       throw new Error('An unexpected error occured. Please try again later.')
     }
   
-    return jsonResponse;
+    const newBudgets = await this.refresh();
+    const newBudget = newBudgets.find(budget => budget.id === jsonResponse.budget.id);
+    if (newBudget) this.setCurrentBudget(newBudget);
   };
 }
 

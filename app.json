@@ -15,7 +15,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "automatic",
+      "bundleIdentifier": "com.anonymous.bwmobileapp"
     },
     "android": {
       "adaptiveIcon": {

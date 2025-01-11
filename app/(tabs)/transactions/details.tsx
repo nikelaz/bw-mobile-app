@@ -100,7 +100,7 @@ export default function TransactionDetails() {
     <View>
       <Stack.Screen options={{
         title: title,
-        headerBackTitle: 'Transactions',
+        headerBackButtonDisplayMode: 'minimal',
       }} />
 
       <Container>
