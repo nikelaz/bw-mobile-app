@@ -58,8 +58,6 @@ export class UserViewModel {
     const req = await fetch(`${api}/users/login`, reqOptions);
     const jsonResponse = await req.json();
 
-    console.log('jsonResponse', jsonResponse);
-
     await Storage.setItem('token', jsonResponse.token);
     await Storage.setItem('user', JSON.stringify(jsonResponse.user));
 

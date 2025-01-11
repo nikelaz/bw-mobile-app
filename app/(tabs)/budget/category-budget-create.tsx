@@ -1,13 +1,14 @@
 import Container from '@/components/container';
-import { BudgetModelContextProvider, useBudgetModel } from '@/view-models/budget-view-model';
+import { useBudgetModel } from '@/view-models/budget-view-model';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { View, Button } from 'react-native';
+import { View } from 'react-native';
 import TextBox from '@/components/text-box';
 import { useState } from 'react';
 import ColLayout from '@/components/col-layout';
 import { CategoryType } from '@/types/category';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
+import Button from '@/components/button';
 
 const getCategoryPlaceholder = (type: CategoryType) => {
   switch (type) {
@@ -85,7 +86,7 @@ export default function CategoryBudgetCreate() {
             />
           ) : null}
 
-          <Button title="Save Changes" onPress={createCategoryBudget} />  
+          <Button onPress={createCategoryBudget}>Save Changes</Button>
         </ColLayout>
       </Container>
     </View>

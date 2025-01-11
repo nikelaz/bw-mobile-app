@@ -6,7 +6,7 @@ import { useBudgetModel } from '@/view-models/budget-view-model';
 import TouchableBox from '@/components/touchable-box';
 import { Budget } from '@/types/budget';
 import months from '@/data/months';
-import { HeaderBackButton } from '@react-navigation/elements';
+import BackButton from '@/components/back-button';
 
 export default function SelectBudget() {
   const budgetModel = useBudgetModel();
@@ -33,7 +33,7 @@ export default function SelectBudget() {
         title: 'Select Budget Period',
         headerBackTitle: 'Budget',
         headerLeft: () => (
-          <HeaderBackButton label={backText} onPress={backButtonHandler} />
+          <BackButton label={backText} onPress={backButtonHandler} />
         )
       }} />
 

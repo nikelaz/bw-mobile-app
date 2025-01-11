@@ -26,6 +26,7 @@ export default function CategoryBudgetDetails() {
   const errorBoundary = useErrorBoundary();
 
   if (!categoryBudget) return 'Loading';
+  console.log("title", title);
 
   const updateCategoryBudget = async () => {
     try {

@@ -1,9 +1,10 @@
 import Container from '@/components/container';
 import ColLayout from '@/components/col-layout';
 import Heading from '@/components/heading';
-import { View, Button } from 'react-native';
+import { View } from 'react-native';
 import TouchableBox from '@/components/touchable-box';
 import React, { useState } from 'react';
+import LinkButton from '@/components/link-button';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import GatedView from '@/components/gated-view';
 import { useUserModel } from '@/view-models/user-view-model';
@@ -39,7 +40,9 @@ export default function Budget() {
           <ColLayout>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
               <Heading>Budget</Heading>
-              <Button color={useThemeColor({}, 'primary')} title="+ New Transaction" onPress={() => router.push(`/(tabs)/transactions/create?backText=Budget&backHref=${encodeURIComponent('/(tabs)/budget')}`)} />
+              <LinkButton href={`/(tabs)/transactions/create?backText=Budget&backHref=${encodeURIComponent('/(tabs)/budget')}`}>
+                + New Transaction
+              </LinkButton>
             </View>
 
             {currentBudget ? (
@@ -78,7 +81,13 @@ export default function Budget() {
                 <ColLayout spacing="m">
                   {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME] && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length > 0 ? (
                     <ColLayout spacing="m">
-                      <Heading level={2}>Income</Heading>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Heading level={2}>Income</Heading>
+                        <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.INCOME}`}>
+                          + New Income
+                        </LinkButton>
+                      </View>
+
                       <View>
                         {categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].map((categoryBudget, index) => (
                           <TouchableBox
@@ -96,14 +105,18 @@ export default function Budget() {
                       </View>
                     </ColLayout>
                   ) : null}
-
-                  <Button title="New Income" onPress={() => router.push(`/(tabs)/budget/category-budget-create?type=${CategoryType.INCOME}`)} />
                 </ColLayout>
 
                 <ColLayout spacing="m">
                   {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE] && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length > 0 ? (
                     <ColLayout spacing="m">
-                      <Heading level={2}>Expenses</Heading>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Heading level={2}>Expenses</Heading>
+                        <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.EXPENSE}`}>
+                          + New Category
+                        </LinkButton>
+                      </View>
+                      
                       <View>
                         {categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].map((categoryBudget, index) => (
                           <TouchableBox
@@ -121,14 +134,18 @@ export default function Budget() {
                       </View>
                     </ColLayout>
                   ) : null}
-
-                  <Button title="New Category" onPress={() => router.push(`/(tabs)/budget/category-budget-create?type=${CategoryType.EXPENSE}`)} />
                 </ColLayout>
 
                 <ColLayout spacing="m">
                   {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS] && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length > 0 ? (
                     <ColLayout spacing="m">
-                      <Heading level={2}>Savings</Heading>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Heading level={2}>Savings</Heading>
+                        <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.SAVINGS}`}>
+                          + New Loan
+                        </LinkButton>
+                      </View>
+                      
                       <View>
                         {categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].map((categoryBudget, index) => (
                           <TouchableBox
@@ -146,14 +163,18 @@ export default function Budget() {
                       </View>
                     </ColLayout>
                   ) : null}
-
-                  <Button title="New Loan" onPress={() => router.push(`/(tabs)/budget/category-budget-create?type=${CategoryType.SAVINGS}`)} />
                 </ColLayout>
 
                 <ColLayout spacing="m">
                   {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT] && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length > 0 ? (
                     <ColLayout spacing="m">
-                      <Heading level={2}>Debt</Heading>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Heading level={2}>Debt</Heading>
+                        <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.DEBT}`}>
+                          + New Fund
+                        </LinkButton>
+                      </View>
+
                       <View>
                         {categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].map((categoryBudget, index) => (
                           <TouchableBox
@@ -171,8 +192,6 @@ export default function Budget() {
                       </View>
                     </ColLayout>
                   ) : null}
-
-                  <Button title="New Fund" onPress={() => router.push(`/(tabs)/budget/category-budget-create?type=${CategoryType.DEBT}`)} />
                 </ColLayout>
               </>
             ) : null}

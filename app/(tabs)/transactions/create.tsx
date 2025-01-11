@@ -1,6 +1,7 @@
 import Container from '@/components/container';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { View, Button } from 'react-native';
+import { View } from 'react-native';
+import Button from '@/components/button';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
 import ColLayout from '@/components/col-layout';
@@ -13,7 +14,7 @@ import { useBudgetModel } from '@/view-models/budget-view-model';
 import { CategoryBudget } from '@/types/category-budget';
 import months from '@/data/months';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
-import { HeaderBackButton } from '@react-navigation/elements';
+import BackButton from '@/components/back-button';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   const categoriesMap: any = {};
@@ -74,9 +75,8 @@ export default function TransactionCreate() {
     <View>
       <Stack.Screen options={{
         title: 'Create New Transaction',
-        headerBackTitle: 'Transactions',
         headerLeft: () => (
-          <HeaderBackButton label={backText} onPress={backButtonHandler} />
+          <BackButton label={backText} onPress={backButtonHandler} />
         )
       }} />
 
@@ -118,7 +118,7 @@ export default function TransactionCreate() {
               <TextBox value={amount} onChangeText={setAmount} />
             </View>
           </ColLayout>
-          <Button onPress={createTransaction} title="Save Changes" />  
+          <Button onPress={createTransaction}>Save Changes</Button>
         </ColLayout>
       </Container>
     </View>      

@@ -4,23 +4,18 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { UserModelContextProvider } from '@/view-models/user-view-model';
 import ErrorBoundary from 'react-native-error-boundary';
-import { SafeAreaView, View, Text, Button } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { useRouter } from 'expo-router';
+import { SafeAreaView, View, Text } from 'react-native';
+import LinkButton from '@/components/link-button';
 
 const ErrorFallbackComponent = () => {
-  const router = useRouter();
-
   return (
     <SafeAreaView>
       <View>
         <Text>Oops!</Text>
         <Text>An unexpected error occured.</Text>
-        <Button
-          color={useThemeColor({}, 'primary')}
-          onPress={() => router.navigate('/')}
-          title="Try again"
-        />
+        <LinkButton href="/(login)">
+          Try again
+        </LinkButton>
       </View>
     </SafeAreaView>
   );

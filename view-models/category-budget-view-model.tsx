@@ -68,7 +68,6 @@ export class CategoryBudgetViewModel {
     }
 
     if (req.status !== 200 && !jsonResponse.message) {
-      console.log(jsonResponse);
       throw new Error('An unexpected error occured. Please try again later.')
     }
 
@@ -123,7 +122,6 @@ export class CategoryBudgetViewModel {
     }
 
     if (req.status !== 200 && !jsonResponse.message) {
-      console.log('jsonResponse', jsonResponse);
       throw new Error('An unexpected error occured. Please try again later.')
     }
 

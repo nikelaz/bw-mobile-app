@@ -1,6 +1,7 @@
 import Container from '@/components/container';
 import { Stack } from 'expo-router';
-import { View, Button } from 'react-native';
+import { View } from 'react-native';
+import Button from '@/components/button';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
 import ColLayout from '@/components/col-layout';
@@ -48,7 +49,7 @@ export default function ChangePassword() {
             <TextBox secureTextEntry={true} value={repeatNewPassword} onChangeText={setRepeatNewPassword} />
           </View>
           <View style={{ alignItems: 'flex-start' }}>
-            <Button title="Change Password" onPress={changePassword} />
+            <Button onPress={changePassword}>Change Password</Button>
             <ThemedText>{successMessage}</ThemedText>
           </View>
         </ColLayout>

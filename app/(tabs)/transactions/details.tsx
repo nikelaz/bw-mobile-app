@@ -15,6 +15,7 @@ import { CategoryBudget } from '@/types/category-budget';
 import months from '@/data/months';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import Dialog from '@/helpers/alert';
+import { ThemedText } from '@/components/themed-text';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   const categoriesMap: any = {};
@@ -42,32 +43,12 @@ export default function TransactionDetails() {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date(transaction?.date));
   const [title, setTitle] = useState(transaction?.title);
-  const [amount, setAmount] = useState(transaction?.amount);
+  const [amount, setAmount] = useState(transaction?.amount.toString());
+
   const categoryOptions = getOptionsFromCategoryBudgets(budgetModel.currentBudget.categoryBudgets);
   const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget.category.id) || categoryOptions[0]);
   
   const errorBoundary = useErrorBoundary();
-
-  const showConfirmDialog = () => {
-    return Alert.alert(
-      "Are your sure?",
-      "Are you sure you want to remove this transaction?",
-      [
-        // The "Yes" button
-        {
-          text: "Yes",
-          // onPress: () => {
-          //   setShowBox(false);
-          // },
-        },
-        // The "No" button
-        // Does nothing but dismiss the dialog when tapped
-        {
-          text: "No",
-        },
-      ]
-    );
-  };
 
   const updateTransaction = async (passedDate?: Date, category?: any) => {
     const updateObj: any = {
@@ -113,7 +94,7 @@ export default function TransactionDetails() {
     );
   }
 
-  if (!transaction) return 'Loading...';
+  if (!transaction) return <ThemedText>Loading...</ThemedText>;
 
   return (
     <View>
@@ -133,10 +114,10 @@ export default function TransactionDetails() {
               <GroupLabel>Date</GroupLabel>
               <TouchableBox onPress={() => setOpen(true)} icon="calendar">{date.getDate()} {months[date.getMonth()]} {date.getFullYear()}</TouchableBox>
               <DatePicker
-                modal={true}
+                modal
                 open={open}
                 date={date}
-                onConfirm={async (date) => {
+                onConfirm={(date) => {
                   setOpen(false);
                   setDate(date);
                   updateTransaction(date);
@@ -159,7 +140,7 @@ export default function TransactionDetails() {
             </View>
             <View>
               <GroupLabel>Amount</GroupLabel>
-              <TextBox value={amount} onChangeText={setAmount} />
+              <TextBox value={amount} onChangeText={setAmount} onBlur={() => updateTransaction()} />
             </View>
           </ColLayout>
           <TouchableBox onPress={confirmDelete} icon="trash-bin">Delete Transaction</TouchableBox>   

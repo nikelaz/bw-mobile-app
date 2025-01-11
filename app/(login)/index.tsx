@@ -1,5 +1,5 @@
 import Container from '@/components/container';
-import { Alert, View, Text, Button } from 'react-native';
+import { View } from 'react-native';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
 import ColLayout from '@/components/col-layout';
@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { useUserModel } from '@/view-models/user-view-model';
 import { useState } from 'react';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
+import LinkButton from '@/components/link-button';
 
 export default function ChangePassword() {
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function ChangePassword() {
         <View>
           <TouchableBox onPress={login} arrow={true}>Login</TouchableBox>
         </View>
-        <Button title='Sign Up' onPress={() => router.navigate('/(login)/sign-up')} />
+        <LinkButton href="/(login)/sign-up">Sign Up</LinkButton>
       </ColLayout>
     </Container>
   );

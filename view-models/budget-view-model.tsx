@@ -3,6 +3,7 @@ import type { Budget } from '@/types/budget';
 import { api } from '@/config';
 import findClosestBudgetDate from '@/helpers/find-closest-budget-date';
 import parseBudgets from '@/helpers/parse-budgets';
+import { useUserModel } from './user-view-model';
 
 export class BudgetViewModel {
   token: string;
@@ -99,10 +100,11 @@ type BudgetModelContextProviderProps = Readonly<{
 
 export const BudgetModelContextProvider = (props: BudgetModelContextProviderProps) => {
   const budgetModel = new BudgetViewModel(props.token);
+  const userModel = useUserModel();
 
   useEffect(() => {
     budgetModel.refresh();
-  }, [budgetModel.token]);
+  }, [props.token, userModel.user]);
 
   return (
     <BudgetModelContext.Provider value={budgetModel}>
