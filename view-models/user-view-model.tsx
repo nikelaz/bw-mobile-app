@@ -22,10 +22,10 @@ export class UserViewModel {
 
   getCurrency() {
     if (this.cachedCurrency !== null && this.currency === this.cachedCurrency.iso) {
-      if (this.cachedCurrency.symbol) {
-        return this.cachedCurrency.symbol;
+      if (this.cachedCurrency.iso) {
+        return this.cachedCurrency.iso;
       }
-      return this.cachedCurrency.iso;
+      return this.cachedCurrency.symbol;
     }
 
     const currency = currencies.find(x => x.iso === this.currency);
@@ -34,11 +34,11 @@ export class UserViewModel {
 
     this.cachedCurrency = currency;
     
-    if (currency.symbol) {
-      return currency.symbol;
+    if (currency.iso) {
+      return currency.iso;
     }
 
-    return currency.iso;
+    return currency.symbol;
   }
 
   async login(email: string, password: string) {
@@ -58,16 +58,16 @@ export class UserViewModel {
     const req = await fetch(`${api}/users/login`, reqOptions);
     const jsonResponse = await req.json();
 
+    if (req.status !== 200) {
+      throw jsonResponse;
+    }
+
     await Storage.setItem('token', jsonResponse.token);
     await Storage.setItem('user', JSON.stringify(jsonResponse.user));
 
-    if (req.status !== 200) {
-      throw new Error(jsonResponse.message);
-    }
-
-    this.token = jsonResponse.token;
-    this.user = jsonResponse.user;
-    this.currency = jsonResponse.user.currency;
+    this.setToken(jsonResponse.token);
+    this.setUser(jsonResponse.user);
+    this.setCurrency(jsonResponse.user.currency);
   };
 
   async signup(user: any) {
@@ -114,6 +114,7 @@ export class UserViewModel {
     if (this.token) return this.token;
     
     const storedToken = await Storage.getItem('token');
+
     this.setToken(storedToken);
 
     if (!this.user) {

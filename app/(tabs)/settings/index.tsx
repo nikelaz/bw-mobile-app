@@ -12,6 +12,7 @@ import { useNavigation, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useUserModel } from '@/view-models/user-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
+import { UserUpdateSchema } from '@/validation-schemas/user-schemas';
 
 export default function Settings() {
   const userModel = useUserModel();
@@ -20,9 +21,10 @@ export default function Settings() {
   const errorBoundary = useErrorBoundary();
   const [firstName, setFirstName] = useState(userModel.user.firstName);
   const [lastName, setLastName] = useState(userModel.user.lastName);
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
   const currencyItems = currencies.map(currency => ({
-    label: `${currency.title} - ${currency.symbol}`,
+    label: `${currency.title}`,
     value: currency.iso }
   ));
 
@@ -40,14 +42,33 @@ export default function Settings() {
 
   const updateUser = async (updateObj: any) => {
     try {
+      const parsedInput = UserUpdateSchema.parse({
+        firstName,
+        lastName,
+      });
+
       userModel.update({
         ...userModel.user,
-        ...updateObj, 
-      })
+        ...parsedInput,
+        ...updateObj,
+      });
     } catch (error) {
       errorBoundary(error);
     }
   };
+
+  const logout = async () => {
+    setIsLogoutLoading(true);
+
+    try {
+      await userModel.logout();
+      router.replace('/(login)');
+    } catch (error) {
+      errorBoundary(error);
+    } finally {
+      setIsLogoutLoading(false);
+    }
+  }
 
   return (
     <Container>
@@ -86,7 +107,8 @@ export default function Settings() {
             />
           </View>
           </ColLayout>
-          <TouchableBox onPress={() => router.push('/(tabs)/settings/change-password')} icon="lock-closed" arrow={true}>Change Password</TouchableBox>   
+          <TouchableBox onPress={() => router.navigate('/(tabs)/settings/change-password')} icon="lock-closed" arrow={true}>Change Password</TouchableBox>
+          <TouchableBox isLoading={isLogoutLoading} onPress={logout} icon="log-out">Logout</TouchableBox>   
         </ColLayout>
       </ColLayout>
     </Container>

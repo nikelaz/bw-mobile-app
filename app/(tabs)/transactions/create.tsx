@@ -1,7 +1,6 @@
 import Container from '@/components/container';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
-import Button from '@/components/button';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
 import ColLayout from '@/components/col-layout';
@@ -15,6 +14,7 @@ import { CategoryBudget } from '@/types/category-budget';
 import months from '@/data/months';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import BackButton from '@/components/back-button';
+import { CreateTransactionSchema } from '@/validation-schemas/transaction.schemas';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   const categoriesMap: any = {};
@@ -38,31 +38,41 @@ export default function TransactionCreate() {
   const params = useLocalSearchParams();
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Transactions';
   const backHref: any = (Array.isArray(params.backHref) ? params.backHref[0] : params.backHref) || '/(tabs)/transactions';
-  // const id = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
   const router = useRouter();
-  // const transaction = transactionsModel.transactions.find((transaction: Transaction) => transaction.id === id);
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const categoryOptions = getOptionsFromCategoryBudgets(budgetModel.currentBudget.categoryBudgets);
   const [category, setCategory] = useState(categoryOptions[0]);
+  const [isLoading, setIsLoading] = useState(false);
   
   const errorBoundary = useErrorBoundary();
 
   const createTransaction = async () => {
+    setIsLoading(true);
+
     try {
-      await transactionsModel.create({
+      const parsedInput = CreateTransactionSchema.parse({
         title,
         date: date.toISOString(),
-        amount: parseFloat(amount),
+        amount,
+        categoryId: category.value,
+      });
+
+      await transactionsModel.create({
+        title: parsedInput.title,
+        date: parsedInput.date,
+        amount: parsedInput.amount,
         categoryBudget: {
-          id: parseInt(category.value),
+          id: parsedInput.categoryId,
         },
       });
       router.back();
     } catch (error) {
       errorBoundary(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -118,7 +128,8 @@ export default function TransactionCreate() {
               <TextBox value={amount} onChangeText={setAmount} />
             </View>
           </ColLayout>
-          <Button onPress={createTransaction}>Save Changes</Button>
+
+          <TouchableBox isLoading={isLoading} icon='create' onPress={createTransaction}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>      

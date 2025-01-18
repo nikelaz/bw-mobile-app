@@ -4,6 +4,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from './themed-text';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { View } from 'react-native';
+import { Loader } from './loader';
 
 export interface TouchableBoxProps {
   children: React.ReactNode,
@@ -19,6 +20,7 @@ export interface TouchableBoxProps {
   additionalText?: string,
   style?: any,
   size?: 's',
+  isLoading?: boolean,
 }
 
 const TouchableBox = (props: TouchableBoxProps) => {
@@ -59,11 +61,16 @@ const TouchableBox = (props: TouchableBoxProps) => {
 
   const smallSizeStyles = props.size === 's' ? { paddingTop: 5, paddingBottom: 5 } : {};
 
+  const iconColor = useThemeColor({}, 'systemGrey2');
+  const additionalTextColor = useThemeColor({}, 'systemGrey');
+  const arrowColor = useThemeColor({}, 'systemGrey2');
+
+
   return (
     <Pressable
-      onPressIn={() => setIsActive(true)}
-      onPressOut={() => setIsActive(false)}
-      onPress={props.onPress}
+      onPressIn={() => !props.isLoading && setIsActive(true)}
+      onPressOut={() => !props.isLoading && setIsActive(false)}
+      onPress={() => { !props.isLoading && (props.onPress && props.onPress()) }}
       style={{
         backgroundColor: bgColor,
         ...styles.touchableBox,
@@ -74,18 +81,31 @@ const TouchableBox = (props: TouchableBoxProps) => {
         ...props.style,
       }}
     >
-      {props.icon ? (
-        <Ionicons name={props.icon} size={24} color={useThemeColor({}, 'systemGrey2')} />
+      {props.isLoading ? (
+        <Loader width={20} height={20} color={additionalTextColor} />
+      ) : null}
+
+      {props.icon && !props.isLoading ? (
+        <Ionicons name={props.icon} size={24} color={iconColor} />
       ) : null}
       
-      <ThemedText>{props.children}</ThemedText>
+      {props.isLoading ? (
+        <ThemedText style={{ color: additionalTextColor }}>
+          Loading...
+        </ThemedText>
+      ) : (
+        <ThemedText>
+          {props.children}
+        </ThemedText>
+      )}
+      
 
       {props.additionalText ? (
-        <ThemedText style={{ color: useThemeColor({}, 'systemGrey'), marginLeft: 'auto'}}>{props.additionalText}</ThemedText>
+        <ThemedText style={{ color: additionalTextColor, marginLeft: 'auto'}}>{props.additionalText}</ThemedText>
       ) : null} 
 
-      {props.arrow ? (
-        <Ionicons style={{ marginLeft: props.additionalText ? 0 : 'auto' }} name="chevron-forward" size={22} color={useThemeColor({}, 'systemGrey2')} />
+      {!props.isLoading && props.arrow ? (
+        <Ionicons style={{ marginLeft: props.additionalText ? 0 : 'auto' }} name="chevron-forward" size={22} color={arrowColor} />
       ) : null}
 
       {props.group && !props.groupLast ? (

@@ -16,6 +16,7 @@ import months from '@/data/months';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import Dialog from '@/helpers/alert';
 import { ThemedText } from '@/components/themed-text';
+import { UpdateTransactionSchema } from '@/validation-schemas/transaction.schemas';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   const categoriesMap: any = {};
@@ -44,6 +45,7 @@ export default function TransactionDetails() {
   const [date, setDate] = useState(new Date(transaction?.date));
   const [title, setTitle] = useState(transaction?.title);
   const [amount, setAmount] = useState(transaction?.amount.toString());
+  const [isLoading, setIsLoading] = useState(false);
 
   const categoryOptions = getOptionsFromCategoryBudgets(budgetModel.currentBudget.categoryBudgets);
   const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget.category.id) || categoryOptions[0]);
@@ -51,25 +53,25 @@ export default function TransactionDetails() {
   const errorBoundary = useErrorBoundary();
 
   const updateTransaction = async (passedDate?: Date, category?: any) => {
-    const updateObj: any = {
-      id,
-      title,
-      amount: parseFloat(amount),
-    };
-
-    if (passedDate) {
-      updateObj.date = passedDate.toISOString();
-    } else {
-      updateObj.date = date.toISOString()
-    }
-
-    if (category) {
-      updateObj.categoryBudget = {
-        id: parseInt(category.value),
-      };
-    }
-
     try {
+      const updateObj: any = UpdateTransactionSchema.parse({
+        id,
+        title,
+        amount
+      });
+  
+      if (passedDate) {
+        updateObj.date = passedDate.toISOString();
+      } else {
+        updateObj.date = date.toISOString()
+      }
+  
+      if (category) {
+        updateObj.categoryBudget = {
+          id: parseInt(category.value),
+        };
+      }
+  
       await transactionsModel.update(updateObj);
     } catch (error) {
       errorBoundary(error);
@@ -77,11 +79,14 @@ export default function TransactionDetails() {
   };
 
   const deleteTransaction = async () => {
+    setIsLoading(true);
     try {
       await transactionsModel.delete(id);
-      router.push('/(tabs)/transactions');
+      router.navigate('/(tabs)/transactions');
     } catch (error) {
       errorBoundary(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -143,7 +148,8 @@ export default function TransactionDetails() {
               <TextBox value={amount} onChangeText={setAmount} onBlur={() => updateTransaction()} />
             </View>
           </ColLayout>
-          <TouchableBox onPress={confirmDelete} icon="trash-bin">Delete Transaction</TouchableBox>   
+
+          <TouchableBox isLoading={isLoading} onPress={confirmDelete} icon="trash-bin">Delete Transaction</TouchableBox>   
         </ColLayout>
       </Container>
     </View>      

@@ -11,7 +11,7 @@ const LinkBox = (props: LinkBoxProps) => {
   return (
       <TouchableBox
         {...props}
-        onPress={() => router.push(props.href)}
+        onPress={() => router.navigate(props.href)}
       >
         {props.children}
       </TouchableBox>

@@ -6,8 +6,13 @@ import { calculateTotalPages } from '@/helpers/pagination-utils';
 import type { Transaction } from '@/types/transaction';
 import { api } from '@/config';
 
+const calculatePerPageBasedOnHeight = (height: number) => {
+  let coefficient = height < 1000 ? 300 : 100;
+  return Math.max(3, Math.ceil((height - coefficient) / 100));
+}
+
 export class TransactionsViewModel {
-  perPage = 11;
+  perPage = 5;
   token: string;
   budgetModel: BudgetViewModel;
   transactions: Array<Transaction>;
@@ -22,7 +27,7 @@ export class TransactionsViewModel {
   setCategory: Function;
 
 
-  constructor(token: string) {
+  constructor(token: string, height: number) {
     this.token = token;
     this.budgetModel = useBudgetModel();
     [this.transactions, this.setTransactions] = useState([]);
@@ -30,6 +35,7 @@ export class TransactionsViewModel {
     [this.filter, this.setFilter] = useState('');
     [this.totalPages, this.setTotalPages] = useState(calculateTotalPages(0, this.perPage));
     [this.category, this.setCategory] = useState('');
+    this.perPage = calculatePerPageBasedOnHeight(height);
 
     useEffect(() => {
       this.refresh();
@@ -159,10 +165,11 @@ const TransactionsModelContext = createContext<any>(null);
 type TransactionsModelContextProviderProps = Readonly<{
   children: React.ReactNode,
   token: string,
+  height: number,
 }>;
 
 export const TransactionsModelContextProvider = (props: TransactionsModelContextProviderProps) => {
-  const transactionsModel = new TransactionsViewModel(props.token);
+  const transactionsModel = new TransactionsViewModel(props.token, props.height);
 
   return (
     <TransactionsModelContext.Provider value={transactionsModel}>

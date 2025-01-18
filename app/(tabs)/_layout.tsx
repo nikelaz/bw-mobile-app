@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Dimensions } from 'react-native';
 
 import { TabBarIcon } from '@/components/tab-bar-icon';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -13,7 +14,7 @@ export default function TabLayout() {
 
   return (
     <BudgetModelContextProvider token={userModel.token}>
-      <TransactionsModelContextProvider token={userModel.token}>
+      <TransactionsModelContextProvider token={userModel.token} height={Dimensions.get('window').height}>
         <CategoryBudgetModelContextProvider token={userModel.token}>
           <Tabs
             screenOptions={{

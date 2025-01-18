@@ -5,7 +5,6 @@ import { View } from 'react-native';
 import TouchableBox from '@/components/touchable-box';
 import React, { useState } from 'react';
 import LinkButton from '@/components/link-button';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import GatedView from '@/components/gated-view';
 import { useUserModel } from '@/view-models/user-view-model';
 import { useBudgetModel } from '@/view-models/budget-view-model';
@@ -13,6 +12,9 @@ import months from '@/data/months';
 import { CategoryType } from '@/types/category';
 import { useRouter } from 'expo-router';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
+import { LoadingLine } from '@/components/loading-line';
+import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
+import { CategoryBudget } from '@/types/category-budget';
 
 enum AmountState {
   Planned = 1,
@@ -31,30 +33,38 @@ export default function Budget() {
   const router = useRouter();
   const categoryBudgetModel = useCategoryBudgetModel();
   const currency = userModel.getCurrency();
-  const currentBudget = budgetModel.currentBudget;
+  const currencyFormatter = new CurrencyFormatter(currency);
+  let currentBudget = budgetModel.currentBudget;
 
   return (
     <GatedView>
-      <View style={{ backgroundColor: useThemeColor({}, 'background') }}>
-        <Container>
-          <ColLayout>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-              <Heading>Budget</Heading>
+      <Container>
+        <ColLayout>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+            <Heading>Budget</Heading>
+
+            {currentBudget ? (
               <LinkButton href={`/(tabs)/transactions/create?backText=Budget&backHref=${encodeURIComponent('/(tabs)/budget')}`}>
                 + New Transaction
               </LinkButton>
-            </View>
+            ) : (
+              <LoadingLine width={150} height={30} />
+            )}
+          </View>
 
-            {currentBudget ? (
-              <TouchableBox
-                icon="calendar-clear"
-                arrow={true}
-                onPress={() => router.push('/budget/select-budget')}
-              >
-                {months[currentBudget.month.getMonth()]} {currentBudget.month.getFullYear()}
-              </TouchableBox>
-            ) : null}
+          {currentBudget ? (
+            <TouchableBox
+              icon="calendar-clear"
+              arrow={true}
+              onPress={() => router.navigate('/budget/select-budget')}
+            >
+              {months[currentBudget.month.getMonth()]} {currentBudget.month.getFullYear()}
+            </TouchableBox>
+          ) : (
+            <LoadingLine height={47} />
+          )}
 
+          {currentBudget ? (
             <View style={{flexDirection: 'row'}}>
               <TouchableBox
                 icon={getAmountStateCheckbox(AmountState.Planned, amountState)}
@@ -75,130 +85,149 @@ export default function Budget() {
                 Actual
               </TouchableBox>
             </View>
+          ) : (
+            <LoadingLine height={47} />
+          )}
 
-            {currentBudget ? (
-              <>
-                <ColLayout spacing="m">
-                  {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME] && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length > 0 ? (
-                    <ColLayout spacing="m">
-                      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Heading level={2}>Income</Heading>
-                        <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.INCOME}`}>
-                          + New Income
-                        </LinkButton>
-                      </View>
+          {currentBudget ? (
+            <>
+              <ColLayout spacing="m">
+                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME] && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length > 0 ? (
+                  <ColLayout spacing="m">
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <Heading level={2}>Income</Heading>
+                      <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.INCOME}`}>
+                        + New Income
+                      </LinkButton>
+                    </View>
 
-                      <View>
-                        {categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].map((categoryBudget, index) => (
-                          <TouchableBox
-                            group={true}
-                            groupFirst={index === 0}
-                            groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length - 1}
-                            arrow={true}
-                            additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
-                            key={categoryBudget.id}
-                            onPress={() => router.push(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
-                          >
-                            {categoryBudget.category?.title}
-                          </TouchableBox>
-                        ))}   
-                      </View>
-                    </ColLayout>
-                  ) : null}
-                </ColLayout>
+                    <View>
+                      {categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].map((categoryBudget: CategoryBudget, index: number) => (
+                        <TouchableBox
+                          group={true}
+                          groupFirst={index === 0}
+                          groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length - 1}
+                          arrow={true}
+                          additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
+                          key={categoryBudget.id}
+                          onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                        >
+                          {categoryBudget.category?.title}
+                        </TouchableBox>
+                      ))}   
+                    </View>
+                  </ColLayout>
+                ) : null}
+              </ColLayout>
 
-                <ColLayout spacing="m">
-                  {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE] && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length > 0 ? (
-                    <ColLayout spacing="m">
-                      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Heading level={2}>Expenses</Heading>
-                        <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.EXPENSE}`}>
-                          + New Category
-                        </LinkButton>
-                      </View>
-                      
-                      <View>
-                        {categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].map((categoryBudget, index) => (
-                          <TouchableBox
-                            group={true}
-                            groupFirst={index === 0}
-                            groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length - 1}
-                            arrow={true}
-                            additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
-                            key={categoryBudget.id}
-                            onPress={() => router.push(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
-                          >
-                            {categoryBudget.category?.title}
-                          </TouchableBox>
-                        ))}   
-                      </View>
-                    </ColLayout>
-                  ) : null}
-                </ColLayout>
+              <ColLayout spacing="m">
+                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE] && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length > 0 ? (
+                  <ColLayout spacing="m">
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <Heading level={2}>Expenses</Heading>
+                      <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.EXPENSE}`}>
+                        + New Category
+                      </LinkButton>
+                    </View>
+                    
+                    <View>
+                      {categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].map((categoryBudget: CategoryBudget, index: number) => (
+                        <TouchableBox
+                          group={true}
+                          groupFirst={index === 0}
+                          groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length - 1}
+                          arrow={true}
+                          additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
+                          key={categoryBudget.id}
+                          onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                        >
+                          {categoryBudget.category?.title}
+                        </TouchableBox>
+                      ))}   
+                    </View>
+                  </ColLayout>
+                ) : null}
+              </ColLayout>
 
-                <ColLayout spacing="m">
-                  {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS] && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length > 0 ? (
-                    <ColLayout spacing="m">
-                      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Heading level={2}>Savings</Heading>
-                        <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.SAVINGS}`}>
-                          + New Loan
-                        </LinkButton>
-                      </View>
-                      
-                      <View>
-                        {categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].map((categoryBudget, index) => (
-                          <TouchableBox
-                            group={true}
-                            groupFirst={index === 0}
-                            groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length - 1}
-                            arrow={true}
-                            additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
-                            key={categoryBudget.id}
-                            onPress={() => router.push(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
-                          >
-                            {categoryBudget.category?.title}
-                          </TouchableBox>
-                        ))}   
-                      </View>
-                    </ColLayout>
-                  ) : null}
-                </ColLayout>
+              <ColLayout spacing="m">
+                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS] && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length > 0 ? (
+                  <ColLayout spacing="m">
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <Heading level={2}>Savings</Heading>
+                      <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.SAVINGS}`}>
+                        + New Loan
+                      </LinkButton>
+                    </View>
+                    
+                    <View>
+                      {categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].map((categoryBudget: CategoryBudget, index: number) => (
+                        <TouchableBox
+                          group={true}
+                          groupFirst={index === 0}
+                          groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length - 1}
+                          arrow={true}
+                          additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
+                          key={categoryBudget.id}
+                          onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                        >
+                          {categoryBudget.category?.title}
+                        </TouchableBox>
+                      ))}   
+                    </View>
+                  </ColLayout>
+                ) : null}
+              </ColLayout>
 
-                <ColLayout spacing="m">
-                  {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT] && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length > 0 ? (
-                    <ColLayout spacing="m">
-                      <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Heading level={2}>Debt</Heading>
-                        <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.DEBT}`}>
-                          + New Fund
-                        </LinkButton>
-                      </View>
+              <ColLayout spacing="m">
+                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT] && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length > 0 ? (
+                  <ColLayout spacing="m">
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <Heading level={2}>Debt</Heading>
+                      <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.DEBT}`}>
+                        + New Fund
+                      </LinkButton>
+                    </View>
 
-                      <View>
-                        {categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].map((categoryBudget, index) => (
-                          <TouchableBox
-                            group={true}
-                            groupFirst={index === 0}
-                            groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length - 1}
-                            arrow={true}
-                            additionalText={`${currency}${amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount}`}
-                            key={categoryBudget.id}
-                            onPress={() => router.push(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
-                          >
-                            {categoryBudget.category?.title}
-                          </TouchableBox>
-                        ))}   
-                      </View>
-                    </ColLayout>
-                  ) : null}
-                </ColLayout>
-              </>
-            ) : null}
-            
-          </ColLayout>
-        </Container>
-      </View>
+                    <View>
+                      {categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].map((categoryBudget: CategoryBudget, index: number) => (
+                        <TouchableBox
+                          group={true}
+                          groupFirst={index === 0}
+                          groupLast={index === categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length - 1}
+                          arrow={true}
+                          additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
+                          key={categoryBudget.id}
+                          onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                        >
+                          {categoryBudget.category?.title}
+                        </TouchableBox>
+                      ))}   
+                    </View>
+                  </ColLayout>
+                ) : null}
+              </ColLayout>
+            </>
+          ) : (
+            <>
+              <ColLayout spacing="m">
+                <LoadingLine width={95} height={30} />
+                <LoadingLine height={250} />
+              </ColLayout>
+
+              <ColLayout spacing="m">
+                <LoadingLine width={95} height={30} />
+                <LoadingLine height={250} />
+              </ColLayout>
+
+              <ColLayout spacing="m">
+                <LoadingLine width={95} height={30} />
+                <LoadingLine height={250} />
+              </ColLayout>
+            </>
+          )}
+          
+        </ColLayout>
+      </Container>
     </GatedView>
   );
 };

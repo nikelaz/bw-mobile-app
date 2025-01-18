@@ -10,20 +10,26 @@ import { useUserModel } from '@/view-models/user-view-model';
 import { useState } from 'react';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import LinkButton from '@/components/link-button';
+import { LoginSchema } from '@/validation-schemas/user-schemas';
 
 export default function ChangePassword() {
   const router = useRouter();
   const userModel = useUserModel();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const errorBoundary = useErrorBoundary();
 
   const login = async () => {
+    setIsLoading(true);
     try {
-      await userModel.login(email, password);
+      const parsedUser = LoginSchema.parse({ email, password });
+      await userModel.login(parsedUser.email, parsedUser.password);
       router.navigate('/(tabs)/budget');
     } catch (error: any) {
       errorBoundary(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -43,9 +49,11 @@ export default function ChangePassword() {
           <TextBox autoComplete="off" textContentType="password" autoCorrect={false} autoCapitalize="none" value={password} onChangeText={setPassword} secureTextEntry={true} />
         </View>
         <View>
-          <TouchableBox onPress={login} arrow={true}>Login</TouchableBox>
+          <TouchableBox onPress={login} arrow={true} isLoading={isLoading}>Login</TouchableBox>
         </View>
-        <LinkButton href="/(login)/sign-up">Sign Up</LinkButton>
+        <View style={{alignItems: 'center'}}>
+          <LinkButton href="/(login)/sign-up">Sign Up</LinkButton>
+        </View>
       </ColLayout>
     </Container>
   );

@@ -25,7 +25,7 @@ export default function SelectBudget() {
 
   const backButtonHandler = () => {
     router.dismissTo('/(tabs)/budget');
-    router.replace(backHref);
+    router.navigate(backHref);
   }
 
   return (

@@ -12,7 +12,7 @@ import { Stack } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Select from '@/components/select';
 import { countries } from '@/data/countries';
-import UserSchema from '@/validation-schemas/user-schema';
+import { SignUpSchema } from '@/validation-schemas/user-schemas';
 
 export default function ChangePassword() {
   const router = useRouter();
@@ -22,14 +22,18 @@ export default function ChangePassword() {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [country, setCountry] = useState('');
-  const errorBoundary = useErrorBoundary();
-
   const countrySelectData = countries.map(country => ({ label: country, value: country }));
+  const [country, setCountry] = useState(countrySelectData[0]);
+  const errorBoundary = useErrorBoundary();
+  const [isLoading, setIsLoading] = useState(false);
+
+  
 
   const signup = async () => {
+    setIsLoading(true);
+
     try {
-      const parsedUser = UserSchema.parse({ email, password, repeatPassword, firstName, lastName, country });
+      const parsedUser = SignUpSchema.parse({ email, password, repeatPassword, firstName, lastName, country: country.value });
       if (parsedUser.password !== parsedUser.repeatPassword) {
         throw new Error('The two passwords do not match');
       }
@@ -37,6 +41,8 @@ export default function ChangePassword() {
       router.navigate('/(login)');
     } catch (error: any) {
       errorBoundary(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,33 +61,34 @@ export default function ChangePassword() {
       <ColLayout spacing="l">
         <View>
           <GroupLabel>Email</GroupLabel>
-          <TextBox value={email} onChangeText={setEmail} />
+          <TextBox autoComplete="email" textContentType="emailAddress" autoCorrect={false} inputMode="email" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
         </View>
         <View>
           <GroupLabel>First Name</GroupLabel>
-          <TextBox value={firstName} onChangeText={setFirstName} />
+          <TextBox autoComplete="name-given" textContentType="givenName" inputMode="text" autoCapitalize="none" value={firstName} onChangeText={setFirstName} />
         </View>
         <View>
           <GroupLabel>Last Name</GroupLabel>
-          <TextBox value={lastName} onChangeText={setLastName} />
+          <TextBox autoComplete="name-family" textContentType="familyName" inputMode="text" autoCapitalize="none" value={lastName} onChangeText={setLastName} />
         </View>
         <View>
           <GroupLabel>Password</GroupLabel>
-          <TextBox value={password} onChangeText={setPassword} secureTextEntry={true} />
+          <TextBox autoComplete="off" textContentType="newPassword" autoCapitalize="none" value={password} onChangeText={setPassword} secureTextEntry={true} />
         </View>
         <View>
           <GroupLabel>Repeat Password</GroupLabel>
-          <TextBox value={repeatPassword} onChangeText={setRepeatPassword} secureTextEntry={true} />
+          <TextBox autoComplete="off" textContentType="password" autoCapitalize="none" value={repeatPassword} onChangeText={setRepeatPassword} secureTextEntry={true} />
         </View>
         <View>
           <GroupLabel>Country</GroupLabel>
           <Select
-            onValueChange={(e) => setCountry(e.value)}
+            onValueChange={(e) => setCountry(countrySelectData.find(item => item.value === e.value) || countrySelectData[0])}
             items={countrySelectData}
+            selectedItem={country}
           />
         </View>
         <View>
-          <TouchableBox onPress={signup} arrow={true}>Sign Up</TouchableBox>
+          <TouchableBox onPress={signup} arrow={true} isLoading={isLoading}>Sign Up</TouchableBox>
         </View>
       </ColLayout>
     </Container>

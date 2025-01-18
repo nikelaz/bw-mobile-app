@@ -12,6 +12,7 @@ import TouchableBox from '@/components/touchable-box';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import Dialog from '@/helpers/alert';
+import { CreateCategoryBudgetSchema } from '@/validation-schemas/category-budget.schemas';
 
 export default function CategoryBudgetDetails() {
   const budgetModel = useBudgetModel();
@@ -24,20 +25,26 @@ export default function CategoryBudgetDetails() {
   const [amount, setAmount] = useState(categoryBudget?.amount.toString());
   const [accAmount, setAccAmount] = useState(categoryBudget?.category?.accAmount?.toString());
   const errorBoundary = useErrorBoundary();
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!categoryBudget) return 'Loading';
-  console.log("title", title);
 
   const updateCategoryBudget = async () => {
     try {
+      const parsedInput = CreateCategoryBudgetSchema.parse({
+        title,
+        amount,
+        accAmount,
+      });
+
       await categoryBudgetModel.update({
         id: categoryBudget.id,
         category: {
           id: categoryBudget.category?.id,
-          title,
-          accAmount: accAmount === undefined ? 0 : parseFloat(accAmount)
+          title: parsedInput.title,
+          accAmount: parsedInput.accAmount,
         },
-        amount: parseFloat(amount)
+        amount: parsedInput.amount
       });
     } catch (error) {
       errorBoundary(error);
@@ -45,11 +52,14 @@ export default function CategoryBudgetDetails() {
   };
 
   const deleteCategoryBudget = async () => {
+    setIsLoading(true);
     try {
       await categoryBudgetModel.delete({ id: categoryBudgetId });
-      router.push('/(tabs)/budget');
+      router.navigate('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,7 +102,7 @@ export default function CategoryBudgetDetails() {
             <TextBox value={categoryBudget.currentAmount.toString()} editable={false} />
           </View>
 
-          <TouchableBox icon="trash-bin" onPress={confirmDelete}>Delete</TouchableBox>  
+          <TouchableBox isLoading={isLoading} icon="trash-bin" onPress={confirmDelete}>Delete</TouchableBox>  
         </ColLayout>
       </Container>
     </View>

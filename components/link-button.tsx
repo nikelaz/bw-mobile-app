@@ -11,7 +11,7 @@ const LinkButton = (props: LinkButtonProps) => {
   return (
     <Button
       {...props}
-      onPress={() => router.push(props.href)}
+      onPress={() => router.navigate(props.href)}
     />
   )
 }

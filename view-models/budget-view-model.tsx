@@ -80,8 +80,6 @@ export class BudgetViewModel {
     const req = await fetch(`${api}/budgets`, reqOptions);
   
     const jsonResponse = await req.json();
-
-    console.log('jsonResponse', jsonResponse);
   
     if (req.status !== 200 && jsonResponse.message) {
       throw new Error(jsonResponse.message);

@@ -8,8 +8,9 @@ import ColLayout from '@/components/col-layout';
 import { CategoryType } from '@/types/category';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
-import Button from '@/components/button';
 import GroupLabel from '@/components/group-label';
+import TouchableBox from '@/components/touchable-box';
+import { CreateCategoryBudgetSchema } from '@/validation-schemas/category-budget.schemas';
 
 const getCategoryPlaceholder = (type: CategoryType) => {
   switch (type) {
@@ -48,23 +49,34 @@ export default function CategoryBudgetCreate() {
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [accAmount, setAccAmount] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const errorBoundary = useErrorBoundary();
 
   const createCategoryBudget = async () => {
+    setIsLoading(true);
+
     try {
+      const parsedInput = CreateCategoryBudgetSchema.parse({
+        amount,
+        title,
+        accAmount,
+      });
+
       await categoryBudgetModel.create({
-        amount: parseFloat(amount),
+        amount: parsedInput.amount,
         category: {
           type,
-          title,
-          accAmount: accAmount ? parseFloat(accAmount) : undefined
+          title: parsedInput.title,
+          accAmount: parsedInput.accAmount
         },
         budget: budgetModel.currentBudget
       });
 
-      router.push('/(tabs)/budget');
+      router.navigate('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,12 +90,12 @@ export default function CategoryBudgetCreate() {
         <ColLayout spacing='l'>
           <View>
             <GroupLabel>Title</GroupLabel>
-            <TextBox value={title} onChangeText={setTitle} placeholder={`e.g. ${getCategoryPlaceholder(type)}`} />
+            <TextBox inputMode="text" value={title} onChangeText={setTitle} placeholder={`e.g. ${getCategoryPlaceholder(type)}`} />
           </View>
 
           <View>
             <GroupLabel>Planned Amount</GroupLabel>
-            <TextBox value={amount} onChangeText={setAmount} />
+            <TextBox inputMode="decimal" value={amount} onChangeText={setAmount} />
           </View>
 
           {type === CategoryType.SAVINGS || type === CategoryType.DEBT ? (
@@ -96,7 +108,7 @@ export default function CategoryBudgetCreate() {
             </View>
           ) : null}
 
-          <Button onPress={createCategoryBudget}>Save Changes</Button>
+          <TouchableBox isLoading={isLoading} icon='create' onPress={createCategoryBudget}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>

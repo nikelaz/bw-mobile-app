@@ -1,14 +1,10 @@
 import Container from '@/components/container';
 import { BudgetViewModel, useBudgetModel } from '@/view-models/budget-view-model';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { View } from 'react-native';
-import TextBox from '@/components/text-box';
 import { useState } from 'react';
 import ColLayout from '@/components/col-layout';
-import { CategoryType } from '@/types/category';
-import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
-import Button from '@/components/button';
 import GroupLabel from '@/components/group-label';
 import Select from '@/components/select';
 import { Budget } from '@/types/budget';
@@ -55,9 +51,8 @@ export default function CreateBudget() {
   const budgetModel = useBudgetModel();
   const router = useRouter();
   const errorBoundary = useErrorBoundary();
-  
-  const existingBudgetMonths = budgetModel.budgets.map((budget: Budget) => new Date(budget.month));
-  
+  const [isLoading, setIsLoading] = useState(false);
+    
   const newBudgetOptions = generateNewBudgetOptions(budgetModel);
   const copyFromItems = budgetModel.budgets.map((budget: Budget) => {
     const date = new Date(budget.month);
@@ -71,11 +66,14 @@ export default function CreateBudget() {
   const [newBudget, setNewBudget] = useState(newBudgetOptions[0]);
 
   const createBudget = async () => {
+    setIsLoading(true);
     try {
       await budgetModel.create({ month: newBudget.value }, { id: copyFrom.value });
       router.navigate('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,7 +103,7 @@ export default function CreateBudget() {
             />
           </View>
 
-          <TouchableBox icon='create-outline' onPress={createBudget}>Create</TouchableBox>
+          <TouchableBox isLoading={isLoading} icon='create' onPress={createBudget}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>

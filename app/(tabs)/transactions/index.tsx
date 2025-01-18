@@ -1,8 +1,7 @@
 import Container from '@/components/container';
 import ColLayout from '@/components/col-layout';
 import Heading from '@/components/heading';
-import { View, Button } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { View } from 'react-native';
 import TouchableBox from '@/components/touchable-box';
 import { useEffect } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
@@ -14,12 +13,15 @@ import { useUserModel } from '@/view-models/user-view-model';
 import LinkButton from '@/components/link-button';
 import TextBox from '@/components/text-box';
 import debounce from '@/helpers/debounce';
+import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
 
 export default function Transactions() {
   const budgetModel = useBudgetModel();
   const userModel = useUserModel();
   const transactionsModel = useTransactionsModel();
   const currentBudget = budgetModel.currentBudget;
+  const currency = userModel.getCurrency();
+  const currencyFormatter = new CurrencyFormatter(currency);
   const navigation = useNavigation();
   const router = useRouter();
 
@@ -28,7 +30,6 @@ export default function Transactions() {
   }, [navigation]);
 
   const changeHandler = (filter: string) => {
-    console.log('change handler', filter);
     transactionsModel.setFilter(filter);
   };
 
@@ -44,7 +45,7 @@ export default function Transactions() {
           <TouchableBox
             icon="calendar-clear"
             arrow={true}
-            onPress={() => router.push(`/budget/select-budget?backText=Transactions&backHref=${encodeURIComponent('/(tabs)/transactions')}`)}
+            onPress={() => router.navigate(`/budget/select-budget?backText=Transactions&backHref=${encodeURIComponent('/(tabs)/transactions')}`)}
           >
             {months[currentBudget.month.getMonth()]} {currentBudget.month.getFullYear()}
           </TouchableBox>
@@ -56,17 +57,43 @@ export default function Transactions() {
           {transactionsModel.transactions.map((transaction: Transaction, index: number) => (
             <TouchableBox
               key={transaction.id}
-              onPress={() => router.push(`/(tabs)/transactions/details?id=${transaction.id}`)}
+              onPress={() => router.navigate(`/(tabs)/transactions/details?id=${transaction.id}`)}
               group={true}
               groupFirst={index === 0}
               groupLast={index === transactionsModel.transactions.length - 1}
               arrow={true}
-              additionalText={`${userModel.getCurrency()}${transaction.amount}`}
+              additionalText={currencyFormatter.format(transaction.amount)}
             >
               {transaction.title}
             </TouchableBox>
           ))}
         </View>
+
+        {transactionsModel.totalPages > 1 ? (
+          <View style={{flexDirection: 'row'}}>
+            {transactionsModel.page !== 0 ? (
+              <TouchableBox
+                rowGroup={transactionsModel.page !== transactionsModel.totalPages - 1}
+                rowGroupFirst={transactionsModel.page !== transactionsModel.totalPages - 1}
+                style={{flex: 1, justifyContent: 'center'}}
+                onPress={() => transactionsModel.prevPage()}
+              >
+                Previous Page
+              </TouchableBox>
+            ) : null}
+            
+            {transactionsModel.page !== transactionsModel.totalPages - 1 ? (
+              <TouchableBox
+                rowGroup={transactionsModel.page !== 0}
+                rowGroupLast={transactionsModel.page !== 0}
+                style={{flex: 1, justifyContent: 'center'}}
+                onPress={() => transactionsModel.nextPage()}
+              >
+                Next Page
+              </TouchableBox>
+            ) : null}
+          </View>
+        ) : null}
       </ColLayout>
     </Container>
   );
