@@ -1,4 +1,3 @@
-// /^(0|[1-9]\d*)(\.\d+)?$/
 import { z } from 'zod';
 
 export const CreateCategoryBudgetSchema = z.object({

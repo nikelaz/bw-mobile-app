@@ -10,7 +10,7 @@ import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
 import { useTransactionsModel } from '@/view-models/transactions-view-model';
 import { useBudgetModel } from '@/view-models/budget-view-model';
-import { CategoryBudget } from '@/types/category-budget';
+import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import BackButton from '@/components/back-button';

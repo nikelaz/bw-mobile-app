@@ -7,7 +7,6 @@ import ColLayout from '@/components/col-layout';
 import { useUserModel } from '@/view-models/user-view-model';
 import { useState } from 'react';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
-import { ThemedText } from '@/components/themed-text';
 import { ChangePasswordSchema } from '@/validation-schemas/user-schemas';
 import TouchableBox from '@/components/touchable-box';
 import SuccessBox from '@/components/success-box';

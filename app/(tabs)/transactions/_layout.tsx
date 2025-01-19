@@ -1,5 +1,4 @@
 import { Stack } from 'expo-router/stack';
-import { Button } from 'react-native';
 
 export default function Layout() {
   return (

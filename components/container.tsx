@@ -1,11 +1,9 @@
 import { View, StyleSheet, SafeAreaView } from 'react-native';
-import type { GenericChildrenProps } from '@/types/generics';
 import { ScrollView } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 const Container = (props: GenericChildrenProps) => (
-  // <SafeAreaView style={{ backgroundColor: useThemeColor({}, 'background') }}>
-  <SafeAreaView>
+  <SafeAreaView style={{ backgroundColor: useThemeColor({}, 'background') }}>
     <ScrollView style={styles.scrollWrapper}>
       <View style={styles.container}>
         {props.children}

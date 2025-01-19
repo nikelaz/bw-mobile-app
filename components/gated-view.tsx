@@ -1,4 +1,3 @@
-import { GenericChildrenProps } from '@/types/generics';
 import { useRootNavigationState, Redirect } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { useUserModel } from '@/view-models/user-view-model';

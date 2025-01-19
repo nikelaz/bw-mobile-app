@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { BudgetViewModel, useBudgetModel } from '@/view-models/budget-view-model';
-import { calculateTotalPages } from '@/helpers/pagination-utils';
-import type { Transaction } from '@/types/transaction';
+import { calculateTotalPages } from '@nikelaz/bw-shared-libraries';
+import { Transaction } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
 
 const calculatePerPageBasedOnHeight = (height: number) => {

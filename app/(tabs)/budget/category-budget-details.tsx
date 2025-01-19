@@ -2,12 +2,12 @@ import Container from '@/components/container';
 import { useBudgetModel } from '@/view-models/budget-view-model';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
-import { CategoryBudget } from '@/types/category-budget';
+import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
 import { useState } from 'react';
 import ColLayout from '@/components/col-layout';
-import { CategoryType } from '@/types/category';
+import { CategoryType } from '@nikelaz/bw-shared-libraries';
 import TouchableBox from '@/components/touchable-box';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
@@ -27,7 +27,7 @@ export default function CategoryBudgetDetails() {
   const errorBoundary = useErrorBoundary();
   const [isLoading, setIsLoading] = useState(false);
 
-  if (!categoryBudget) return 'Loading';
+  if (!categoryBudget) return null;
 
   const updateCategoryBudget = async () => {
     try {

@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import ColLayout from '@/components/col-layout';
 import { useBudgetModel } from '@/view-models/budget-view-model';
 import TouchableBox from '@/components/touchable-box';
-import { Budget } from '@/types/budget';
+import { Budget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import BackButton from '@/components/back-button';
 import LinkBox from '@/components/link-box';
@@ -16,7 +16,7 @@ export default function SelectBudget() {
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Budget';
   const backHref: any = (Array.isArray(params.backHref) ? params.backHref[0] : params.backHref) || '/(tabs)/budget';
 
-  if (!budgetModel) return <p>Loading</p>;
+  if (!budgetModel) return null;
 
   const changeBudgetPeriod = (budget: Budget) => {
     budgetModel.setCurrentBudget(budget);

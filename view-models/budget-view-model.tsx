@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import type { Budget } from '@/types/budget';
+import { Budget } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
-import findClosestBudgetDate from '@/helpers/find-closest-budget-date';
-import parseBudgets from '@/helpers/parse-budgets';
+import { findClosestBudgetDate } from '@nikelaz/bw-shared-libraries';
+import { parseBudget } from '@nikelaz/bw-shared-libraries';
 import { useUserModel } from './user-view-model';
 
 export class BudgetViewModel {
@@ -20,7 +20,7 @@ export class BudgetViewModel {
 
   async refresh() {
     const budgets = await this.fetchBudgets();
-    const parsedBudgets = parseBudgets(budgets);
+    const parsedBudgets = parseBudget(budgets);
 
     this.setBudgets(parsedBudgets);
 

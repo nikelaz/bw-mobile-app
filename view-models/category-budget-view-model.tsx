@@ -2,8 +2,8 @@
 
 import { createContext, useContext } from 'react';
 import { BudgetViewModel, useBudgetModel } from '@/view-models/budget-view-model';
-import type { CategoryBudget } from '@/types/category-budget';
-import { CategoryType } from '@/types/category';
+import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
+import { CategoryType } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
 import { useTransactionsModel } from '@/view-models/transactions-view-model';
 import { useMemo } from 'react';

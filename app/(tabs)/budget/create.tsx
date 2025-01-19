@@ -7,7 +7,7 @@ import ColLayout from '@/components/col-layout';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import GroupLabel from '@/components/group-label';
 import Select from '@/components/select';
-import { Budget } from '@/types/budget';
+import { Budget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import TouchableBox from '@/components/touchable-box';
 

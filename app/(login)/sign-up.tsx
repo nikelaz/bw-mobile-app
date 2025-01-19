@@ -27,8 +27,6 @@ export default function ChangePassword() {
   const errorBoundary = useErrorBoundary();
   const [isLoading, setIsLoading] = useState(false);
 
-  
-
   const signup = async () => {
     setIsLoading(true);
 

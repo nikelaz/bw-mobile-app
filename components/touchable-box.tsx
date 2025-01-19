@@ -21,6 +21,7 @@ export interface TouchableBoxProps {
   style?: any,
   size?: 's',
   isLoading?: boolean,
+  disabled?: boolean,
 }
 
 const TouchableBox = (props: TouchableBoxProps) => {
@@ -80,6 +81,7 @@ const TouchableBox = (props: TouchableBoxProps) => {
         ...smallSizeStyles,
         ...props.style,
       }}
+      disabled={props.disabled}
     >
       {props.isLoading ? (
         <Loader width={20} height={20} color={additionalTextColor} />
@@ -109,11 +111,11 @@ const TouchableBox = (props: TouchableBoxProps) => {
       ) : null}
 
       {props.group && !props.groupLast ? (
-        <View style={styles.groupSeparator} />
+        <View style={{ ...styles.groupSeparator, backgroundColor: useThemeColor({}, 'systemGrey4') }} />
       ) : null}
 
       {props.rowGroup && !props.rowGroupLast ? (
-        <View style={styles.rowGroupSeparator} />
+        <View style={{ ...styles.rowGroupSeparator, backgroundColor: useThemeColor({}, 'systemGrey4') }} />
       ) : null}
     </Pressable>
   );
@@ -138,7 +140,6 @@ export const styles = StyleSheet.create({
   groupSeparator: {
     width: '100%',
     height: 1,
-    // backgroundColor: useThemeColor({}, 'systemGrey4'),
     position: 'absolute',
     bottom: 0,
     left: 15,
@@ -146,10 +147,9 @@ export const styles = StyleSheet.create({
   rowGroupSeparator: {
     width: 1,
     height: '100%',
-    // backgroundColor: useThemeColor({}, 'systemGrey4'),
     position: 'absolute',
     right: 0,
-    top: 15,
+    top: 12,
   }
 });
 

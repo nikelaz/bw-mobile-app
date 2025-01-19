@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import TextBox from '@/components/text-box';
 import { useState } from 'react';
 import ColLayout from '@/components/col-layout';
-import { CategoryType } from '@/types/category';
+import { CategoryType } from '@nikelaz/bw-shared-libraries';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import GroupLabel from '@/components/group-label';

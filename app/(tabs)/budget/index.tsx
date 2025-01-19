@@ -9,12 +9,13 @@ import GatedView from '@/components/gated-view';
 import { useUserModel } from '@/view-models/user-view-model';
 import { useBudgetModel } from '@/view-models/budget-view-model';
 import months from '@/data/months';
-import { CategoryType } from '@/types/category';
+import { CategoryType } from '@nikelaz/bw-shared-libraries';
 import { useRouter } from 'expo-router';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import { LoadingLine } from '@/components/loading-line';
 import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
-import { CategoryBudget } from '@/types/category-budget';
+import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
+import { ThemedText } from '@/components/themed-text';
 
 enum AmountState {
   Planned = 1,
@@ -92,7 +93,7 @@ export default function Budget() {
           {currentBudget ? (
             <>
               <ColLayout spacing="m">
-                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME] && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length > 0 ? (
+                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME] ? (
                   <ColLayout spacing="m">
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                       <Heading level={2}>Income</Heading>
@@ -118,10 +119,14 @@ export default function Budget() {
                     </View>
                   </ColLayout>
                 ) : null}
+
+                {categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length === 0 && (
+                  <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
+                )}
               </ColLayout>
 
               <ColLayout spacing="m">
-                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE] && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length > 0 ? (
+                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE] ? (
                   <ColLayout spacing="m">
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                       <Heading level={2}>Expenses</Heading>
@@ -147,15 +152,19 @@ export default function Budget() {
                     </View>
                   </ColLayout>
                 ) : null}
+
+                {categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length === 0 && (
+                  <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
+                )}
               </ColLayout>
 
               <ColLayout spacing="m">
-                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS] && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length > 0 ? (
+                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS] ? (
                   <ColLayout spacing="m">
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                       <Heading level={2}>Savings</Heading>
                       <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.SAVINGS}`}>
-                        + New Loan
+                        + New Fund
                       </LinkButton>
                     </View>
                     
@@ -176,10 +185,14 @@ export default function Budget() {
                     </View>
                   </ColLayout>
                 ) : null}
+
+                {categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length === 0 && (
+                  <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
+                )}
               </ColLayout>
 
               <ColLayout spacing="m">
-                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT] && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length > 0 ? (
+                {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT] ? (
                   <ColLayout spacing="m">
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                       <Heading level={2}>Debt</Heading>
@@ -201,7 +214,11 @@ export default function Budget() {
                         >
                           {categoryBudget.category?.title}
                         </TouchableBox>
-                      ))}   
+                      ))}
+                      
+                      {categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length === 0 && (
+                        <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
+                      )}
                     </View>
                   </ColLayout>
                 ) : null}

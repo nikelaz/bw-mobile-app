@@ -60,7 +60,7 @@ export default function Reporting() {
           <WebView
             ref={webViewRef}
             source={{ html }}
-            style={{ flex: 1, height: screenDimensions.width *  3.5, backgroundColor: 'transparent', outline: '1px solid', outlineColor: '#fff', overflow: 'hidden' }}
+            style={{ flex: 1, height: screenDimensions.width *  3.41, backgroundColor: 'transparent', outline: '1px solid', outlineColor: '#fff', overflow: 'hidden' }}
             onLoad={() => setIsLoading(false)}
             injectedJavaScriptBeforeContentLoaded={runFirst}
             scalesPageToFit={true}
