@@ -1,1 +1,1 @@
-export const api = 'https://staging-api.budgetwarden.com/api/v1';
+export const api = 'https://api.budgetwarden.com/api/v1';

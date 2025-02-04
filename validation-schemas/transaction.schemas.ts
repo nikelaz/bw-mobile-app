@@ -5,7 +5,7 @@ export const CreateTransactionSchema = z.object({
     .min(1, { message: 'Title is required' }),
   date: z.string()
     .datetime({ message: 'Date is invalid'}),
-  categoryId: z.string()
+  categoryBudgetId: z.string()
     .regex(/^\d+$/, { message: 'Category is invalid'})
     .transform(Number),
   amount: z.string()

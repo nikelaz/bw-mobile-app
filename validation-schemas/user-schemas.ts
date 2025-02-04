@@ -32,10 +32,7 @@ export const ChangePasswordSchema = z.object({
   password: z.string()
     .min(1, { message: 'Password is required' }),
   newPassword: z.string()
-    .min(1, { message: 'New Password is required' })
-    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {
-      message: 'Invalid new password. Use a password with at least 8 symbols, including letters and digits.'
-    }),
+    .min(1, { message: 'New Password is required' }),
   repeatPassword: z.string()
     .min(1, { message: 'Repeat Password is required' }),
 });

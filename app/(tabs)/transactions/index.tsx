@@ -53,6 +53,10 @@ export default function Transactions() {
 
         <TextBox placeholder="Search" onChangeText={debounce(changeHandler)} />
 
+        { !transactionsModel.transactions || transactionsModel.transactions.length === 0 && (
+          <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
+        )}
+
         <View>
           {transactionsModel.transactions.map((transaction: Transaction, index: number) => (
             <TouchableBox

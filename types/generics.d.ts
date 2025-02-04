@@ -1,3 +1,4 @@
 type GenericChildrenProps = Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode,
+  style: any,
 }>;

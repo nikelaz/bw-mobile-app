@@ -35,26 +35,28 @@ export default function ChangePassword() {
 
   return (
     <Container>
-      <ColLayout spacing="l">
-        <View style={{ alignItems: 'center', marginTop: 30, marginBottom: 30}}>
-          <Logo width={100} height={100} />
-        </View>
-        
-        <View>
-          <GroupLabel>Email</GroupLabel>
-          <TextBox autoComplete="email" textContentType="emailAddress" autoCorrect={false} inputMode="email" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-        </View>
-        <View>
-          <GroupLabel>Password</GroupLabel>
-          <TextBox autoComplete="off" textContentType="password" autoCorrect={false} autoCapitalize="none" value={password} onChangeText={setPassword} secureTextEntry={true} />
-        </View>
-        <View>
-          <TouchableBox onPress={login} arrow={true} isLoading={isLoading}>Login</TouchableBox>
-        </View>
-        <View style={{alignItems: 'center'}}>
-          <LinkButton href="/(login)/sign-up">Sign Up</LinkButton>
-        </View>
-      </ColLayout>
+      <View style={{width: '100%', maxWidth: 420, margin: 'auto'}}>
+        <ColLayout spacing="l">
+          <View style={{ alignItems: 'center', marginTop: 30, marginBottom: 30}}>
+            <Logo width={100} height={100} />
+          </View>
+          
+          <View>
+            <GroupLabel>Email</GroupLabel>
+            <TextBox autoComplete="email" textContentType="emailAddress" autoCorrect={false} inputMode="email" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+          </View>
+          <View>
+            <GroupLabel>Password</GroupLabel>
+            <TextBox autoComplete="off" textContentType="password" autoCorrect={false} autoCapitalize="none" value={password} onChangeText={setPassword} secureTextEntry={true} />
+          </View>
+          <View>
+            <TouchableBox onPress={login} arrow={true} isLoading={isLoading}>Login</TouchableBox>
+          </View>
+          <View style={{alignItems: 'center'}}>
+            <LinkButton href="/(login)/sign-up">Sign Up</LinkButton>
+          </View>
+        </ColLayout>
+      </View>
     </Container>
   );
 }

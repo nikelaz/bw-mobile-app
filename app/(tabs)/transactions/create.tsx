@@ -21,7 +21,7 @@ const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
 
   categoryBudgets.forEach((categoryBudget: CategoryBudget) => {
     if (!categoryBudget.category) return;
-    categoriesMap[categoryBudget.category.id] = categoryBudget.category.title;
+    categoriesMap[categoryBudget.id] = categoryBudget.category.title;
   });
   
   return Object.keys(categoriesMap).map((key: any) => {
@@ -57,7 +57,7 @@ export default function TransactionCreate() {
         title,
         date: date.toISOString(),
         amount,
-        categoryId: category.value,
+        categoryBudgetId: category.value,
       });
 
       await transactionsModel.create({
@@ -65,10 +65,10 @@ export default function TransactionCreate() {
         date: parsedInput.date,
         amount: parsedInput.amount,
         categoryBudget: {
-          id: parsedInput.categoryId,
+          id: parsedInput.categoryBudgetId,
         },
       });
-      router.back();
+      backButtonHandler();
     } catch (error) {
       errorBoundary(error);
     } finally {
@@ -78,7 +78,10 @@ export default function TransactionCreate() {
 
   const backButtonHandler = () => {
     router.dismissTo('/(tabs)/transactions');
-    router.replace(backHref);
+
+    if (backHref !== '/(tabs)/transactions') {
+      router.navigate(backHref);
+    }
   }
 
   return (

@@ -72,7 +72,10 @@ export default function CategoryBudgetCreate() {
         budget: budgetModel.currentBudget
       });
 
-      router.navigate('/(tabs)/budget');
+      router.dismissTo('/(tabs)/budget');
+      setTitle('');
+      setAmount('');
+      setAccAmount('');
     } catch (error) {
       errorBoundary(error);
     } finally {

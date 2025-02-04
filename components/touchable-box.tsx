@@ -65,7 +65,7 @@ const TouchableBox = (props: TouchableBoxProps) => {
   const iconColor = useThemeColor({}, 'systemGrey2');
   const additionalTextColor = useThemeColor({}, 'systemGrey');
   const arrowColor = useThemeColor({}, 'systemGrey2');
-
+  const separatorColor = useThemeColor({}, 'systemGrey4');
 
   return (
     <Pressable
@@ -96,26 +96,26 @@ const TouchableBox = (props: TouchableBoxProps) => {
           Loading...
         </ThemedText>
       ) : (
-        <ThemedText>
+        <ThemedText numberOfLines={1} style={{ flexShrink: 1 }}>
           {props.children}
         </ThemedText>
       )}
       
 
       {props.additionalText ? (
-        <ThemedText style={{ color: additionalTextColor, marginLeft: 'auto'}}>{props.additionalText}</ThemedText>
+        <ThemedText style={{ color: additionalTextColor, marginLeft: 'auto', flexShrink: 0 }}>{props.additionalText}</ThemedText>
       ) : null} 
 
       {!props.isLoading && props.arrow ? (
-        <Ionicons style={{ marginLeft: props.additionalText ? 0 : 'auto' }} name="chevron-forward" size={22} color={arrowColor} />
+        <Ionicons style={{ marginLeft: props.additionalText ? 0 : 'auto', flexShrink: 0 }} name="chevron-forward" size={22} color={arrowColor} />
       ) : null}
 
       {props.group && !props.groupLast ? (
-        <View style={{ ...styles.groupSeparator, backgroundColor: useThemeColor({}, 'systemGrey4') }} />
+        <View style={{ ...styles.groupSeparator, backgroundColor: separatorColor }} />
       ) : null}
 
       {props.rowGroup && !props.rowGroupLast ? (
-        <View style={{ ...styles.rowGroupSeparator, backgroundColor: useThemeColor({}, 'systemGrey4') }} />
+        <View style={{ ...styles.rowGroupSeparator, backgroundColor: separatorColor }} />
       ) : null}
     </Pressable>
   );

@@ -15,7 +15,7 @@ import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model
 import { LoadingLine } from '@/components/loading-line';
 import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
-import { ThemedText } from '@/components/themed-text';
+import ConditionalRenderer from '@/components/conditional-renderer';
 
 enum AmountState {
   Planned = 1,
@@ -44,28 +44,30 @@ export default function Budget() {
           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
             <Heading>Budget</Heading>
 
-            {currentBudget ? (
+            <ConditionalRenderer isVisible={currentBudget}>
               <LinkButton href={`/(tabs)/transactions/create?backText=Budget&backHref=${encodeURIComponent('/(tabs)/budget')}`}>
                 + New Transaction
               </LinkButton>
-            ) : (
+            </ConditionalRenderer>
+            <ConditionalRenderer isVisible={!currentBudget}>
               <LoadingLine width={150} height={30} />
-            )}
+            </ConditionalRenderer>
           </View>
 
-          {currentBudget ? (
+          <ConditionalRenderer isVisible={currentBudget}>
             <TouchableBox
               icon="calendar-clear"
               arrow={true}
               onPress={() => router.navigate('/budget/select-budget')}
             >
-              {months[currentBudget.month.getMonth()]} {currentBudget.month.getFullYear()}
+              {months[currentBudget?.month.getMonth()]} {currentBudget?.month.getFullYear()}
             </TouchableBox>
-          ) : (
+          </ConditionalRenderer>
+          <ConditionalRenderer isVisible={!currentBudget}>
             <LoadingLine height={47} />
-          )}
+          </ConditionalRenderer>
 
-          {currentBudget ? (
+          <ConditionalRenderer isVisible={currentBudget}>
             <View style={{flexDirection: 'row'}}>
               <TouchableBox
                 icon={getAmountStateCheckbox(AmountState.Planned, amountState)}
@@ -86,12 +88,13 @@ export default function Budget() {
                 Actual
               </TouchableBox>
             </View>
-          ) : (
+          </ConditionalRenderer>
+          <ConditionalRenderer isVisible={!currentBudget}>
             <LoadingLine height={47} />
-          )}
+          </ConditionalRenderer>
 
-          {currentBudget ? (
-            <>
+          <ConditionalRenderer isVisible={currentBudget}>
+            <ColLayout>
               <ColLayout spacing="m">
                 {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME] ? (
                   <ColLayout spacing="m">
@@ -223,9 +226,10 @@ export default function Budget() {
                   </ColLayout>
                 ) : null}
               </ColLayout>
-            </>
-          ) : (
-            <>
+            </ColLayout>
+          </ConditionalRenderer>
+          <ConditionalRenderer isVisible={!currentBudget}>
+            <ColLayout>
               <ColLayout spacing="m">
                 <LoadingLine width={95} height={30} />
                 <LoadingLine height={250} />
@@ -240,9 +244,8 @@ export default function Budget() {
                 <LoadingLine width={95} height={30} />
                 <LoadingLine height={250} />
               </ColLayout>
-            </>
-          )}
-          
+            </ColLayout>
+          </ConditionalRenderer>
         </ColLayout>
       </Container>
     </GatedView>

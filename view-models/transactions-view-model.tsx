@@ -104,6 +104,7 @@ export class TransactionsViewModel {
       throw new Error('An unexpected error occured. Please try again later.')
     }
   
+    await this.budgetModel.refresh();
     await this.refresh();
   };
 
@@ -129,6 +130,7 @@ export class TransactionsViewModel {
       throw new Error('An unexpected error occured. Please try again later.')
     }
   
+    await this.budgetModel.refresh();
     await this.refresh();
   };
 
@@ -156,6 +158,7 @@ export class TransactionsViewModel {
       throw new Error('An unexpected error occured. Please try again later.')
     }
   
+    await this.budgetModel.refresh();
     await this.refresh();
   };
 }

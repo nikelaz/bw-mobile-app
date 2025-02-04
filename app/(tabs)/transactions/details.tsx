@@ -17,6 +17,7 @@ import useErrorBoundary from '@/hooks/useErrorBoundary';
 import Dialog from '@/helpers/alert';
 import { ThemedText } from '@/components/themed-text';
 import { UpdateTransactionSchema } from '@/validation-schemas/transaction.schemas';
+import { LoadingLine } from '@/components/loading-line';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   const categoriesMap: any = {};
@@ -82,7 +83,7 @@ export default function TransactionDetails() {
     setIsLoading(true);
     try {
       await transactionsModel.delete(id);
-      router.navigate('/(tabs)/transactions');
+      router.dismissTo('/(tabs)/transactions');
     } catch (error) {
       errorBoundary(error);
     } finally {
@@ -98,8 +99,6 @@ export default function TransactionDetails() {
       () => deleteTransaction()
     );
   }
-
-  if (!transaction) return <ThemedText>Loading...</ThemedText>;
 
   return (
     <View>

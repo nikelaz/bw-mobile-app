@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ColLayout from '@/components/col-layout';
 import { CategoryType } from '@nikelaz/bw-shared-libraries';
 import TouchableBox from '@/components/touchable-box';
@@ -55,7 +55,7 @@ export default function CategoryBudgetDetails() {
     setIsLoading(true);
     try {
       await categoryBudgetModel.delete({ id: categoryBudgetId });
-      router.navigate('/(tabs)/budget');
+      router.dismissTo('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);
     } finally {
