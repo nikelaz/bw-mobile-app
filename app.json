@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "bw-mobile-app",
-    "slug": "bw-mobile-app",
+    "name": "Budget Warden",
+    "slug": "budget-warden",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,18 +9,28 @@
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#000",
     "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#fff",
+      "image": "./assets/images/splash-icon-light.png",
+      "dark": {
+        "image": "./assets/images/splash-icon-dark.png",
+        "backgroundColor": "#0D1117"
+      },
+      "imageWidth": 200
     },
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
-      "bundleIdentifier": "com.anonymous.bwmobileapp"
+      "bundleIdentifier": "com.anonymous.bwmobileapp",
+      "icon": {
+        "dark": "./assets/images/ios-dark.png",
+        "light": "./assets/images/ios-light.png",
+        "tinted": "./assets/images/ios-tinted.png"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
+        "monochromeImage": "./assets/images/adaptive-icon-monochrome.png",
         "backgroundColor": "#ffffff"
       },
       "userInterfaceStyle": "automatic",

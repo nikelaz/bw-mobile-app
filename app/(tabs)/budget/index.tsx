@@ -16,6 +16,7 @@ import { LoadingLine } from '@/components/loading-line';
 import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import ConditionalRenderer from '@/components/conditional-renderer';
+import ProgressBar from '@/components/progress-bar';
 
 enum AmountState {
   Planned = 1,
@@ -115,6 +116,7 @@ export default function Budget() {
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
                           key={categoryBudget.id}
                           onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                          progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
                         </TouchableBox>
@@ -123,9 +125,9 @@ export default function Budget() {
                   </ColLayout>
                 ) : null}
 
-                {categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length === 0 && (
+                <ConditionalRenderer isVisible={categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME].length === 0}>
                   <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
-                )}
+                </ConditionalRenderer>
               </ColLayout>
 
               <ColLayout spacing="m">
@@ -148,6 +150,7 @@ export default function Budget() {
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
                           key={categoryBudget.id}
                           onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                          progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
                         </TouchableBox>
@@ -156,9 +159,9 @@ export default function Budget() {
                   </ColLayout>
                 ) : null}
 
-                {categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length === 0 && (
+                <ConditionalRenderer isVisible={categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE].length === 0}>
                   <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
-                )}
+                </ConditionalRenderer>
               </ColLayout>
 
               <ColLayout spacing="m">
@@ -181,6 +184,7 @@ export default function Budget() {
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
                           key={categoryBudget.id}
                           onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                          progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
                         </TouchableBox>
@@ -189,9 +193,9 @@ export default function Budget() {
                   </ColLayout>
                 ) : null}
 
-                {categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length === 0 && (
+                <ConditionalRenderer isVisible={categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS].length === 0}>
                   <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
-                )}
+                </ConditionalRenderer>
               </ColLayout>
 
               <ColLayout spacing="m">
@@ -214,14 +218,15 @@ export default function Budget() {
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
                           key={categoryBudget.id}
                           onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
+                          progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
                         </TouchableBox>
                       ))}
                       
-                      {categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length === 0 && (
+                      <ConditionalRenderer isVisible={categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT].length === 0}>
                         <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
-                      )}
+                      </ConditionalRenderer>
                     </View>
                   </ColLayout>
                 ) : null}

@@ -5,6 +5,8 @@ import { ThemedText } from './themed-text';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { View } from 'react-native';
 import { Loader } from './loader';
+import ProgressBar from './progress-bar';
+import ConditionalRenderer from './conditional-renderer';
 
 export interface TouchableBoxProps {
   children: React.ReactNode,
@@ -22,6 +24,7 @@ export interface TouchableBoxProps {
   size?: 's',
   isLoading?: boolean,
   disabled?: boolean,
+  progress?: number,
 }
 
 const TouchableBox = (props: TouchableBoxProps) => {
@@ -117,6 +120,10 @@ const TouchableBox = (props: TouchableBoxProps) => {
       {props.rowGroup && !props.rowGroupLast ? (
         <View style={{ ...styles.rowGroupSeparator, backgroundColor: separatorColor }} />
       ) : null}
+
+      <ConditionalRenderer isVisible={Boolean(props.progress)}>
+        <ProgressBar progress={props.progress || 0}/>
+      </ConditionalRenderer>
     </Pressable>
   );
 }

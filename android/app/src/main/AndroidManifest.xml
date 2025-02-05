@@ -27,6 +27,7 @@
         <data android:scheme="myapp"/>
         <data android:scheme="com.anonymous.bwmobileapp"/>
         <data android:scheme="exp+bw-mobile-app"/>
+        <data android:scheme="exp+budget-warden"/>
       </intent-filter>
     </activity>
   </application>
