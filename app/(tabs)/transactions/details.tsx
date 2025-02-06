@@ -121,6 +121,7 @@ export default function TransactionDetails() {
                 modal
                 open={open}
                 date={date}
+                mode="date"
                 onConfirm={(date) => {
                   setOpen(false);
                   setDate(date);

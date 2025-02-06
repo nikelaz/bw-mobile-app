@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { useUserModel } from '@/view-models/user-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import { UserUpdateSchema } from '@/validation-schemas/user-schemas';
+import Dialog from '@/helpers/alert';
 
 export default function Settings() {
   const userModel = useUserModel();
@@ -22,6 +23,7 @@ export default function Settings() {
   const [firstName, setFirstName] = useState(userModel.user.firstName);
   const [lastName, setLastName] = useState(userModel.user.lastName);
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   const currencyItems = currencies.map(currency => ({
     label: `${currency.title}`,
@@ -70,6 +72,36 @@ export default function Settings() {
     }
   }
 
+  const deleteAccount = async () => {
+    setIsDeleteLoading(true);
+    try {
+      await userModel.deleteAccount();
+      router.navigate('/(login)');
+    } catch (error) {
+      errorBoundary(error);
+    } finally {
+      setIsDeleteLoading(false);
+    }
+  };
+
+  const secondaryDeleteConfirmation = () => {
+    Dialog.confirm(
+      'Delete Account',
+      `This is permanent and you will lose all of your data \nAre you sure?`,
+      'Yes, Delete',
+      () => deleteAccount()
+    );
+  }
+
+  const confirmDelete = () => {
+    Dialog.confirm(
+      'Delete Account',
+      `You are about to delete your account.`,
+      'Delete',
+      () => secondaryDeleteConfirmation()
+    );
+  }
+
   return (
     <Container>
       <ColLayout>
@@ -108,6 +140,7 @@ export default function Settings() {
           </View>
           </ColLayout>
           <TouchableBox onPress={() => router.navigate('/(tabs)/settings/change-password')} icon="lock-closed" arrow={true}>Change Password</TouchableBox>
+          <TouchableBox onPress={confirmDelete} icon="trash" isLoading={isDeleteLoading}>Delete Account</TouchableBox>
           <TouchableBox isLoading={isLogoutLoading} onPress={logout} icon="log-out">Logout</TouchableBox>   
         </ColLayout>
       </ColLayout>

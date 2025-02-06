@@ -107,6 +107,7 @@ export default function TransactionCreate() {
                 modal={true}
                 open={open}
                 date={date}
+                mode="date"
                 onConfirm={async (date) => {
                   setOpen(false);
                   setDate(date);

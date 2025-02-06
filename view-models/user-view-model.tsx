@@ -58,9 +58,6 @@ export class UserViewModel {
     const req = await fetch(`${api}/users/login`, reqOptions);
     const jsonResponse = await req.json();
 
-    console.log('res', req);
-    console.log('jsonResponse', jsonResponse);
-
     if (req.status !== 200) {
       throw jsonResponse;
     }
@@ -211,7 +208,25 @@ export class UserViewModel {
     }
   
     return jsonResponse;
-  };  
+  };
+
+  async deleteAccount() {
+    const reqOptions = {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${this.token}`
+      },
+    };
+
+    const req = await fetch(`${api}/users/${this.user.id}`, reqOptions);
+    const jsonResponse = await req.json();
+
+    if (req.status !== 200) {
+      throw jsonResponse;
+    }
+
+    this.logout();
+  };
 }
 
 const UserModelContext = createContext<any>([null, null]);

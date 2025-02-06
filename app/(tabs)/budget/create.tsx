@@ -69,7 +69,7 @@ export default function CreateBudget() {
     setIsLoading(true);
     try {
       await budgetModel.create({ month: newBudget.value }, { id: copyFrom.value });
-      router.navigate('/(tabs)/budget');
+      router.dismissTo('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);
     } finally {

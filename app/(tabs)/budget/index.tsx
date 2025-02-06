@@ -204,7 +204,7 @@ export default function Budget() {
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                       <Heading level={2}>Debt</Heading>
                       <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.DEBT}`}>
-                        + New Fund
+                        + New Loan
                       </LinkButton>
                     </View>
 
