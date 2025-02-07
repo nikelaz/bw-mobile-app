@@ -20,11 +20,15 @@
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
-      "bundleIdentifier": "com.anonymous.bwmobileapp",
+      "bundleIdentifier": "com.lazarovco.budgetwarden",
+      "buildNumber": 3,
       "icon": {
         "dark": "./assets/images/ios-dark.png",
         "light": "./assets/images/ios-light.png",
         "tinted": "./assets/images/ios-tinted.png"
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -34,7 +38,7 @@
         "backgroundColor": "#ffffff"
       },
       "userInterfaceStyle": "automatic",
-      "package": "com.anonymous.bwmobileapp"
+      "package": "com.lazarovco.budgetwarden"
     },
     "web": {
       "bundler": "metro",
@@ -47,6 +51,14 @@
     "newArchEnabled": true,
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9db2f143-7403-4bbe-9df9-bb990d546fee"
+      }
     }
   }
 }
