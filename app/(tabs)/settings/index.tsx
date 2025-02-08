@@ -2,8 +2,8 @@ import Heading from '@/components/heading';
 import Select from '../../../components/select';
 import Container from '@/components/container';
 import ColLayout from '@/components/col-layout';
-import { currencies } from '@/data/currencies';
-import { countries } from '@/data/countries';
+import { currencies } from '@nikelaz/bw-shared-libraries';
+import { countries } from '@nikelaz/bw-shared-libraries';
 import GroupLabel from '@/components/group-label';
 import { View } from 'react-native';
 import TouchableBox from '@/components/touchable-box';
@@ -27,8 +27,8 @@ export default function Settings() {
 
   const currencyItems = currencies.map(currency => ({
     label: `${currency.title}`,
-    value: currency.iso }
-  ));
+    value: currency.iso
+  }));
 
   const countryItems = countries.map(country => ({
     label: country,
@@ -139,9 +139,9 @@ export default function Settings() {
             />
           </View>
           </ColLayout>
-          <TouchableBox onPress={() => router.navigate('/(tabs)/settings/change-password')} icon="lock-closed" arrow={true}>Change Password</TouchableBox>
-          <TouchableBox onPress={confirmDelete} icon="trash" isLoading={isDeleteLoading}>Delete Account</TouchableBox>
-          <TouchableBox isLoading={isLogoutLoading} onPress={logout} icon="log-out">Logout</TouchableBox>   
+          <TouchableBox onPress={() => router.navigate('/(tabs)/settings/change-password')} icon="lock-closed-outline" arrow={true}>Change Password</TouchableBox>
+          <TouchableBox onPress={confirmDelete} icon="trash-outline" color="danger" isLoading={isDeleteLoading}>Delete Account</TouchableBox>
+          <TouchableBox isLoading={isLogoutLoading} onPress={logout} icon="log-out-outline">Logout</TouchableBox>   
         </ColLayout>
       </ColLayout>
     </Container>

@@ -103,7 +103,7 @@ export default function CreateBudget() {
             />
           </View>
 
-          <TouchableBox isLoading={isLoading} icon='create' onPress={createBudget}>Create</TouchableBox>
+          <TouchableBox isLoading={isLoading} color="primary" center={true} icon='create-outline' onPress={createBudget}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>

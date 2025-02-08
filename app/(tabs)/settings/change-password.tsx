@@ -28,9 +28,11 @@ export default function ChangePassword() {
         newPassword,
         repeatPassword: repeatNewPassword
       });
+      if (newPassword !== repeatNewPassword) throw new Error('The new passwords do not match');
       await userModel.changePassword(parsedInput.password, parsedInput.newPassword, parsedInput.repeatPassword);
       setSuccessMessage('Password changed successfully.');
     } catch (error) {
+      console.log('error');
       errorBoundary(error);
     } finally {
       setIsLoading(false);
@@ -58,7 +60,7 @@ export default function ChangePassword() {
             <GroupLabel>Repeat New Password</GroupLabel>
             <TextBox secureTextEntry={true} value={repeatNewPassword} onChangeText={setRepeatNewPassword} />
           </View>
-          <TouchableBox isLoading={isLoading} icon='save' onPress={changePassword}>Save Changes</TouchableBox>
+          <TouchableBox isLoading={isLoading} icon='save-outline' center={true} color="primary" onPress={changePassword}>Save Changes</TouchableBox>
           { successMessage ? (
             <SuccessBox>{successMessage}</SuccessBox>
           ) : null }

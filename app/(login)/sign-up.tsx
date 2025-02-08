@@ -36,7 +36,7 @@ export default function ChangePassword() {
         throw new Error('The two passwords do not match');
       }
       await userModel.signup(parsedUser);
-      router.navigate('/(login)');
+      router.navigate(`/(login)?signed_up=true&email=${email}`);
     } catch (error: any) {
       errorBoundary(error);
     } finally {
@@ -63,11 +63,11 @@ export default function ChangePassword() {
         </View>
         <View>
           <GroupLabel>First Name</GroupLabel>
-          <TextBox autoComplete="name-given" textContentType="givenName" inputMode="text" autoCapitalize="none" value={firstName} onChangeText={setFirstName} />
+          <TextBox autoComplete="name-given" textContentType="givenName" inputMode="text" autoCapitalize="words" value={firstName} onChangeText={setFirstName} />
         </View>
         <View>
           <GroupLabel>Last Name</GroupLabel>
-          <TextBox autoComplete="name-family" textContentType="familyName" inputMode="text" autoCapitalize="none" value={lastName} onChangeText={setLastName} />
+          <TextBox autoComplete="name-family" textContentType="familyName" inputMode="text" autoCapitalize="words" value={lastName} onChangeText={setLastName} />
         </View>
         <View>
           <GroupLabel>Password</GroupLabel>
@@ -86,7 +86,7 @@ export default function ChangePassword() {
           />
         </View>
         <View>
-          <TouchableBox onPress={signup} arrow={true} isLoading={isLoading}>Sign Up</TouchableBox>
+          <TouchableBox onPress={signup} icon="create-outline" center={true} color="primary" isLoading={isLoading}>Sign Up</TouchableBox>
         </View>
       </ColLayout>
     </Container>

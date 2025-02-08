@@ -111,7 +111,7 @@ export default function CategoryBudgetCreate() {
             </View>
           ) : null}
 
-          <TouchableBox isLoading={isLoading} icon='create' onPress={createCategoryBudget}>Create</TouchableBox>
+          <TouchableBox isLoading={isLoading} icon='create-outline' color="primary" center={true} onPress={createCategoryBudget}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>

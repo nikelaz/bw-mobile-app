@@ -25,13 +25,36 @@ export interface TouchableBoxProps {
   isLoading?: boolean,
   disabled?: boolean,
   progress?: number,
+  color?: 'primary' | 'danger',
+  center?: boolean,
+  opaque?: boolean,
 }
 
 const TouchableBox = (props: TouchableBoxProps) => {
   const [isActive, setIsActive] = useState(false);
-  const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
+  let bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
+  let iconColor = useThemeColor({}, 'systemGrey2');
+  let additionalTextColor = useThemeColor({}, 'systemGrey');
+  let arrowColor = useThemeColor({}, 'systemGrey2');
+  let separatorColor = useThemeColor({}, 'systemGrey4');
+  let textColor = useThemeColor({}, 'text');
+  const primary = useThemeColor({}, 'primary');
+  const primaryDarker = useThemeColor({}, 'primaryDarker');
+  const white = useThemeColor({}, 'white');
+  const danger = useThemeColor({}, 'dangerOpaque50');
+  const dangerActive = useThemeColor({}, 'dangerOpaque70');
 
-  const iconStyles = props.icon ? { ...styles.withIcon } : {};
+  if (props.color === 'primary') {
+    bgColor = isActive ?  primaryDarker : primary;
+  }
+
+  if (props.color === 'danger') {
+    bgColor = isActive ?  dangerActive : danger;
+  }
+
+  if (props.color === 'danger' || props.color === 'primary') {
+    iconColor = textColor = additionalTextColor = arrowColor = separatorColor = white;
+  }
   
   const groupStyles: any = {};
 
@@ -65,10 +88,7 @@ const TouchableBox = (props: TouchableBoxProps) => {
 
   const smallSizeStyles = props.size === 's' ? { paddingTop: 5, paddingBottom: 5 } : {};
 
-  const iconColor = useThemeColor({}, 'systemGrey2');
-  const additionalTextColor = useThemeColor({}, 'systemGrey');
-  const arrowColor = useThemeColor({}, 'systemGrey2');
-  const separatorColor = useThemeColor({}, 'systemGrey4');
+  
 
   return (
     <Pressable
@@ -78,10 +98,10 @@ const TouchableBox = (props: TouchableBoxProps) => {
       style={{
         backgroundColor: bgColor,
         ...styles.touchableBox,
-        ...iconStyles,
         ...groupStyles,
         ...rowGroupStyles,
         ...smallSizeStyles,
+        ...(props.center ? { justifyContent: 'center' } : {}),
         ...props.style,
       }}
       disabled={props.disabled}
@@ -99,7 +119,7 @@ const TouchableBox = (props: TouchableBoxProps) => {
           Loading...
         </ThemedText>
       ) : (
-        <ThemedText numberOfLines={1} style={{ flexShrink: 1 }}>
+        <ThemedText numberOfLines={1} style={{ flexShrink: 1, color: textColor }}>
           {props.children}
         </ThemedText>
       )}
@@ -132,17 +152,14 @@ export const styles = StyleSheet.create({
   touchableBox: {
     height: 'auto',
     borderRadius: 10,
-    paddingTop: 15,
+    paddingTop: 11.5,
     paddingRight: 15,
-    paddingBottom: 15,
+    paddingBottom: 11.5,
     paddingLeft: 15,
+    minHeight: 44,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,
-  },
-  withIcon: {
-    paddingTop: 11.5,
-    paddingBottom: 11.5,
   },
   groupSeparator: {
     width: '100%',
@@ -157,7 +174,10 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 12,
-  }
+  },
+  autoWidth: {
+    width: 'auto',
+  },
 });
 
 export default TouchableBox;

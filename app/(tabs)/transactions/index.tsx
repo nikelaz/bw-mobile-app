@@ -36,14 +36,14 @@ export default function Transactions() {
   return (
     <Container>
       <ColLayout>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
           <Heading>Transactions</Heading>
           <LinkButton href="/(tabs)/transactions/create">+ New Transaction</LinkButton>
         </View>
 
         {currentBudget ? (
           <TouchableBox
-            icon="calendar-clear"
+            icon="calendar-outline"
             arrow={true}
             onPress={() => router.navigate(`/budget/select-budget?backText=Transactions&backHref=${encodeURIComponent('/(tabs)/transactions')}`)}
           >

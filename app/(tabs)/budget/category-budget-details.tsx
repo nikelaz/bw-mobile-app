@@ -102,7 +102,7 @@ export default function CategoryBudgetDetails() {
             <TextBox value={categoryBudget.currentAmount.toString()} editable={false} />
           </View>
 
-          <TouchableBox isLoading={isLoading} icon="trash-bin" onPress={confirmDelete}>Delete</TouchableBox>  
+          <TouchableBox isLoading={isLoading} icon="trash-bin-outline" color="danger" center={true} onPress={confirmDelete}>Delete</TouchableBox>  
         </ColLayout>
       </Container>
     </View>

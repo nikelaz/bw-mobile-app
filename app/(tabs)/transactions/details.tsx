@@ -149,7 +149,7 @@ export default function TransactionDetails() {
             </View>
           </ColLayout>
 
-          <TouchableBox isLoading={isLoading} onPress={confirmDelete} icon="trash-bin">Delete Transaction</TouchableBox>   
+          <TouchableBox isLoading={isLoading} color="danger" center={true} onPress={confirmDelete} icon="trash-bin">Delete Transaction</TouchableBox>   
         </ColLayout>
       </Container>
     </View>      

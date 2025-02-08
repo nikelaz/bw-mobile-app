@@ -25,6 +25,7 @@ export default function Reporting() {
   const [isLoading, setIsLoading] = useState(true);
   const webViewRef: MutableRefObject<WebView | null> = useRef(null);
   const screenDimensions = Dimensions.get('screen');
+  const [height, setHeight] = useState(screenDimensions.width * 3.41);
 
   const runFirst = `
     window.categoryBudgetModel = ${JSON.stringify(categoryBudgetModel)};
@@ -46,7 +47,7 @@ export default function Reporting() {
 
         {currentBudget && !isLoading ? (
           <TouchableBox
-            icon="calendar-clear"
+            icon="calendar-outline"
             arrow={true}
             onPress={() => router.navigate(`/budget/select-budget?backText=Reporting&backHref=${encodeURIComponent('/(tabs)/reporting')}`)}
           >
@@ -60,7 +61,7 @@ export default function Reporting() {
           <WebView
             ref={webViewRef}
             source={{ html }}
-            style={{ flex: 1, height: screenDimensions.width *  3.41, backgroundColor: 'transparent', outline: '1px solid', outlineColor: '#fff', overflow: 'hidden' }}
+            style={{ flex: 1, height: height, backgroundColor: 'transparent', outline: '1px solid', outlineColor: '#fff', overflow: 'hidden' }}
             onLoad={() => setIsLoading(false)}
             injectedJavaScriptBeforeContentLoaded={runFirst}
             scalesPageToFit={true}
@@ -68,6 +69,14 @@ export default function Reporting() {
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             overScrollMode='never'
+            onMessage={(event) => {
+              if (event.nativeEvent && event.nativeEvent.data) {
+                try {
+                  const data = JSON.parse(event.nativeEvent.data);
+                  if (data.height) setHeight(parseInt(data.height) + 1);
+                } catch {}
+              }
+            }}
           />
           { isLoading ? (
             <View style={{position: 'absolute', width: '100%'}}>

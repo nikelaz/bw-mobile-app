@@ -62,7 +62,7 @@ export default function SelectBudget() {
             })}   
           </View>
 
-          <LinkBox icon="add-outline" href="/(tabs)/budget/create">Create New Budget</LinkBox>
+          <LinkBox icon="add-outline" color="primary" center={true} href="/(tabs)/budget/create">Create New Budget</LinkBox>
         </ColLayout>
       </Container>
     </View>

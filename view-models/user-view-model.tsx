@@ -106,6 +106,7 @@ export class UserViewModel {
   };
 
   async logout() {
+    this.setToken(null);
     await Storage.removeItem('token');
     await Storage.removeItem('user');
   };

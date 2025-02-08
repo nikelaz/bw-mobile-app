@@ -17,6 +17,7 @@ import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import ConditionalRenderer from '@/components/conditional-renderer';
 import ProgressBar from '@/components/progress-bar';
+import LinkBox from '@/components/link-box';
 
 enum AmountState {
   Planned = 1,
@@ -42,7 +43,7 @@ export default function Budget() {
     <GatedView>
       <Container>
         <ColLayout>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10}}>
             <Heading>Budget</Heading>
 
             <ConditionalRenderer isVisible={currentBudget}>
@@ -57,7 +58,7 @@ export default function Budget() {
 
           <ConditionalRenderer isVisible={currentBudget}>
             <TouchableBox
-              icon="calendar-clear"
+              icon="calendar-outline"
               arrow={true}
               onPress={() => router.navigate('/budget/select-budget')}
             >
@@ -99,7 +100,7 @@ export default function Budget() {
               <ColLayout spacing="m">
                 {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.INCOME] ? (
                   <ColLayout spacing="m">
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10}}>
                       <Heading level={2}>Income</Heading>
                       <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.INCOME}`}>
                         + New Income
@@ -133,7 +134,7 @@ export default function Budget() {
               <ColLayout spacing="m">
                 {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.EXPENSE] ? (
                   <ColLayout spacing="m">
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                       <Heading level={2}>Expenses</Heading>
                       <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.EXPENSE}`}>
                         + New Category
@@ -167,7 +168,7 @@ export default function Budget() {
               <ColLayout spacing="m">
                 {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.SAVINGS] ? (
                   <ColLayout spacing="m">
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                       <Heading level={2}>Savings</Heading>
                       <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.SAVINGS}`}>
                         + New Fund
@@ -201,7 +202,7 @@ export default function Budget() {
               <ColLayout spacing="m">
                 {categoryBudgetModel.categoryBudgetsByType && categoryBudgetModel.categoryBudgetsByType[CategoryType.DEBT] ? (
                   <ColLayout spacing="m">
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                       <Heading level={2}>Debt</Heading>
                       <LinkButton href={`/(tabs)/budget/category-budget-create?type=${CategoryType.DEBT}`}>
                         + New Loan

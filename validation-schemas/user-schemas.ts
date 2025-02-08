@@ -11,8 +11,8 @@ export const SignUpSchema = z.object({
     .min(1, { message: 'Last name is required' }),
   password: z.string()
     .min(1, { message: 'Password is required' })
-    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {
-      message: 'Invalid Password. Use a password with at least 8 symbols, including letters and digits.'
+    .regex(/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/, {
+      message: 'Invalid Password. Use a password with at least 8 symbols, that includes at least 1 letter and a digit.'
     }),
   repeatPassword: z.string()
     .min(1, { message: 'The Repeat Password field is required' }),
@@ -22,7 +22,7 @@ export const SignUpSchema = z.object({
 
 export const LoginSchema = z.object({
   email: z.string()
-    .email({ message: 'Email is invalid' })
+    .email({ message: 'Invalid credentials' })
     .min(5, { message: 'Email must be 5 or more characters long' }),
   password: z.string()
     .min(1, { message: 'Password is required' })
@@ -32,7 +32,10 @@ export const ChangePasswordSchema = z.object({
   password: z.string()
     .min(1, { message: 'Password is required' }),
   newPassword: z.string()
-    .min(1, { message: 'New Password is required' }),
+    .min(1, { message: 'New Password is required' })
+    .regex(/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/, {
+      message: 'Invalid Password. Use a password with at least 8 symbols, that includes at least 1 letter and a digit.'
+    }),
   repeatPassword: z.string()
     .min(1, { message: 'Repeat Password is required' }),
 });

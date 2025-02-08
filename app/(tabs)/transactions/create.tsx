@@ -133,7 +133,7 @@ export default function TransactionCreate() {
             </View>
           </ColLayout>
 
-          <TouchableBox isLoading={isLoading} icon='create' onPress={createTransaction}>Create</TouchableBox>
+          <TouchableBox isLoading={isLoading} icon='create-outline' color="primary" center={true} onPress={createTransaction}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>      
