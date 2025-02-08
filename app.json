@@ -21,7 +21,6 @@
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
       "bundleIdentifier": "com.lazarovco.budgetwarden",
-      "buildNumber": "3",
       "icon": {
         "dark": "./assets/images/ios-dark.png",
         "light": "./assets/images/ios-light.png",
