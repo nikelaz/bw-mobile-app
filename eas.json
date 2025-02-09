@@ -1,10 +1,6 @@
 {
   "cli": {
-<<<<<<< HEAD
     "version": ">= 15.0.5",
-=======
-    "version": ">= 15.0.4",
->>>>>>> 9eded2e (hanging changes)
     "appVersionSource": "remote"
   },
   "build": {
@@ -20,7 +16,6 @@
     }
   },
   "submit": {
-<<<<<<< HEAD
     "production": {
       "ios": {
         "appleId": "nikola.n.lazarov@icloud.com",
@@ -28,8 +23,5 @@
         "appleTeamId": "KCDH4VF88Y"
       }
     }
-=======
-    "production": {}
->>>>>>> 9eded2e (hanging changes)
   }
 }
