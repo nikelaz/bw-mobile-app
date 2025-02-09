@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
-    "@nikelaz/bw-reporting-view": "0.2.0",
+    "@nikelaz/bw-reporting-view": "0.2.2",
     "@nikelaz/bw-shared-libraries": "1.0.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-picker/picker": "2.9.0",

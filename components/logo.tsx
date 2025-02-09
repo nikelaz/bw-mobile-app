@@ -1,6 +1,7 @@
 import * as React from "react";
-import { useColorScheme } from "react-native";
 import Svg, { Path } from 'react-native-svg';
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { Colors } from '@/constants/Colors';
 
 type LogoProps = Readonly<{
   width: number;
@@ -8,8 +9,7 @@ type LogoProps = Readonly<{
 }>;
 
 const Logo = (props: LogoProps) => {
-  const colorScheme = useColorScheme() || 'light';
-  const fill = colorScheme === 'dark' ? '#0057FF' : '#00349A';
+  const fill = useThemeColor({dark: Colors.dark.systemGrey4}, 'systemGrey');
 
   return  (
     <Svg width={props.width} height={props.height} fill="none" viewBox="0 0 365 387">

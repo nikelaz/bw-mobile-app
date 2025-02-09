@@ -1,6 +1,5 @@
 import Heading from '@/components/heading';
 import Select from '../../../components/select';
-import Container from '@/components/container';
 import ColLayout from '@/components/col-layout';
 import { currencies } from '@nikelaz/bw-shared-libraries';
 import { countries } from '@nikelaz/bw-shared-libraries';
@@ -14,6 +13,7 @@ import { useUserModel } from '@/view-models/user-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import { UserUpdateSchema } from '@/validation-schemas/user-schemas';
 import Dialog from '@/helpers/alert';
+import AndroidOffsetContainer from '@/components/android-offset-container';
 
 export default function Settings() {
   const userModel = useUserModel();
@@ -103,7 +103,7 @@ export default function Settings() {
   }
 
   return (
-    <Container>
+    <AndroidOffsetContainer>
       <ColLayout>
         <Heading>Settings</Heading>
 
@@ -144,6 +144,6 @@ export default function Settings() {
           <TouchableBox isLoading={isLogoutLoading} onPress={logout} icon="log-out-outline">Logout</TouchableBox>   
         </ColLayout>
       </ColLayout>
-    </Container>
+    </AndroidOffsetContainer>
   );
 };

@@ -56,6 +56,7 @@ export class UserViewModel {
     };
 
     const req = await fetch(`${api}/users/login`, reqOptions);
+
     const jsonResponse = await req.json();
 
     if (req.status !== 200) {

@@ -4,6 +4,8 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from './themed-text';
 import { useColorScheme } from 'react-native';
 import { styles as touchableBoxStyleSheet } from './touchable-box';
+import { debounce } from '@nikelaz/bw-shared-libraries';
+import { Platform } from 'react-native';
 
 type SelectItem = {
   label: string;
@@ -28,6 +30,9 @@ const Select = (props: SelectProps) => {
     const selectedItem = props.items.find(item => item.value.toString() === selectedValue.toString());
     if (!selectedItem) return;
     setTempItem(selectedItem);
+    if (Platform.OS === 'android') {
+      androidChangeHandler();
+    }
   };
 
   const handleClose = (donePressed: boolean) => {
@@ -40,6 +45,8 @@ const Select = (props: SelectProps) => {
     setSelectedItem(tempItem);
     props.onValueChange(tempItem);
   }
+
+  const androidChangeHandler = debounce(handleDonePress, 100);
 
   return (
     <RNPickerSelect

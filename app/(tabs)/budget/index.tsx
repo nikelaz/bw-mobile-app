@@ -1,4 +1,3 @@
-import Container from '@/components/container';
 import ColLayout from '@/components/col-layout';
 import Heading from '@/components/heading';
 import { View } from 'react-native';
@@ -16,8 +15,7 @@ import { LoadingLine } from '@/components/loading-line';
 import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import ConditionalRenderer from '@/components/conditional-renderer';
-import ProgressBar from '@/components/progress-bar';
-import LinkBox from '@/components/link-box';
+import AndroidOffsetContainer from '@/components/android-offset-container';
 
 enum AmountState {
   Planned = 1,
@@ -41,7 +39,7 @@ export default function Budget() {
 
   return (
     <GatedView>
-      <Container>
+      <AndroidOffsetContainer>
         <ColLayout>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10}}>
             <Heading>Budget</Heading>
@@ -253,7 +251,7 @@ export default function Budget() {
             </ColLayout>
           </ConditionalRenderer>
         </ColLayout>
-      </Container>
+      </AndroidOffsetContainer>
     </GatedView>
   );
 };

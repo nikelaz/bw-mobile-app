@@ -1,4 +1,3 @@
-import Container from '@/components/container';
 import { View } from 'react-native';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
@@ -15,6 +14,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import ConditionalRenderer from '@/components/conditional-renderer';
 import SuccessBox from '@/components/success-box';
 import { useLocalSearchParams } from 'expo-router';
+import AndroidOffsetContainer from '@/components/android-offset-container';
 
 export default function ChangePassword() {
   const router = useRouter();
@@ -51,7 +51,7 @@ export default function ChangePassword() {
   };
 
   return (
-    <Container>
+    <AndroidOffsetContainer>
       <View style={{width: '100%', maxWidth: 420, margin: 'auto'}}>
         <ColLayout spacing="l">
           <View style={{ alignItems: 'center', marginTop: 30, marginBottom: 30}}>
@@ -78,6 +78,6 @@ export default function ChangePassword() {
           </View>
         </ColLayout>
       </View>
-    </Container>
+    </AndroidOffsetContainer>
   );
 }

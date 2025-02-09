@@ -15,16 +15,14 @@ import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import Dialog from '@/helpers/alert';
-import { ThemedText } from '@/components/themed-text';
 import { UpdateTransactionSchema } from '@/validation-schemas/transaction.schemas';
-import { LoadingLine } from '@/components/loading-line';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   const categoriesMap: any = {};
 
   categoryBudgets.forEach((categoryBudget: CategoryBudget) => {
     if (!categoryBudget.category) return;
-    categoriesMap[categoryBudget.category.id] = categoryBudget.category.title;
+    categoriesMap[categoryBudget.id] = categoryBudget.category.title;
   });
   
   return Object.keys(categoriesMap).map((key: any) => {
@@ -49,7 +47,7 @@ export default function TransactionDetails() {
   const [isLoading, setIsLoading] = useState(false);
 
   const categoryOptions = getOptionsFromCategoryBudgets(budgetModel.currentBudget.categoryBudgets);
-  const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget.category.id) || categoryOptions[0]);
+  const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget.id) || categoryOptions[0]);
   
   const errorBoundary = useErrorBoundary();
 

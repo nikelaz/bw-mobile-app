@@ -7,6 +7,7 @@ import { View } from 'react-native';
 import { Loader } from './loader';
 import ProgressBar from './progress-bar';
 import ConditionalRenderer from './conditional-renderer';
+import { Colors } from '@/constants/Colors';
 
 export interface TouchableBoxProps {
   children: React.ReactNode,
@@ -41,19 +42,18 @@ const TouchableBox = (props: TouchableBoxProps) => {
   const primary = useThemeColor({}, 'primary');
   const primaryDarker = useThemeColor({}, 'primaryDarker');
   const white = useThemeColor({}, 'white');
-  const danger = useThemeColor({}, 'dangerOpaque50');
-  const dangerActive = useThemeColor({}, 'dangerOpaque70');
+  const danger = useThemeColor({ light: Colors.light.dangerOpaque90 }, 'dangerOpaque50');
+  const dangerActive = useThemeColor({ light: Colors.light.danger }, 'dangerOpaque70');
+  const dangerTextColor = useThemeColor({}, 'white');
 
   if (props.color === 'primary') {
     bgColor = isActive ?  primaryDarker : primary;
+    iconColor = textColor = additionalTextColor = arrowColor = separatorColor = white;
   }
 
   if (props.color === 'danger') {
     bgColor = isActive ?  dangerActive : danger;
-  }
-
-  if (props.color === 'danger' || props.color === 'primary') {
-    iconColor = textColor = additionalTextColor = arrowColor = separatorColor = white;
+    iconColor = textColor = additionalTextColor = arrowColor = separatorColor = dangerTextColor;
   }
   
   const groupStyles: any = {};

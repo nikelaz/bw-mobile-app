@@ -1,4 +1,3 @@
-import Container from '@/components/container';
 import ColLayout from '@/components/col-layout';
 import Heading from '@/components/heading';
 import { useBudgetModel } from '@/view-models/budget-view-model';
@@ -13,6 +12,7 @@ import { useUserModel } from '@/view-models/user-view-model';
 import { useState, useRef, MutableRefObject, useEffect } from 'react';
 import { View } from 'react-native';
 import { LoadingLine } from '@/components/loading-line';
+import AndroidOffsetContainer from '@/components/android-offset-container';
 const html = decodeURIComponent(encodedHtml);
 
 export default function Reporting() {
@@ -41,7 +41,7 @@ export default function Reporting() {
   }, [budgetModel.currentBudget, userModel, webViewRef.current]);
 
   return (
-    <Container>
+    <AndroidOffsetContainer>
       <ColLayout>
         <Heading>Reporting</Heading>
 
@@ -90,7 +90,6 @@ export default function Reporting() {
         </View>
         
       </ColLayout>
-      
-    </Container>
+    </AndroidOffsetContainer>
   );
 };

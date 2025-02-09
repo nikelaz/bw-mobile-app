@@ -1,4 +1,3 @@
-import Container from '@/components/container';
 import ColLayout from '@/components/col-layout';
 import Heading from '@/components/heading';
 import { View } from 'react-native';
@@ -14,6 +13,7 @@ import LinkButton from '@/components/link-button';
 import TextBox from '@/components/text-box';
 import { debounce } from '@nikelaz/bw-shared-libraries';
 import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
+import AndroidOffsetContainer from '@/components/android-offset-container';
 
 export default function Transactions() {
   const budgetModel = useBudgetModel();
@@ -34,7 +34,7 @@ export default function Transactions() {
   };
 
   return (
-    <Container>
+    <AndroidOffsetContainer>
       <ColLayout>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
           <Heading>Transactions</Heading>
@@ -99,6 +99,6 @@ export default function Transactions() {
           </View>
         ) : null}
       </ColLayout>
-    </Container>
+    </AndroidOffsetContainer>
   );
 };
