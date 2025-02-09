@@ -1,5 +1,5 @@
 import { View, StyleSheet, SafeAreaView } from 'react-native';
-import { ScrollView } from 'react-native';
+import { ScrollView, Platform } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 const Container = (props: GenericChildrenProps) => (
@@ -16,7 +16,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     height: '100%',
-    paddingTop: 30,
+    ...Platform.select({
+      ios: {
+        paddingTop: 30,
+      },
+      android: {
+        paddingTop: 60,
+      },
+    }),
     paddingRight: 15,
     paddingBottom: 40,
     paddingLeft: 15,

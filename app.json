@@ -1,8 +1,13 @@
 {
   "expo": {
     "name": "Budget Warden",
+<<<<<<< HEAD
     "slug": "budget-warden",
     "version": "1.1.0",
+=======
+    "slug": "budgetwarden",
+    "version": "1.0.0",
+>>>>>>> 9eded2e (hanging changes)
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -20,6 +25,7 @@
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
+<<<<<<< HEAD
       "bundleIdentifier": "com.lazarovco.budgetwarden",
       "icon": {
         "dark": "./assets/images/ios-dark.png",
@@ -29,6 +35,9 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
+=======
+      "bundleIdentifier": "com.lazarovco.budgetwarden"
+>>>>>>> 9eded2e (hanging changes)
     },
     "android": {
       "adaptiveIcon": {
@@ -62,7 +71,11 @@
         "origin": false
       },
       "eas": {
+<<<<<<< HEAD
         "projectId": "9db2f143-7403-4bbe-9df9-bb990d546fee"
+=======
+        "projectId": "3430c271-1e7b-4e1e-8e09-3e3b820e90d0"
+>>>>>>> 9eded2e (hanging changes)
       }
     }
   }

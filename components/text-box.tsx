@@ -19,6 +19,7 @@ const TextBox = (props: TextInputProps) => {
         ...touchableBoxStyleSheet.touchableBox,
         fontSize: 16
       }}
+      placeholderTextColor={useThemeColor({}, 'systemGrey')}
       {...props}
     />
   );
