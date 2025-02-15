@@ -1,11 +1,6 @@
-import RNPickerSelect from 'react-native-picker-select';
 import { useState } from 'react';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { ThemedText } from './themed-text';
-import { useColorScheme } from 'react-native';
-import { styles as touchableBoxStyleSheet } from './touchable-box';
-import { debounce } from '@nikelaz/bw-shared-libraries';
-import { Platform } from 'react-native';
+import TouchableBox from './touchable-box';
+import { Picker, PickerValue } from '@ant-design/react-native';
 
 type SelectItem = {
   label: string;
@@ -16,57 +11,36 @@ type SelectProps = Readonly<{
   items: SelectItem[],
   onValueChange: (value: SelectItem) => void,
   selectedItem: SelectItem,
+  title?: string,
 }>;
 
 const Select = (props: SelectProps) => {
-  const colorScheme = useColorScheme() || 'light';
   const [selectedItem, setSelectedItem] = useState(props.selectedItem || props.items[0]);
-  const [tempItem, setTempItem] = useState(props.selectedItem || props.items[0]);
-  const [isActive, setIsActive] = useState(false);
-  const bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
+  const [isVisible, setIsVisible] = useState(false);
 
-  const handleChange = (selectedValue: string) => {
-    if (selectedValue === null) return;
-    const selectedItem = props.items.find(item => item.value.toString() === selectedValue.toString());
+  const handleChange = (selectedValue: PickerValue[]) => {
+    if (selectedValue[0] === null) return;
+    const selectedItem = props.items.find(item => item.value.toString() === selectedValue[0].toString());
     if (!selectedItem) return;
-    setTempItem(selectedItem);
-    if (Platform.OS === 'android') {
-      androidChangeHandler();
-    }
+    props.onValueChange(selectedItem);
+    setSelectedItem(selectedItem);
   };
 
-  const handleClose = (donePressed: boolean) => {
-    if (!donePressed) {
-      setTempItem(selectedItem);
-    }
-  }
-
-  const handleDonePress = () => {
-    setSelectedItem(tempItem);
-    props.onValueChange(tempItem);
-  }
-
-  const androidChangeHandler = debounce(handleDonePress, 100);
-
   return (
-    <RNPickerSelect
-      onValueChange={handleChange}
-      onClose={handleClose}
-      onDonePress={handleDonePress}
-      items={props.items}
-      value={tempItem.value}
-      darkTheme={colorScheme === 'dark'}
-      touchableWrapperProps={{
-        style: {
-          backgroundColor: bgColor,
-          ...touchableBoxStyleSheet.touchableBox
-        },
-        onPressIn: () => setIsActive(true),
-        onPressOut: () => setIsActive(false),
-      }}
-    >
-      <ThemedText style={{lineHeight: 17}}>{selectedItem.label}</ThemedText>
-    </RNPickerSelect>
+    <>
+      <TouchableBox onPress={() => setIsVisible(true)}>{selectedItem.label}</TouchableBox>
+      <Picker
+        data={props.items}
+        title={props.title}
+        value={[selectedItem.value]}
+        okText="Done"
+        dismissText="Cancel"
+        onChange={handleChange}
+        cols={1}
+        onVisibleChange={v => setIsVisible(v)}
+        visible={isVisible}
+      />
+    </>
   );
 }
 

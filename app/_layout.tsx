@@ -7,6 +7,7 @@ import ErrorBoundary from 'react-native-error-boundary';
 import { SafeAreaView, View, Text } from 'react-native';
 import { StatusBar } from "expo-status-bar";
 import LinkButton from '@/components/link-button';
+import { Provider } from '@ant-design/react-native';
 
 const ErrorFallbackComponent = () => {
   return (
@@ -22,21 +23,36 @@ const ErrorFallbackComponent = () => {
   );
 };
 
+const antDesignDarkTheme = {
+  "fill_body": "#262629",
+  "fill_base": "#1a1a1a",
+  "fill_tap": "#2b2b2b",
+  "fill_grey": "#0a0a0a",
+  "color_text_base": "#e6e6e6",
+  "color_text_placeholder": "#4d4d4d",
+  "border_color_base": "#2b2b2b",
+  "border_color_thin": "#2b2b2b",
+};
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
-      <UserModelContextProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <StatusBar style="auto" />
-          <Stack>
-            <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </ThemeProvider>
-      </UserModelContextProvider>
-    </ErrorBoundary>
+    <Provider
+      theme={colorScheme === 'dark' ? antDesignDarkTheme : undefined}
+    >
+      <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+        <UserModelContextProvider>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <StatusBar style="auto" />
+            <Stack>
+              <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </ThemeProvider>
+        </UserModelContextProvider>
+      </ErrorBoundary>
+    </Provider>
   );
 }

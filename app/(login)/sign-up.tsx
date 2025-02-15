@@ -11,7 +11,7 @@ import useErrorBoundary from '@/hooks/useErrorBoundary';
 import { Stack } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Select from '@/components/select';
-import { countries } from '@/data/countries';
+import { countries } from '@nikelaz/bw-shared-libraries';
 import { SignUpSchema } from '@/validation-schemas/user-schemas';
 
 export default function ChangePassword() {

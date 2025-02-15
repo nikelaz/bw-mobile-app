@@ -1,10 +1,8 @@
-import { Pressable, StyleSheet } from 'react-native';
-import { useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from './themed-text';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { View } from 'react-native';
-import { Loader } from './loader';
 
 export interface TouchableBoxProps {
   children: React.ReactNode,
