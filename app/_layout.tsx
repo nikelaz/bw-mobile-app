@@ -5,7 +5,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { UserModelContextProvider } from '@/view-models/user-view-model';
 import ErrorBoundary from 'react-native-error-boundary';
 import { SafeAreaView, View, Text } from 'react-native';
-import { StatusBar } from "expo-status-bar";
 import LinkButton from '@/components/link-button';
 import { Provider } from '@ant-design/react-native';
 
@@ -44,7 +43,6 @@ export default function RootLayout() {
       <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
         <UserModelContextProvider>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <StatusBar style="auto" />
             <Stack>
               <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
