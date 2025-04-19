@@ -156,7 +156,7 @@ export const styles = StyleSheet.create({
     paddingRight: 15,
     paddingBottom: 11.5,
     paddingLeft: 15,
-    minHeight: 44,
+    minHeight: 50,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,

@@ -59,34 +59,85 @@ export default function ChangePassword() {
       <ColLayout spacing="l">
         <View>
           <GroupLabel>Email</GroupLabel>
-          <TextBox autoComplete="email" textContentType="emailAddress" autoCorrect={false} inputMode="email" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+          <TextBox
+            value={email}
+            onChangeText={setEmail}
+            aria-label="email input"
+            autoComplete="email"
+            textContentType="emailAddress"
+            inputMode="email"
+            keyboardType="email-address"
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
         </View>
         <View>
           <GroupLabel>First Name</GroupLabel>
-          <TextBox autoComplete="name-given" textContentType="givenName" inputMode="text" autoCapitalize="words" value={firstName} onChangeText={setFirstName} />
+          <TextBox
+            value={firstName}
+            onChangeText={setFirstName}
+            aria-label="first name input"
+            autoComplete="name-given"
+            textContentType="givenName"
+            inputMode="text"
+            autoCapitalize="words"
+          />
         </View>
         <View>
           <GroupLabel>Last Name</GroupLabel>
-          <TextBox autoComplete="name-family" textContentType="familyName" inputMode="text" autoCapitalize="words" value={lastName} onChangeText={setLastName} />
+          <TextBox
+            value={lastName}
+            onChangeText={setLastName}
+            aria-label="last name input"
+            autoComplete="name-family"
+            textContentType="familyName"
+            inputMode="text"
+            autoCapitalize="words"
+          />
         </View>
         <View>
           <GroupLabel>Password</GroupLabel>
-          <TextBox autoComplete="off" textContentType="newPassword" autoCapitalize="none" value={password} onChangeText={setPassword} secureTextEntry={true} />
+          <TextBox
+            value={password}
+            onChangeText={setPassword}
+            aria-label="password input"
+            autoComplete="off"
+            textContentType="newPassword"
+            autoCapitalize="none"
+            secureTextEntry={true}
+          />
         </View>
         <View>
           <GroupLabel>Repeat Password</GroupLabel>
-          <TextBox autoComplete="off" textContentType="password" autoCapitalize="none" value={repeatPassword} onChangeText={setRepeatPassword} secureTextEntry={true} />
+          <TextBox 
+            value={repeatPassword}
+            onChangeText={setRepeatPassword}
+            aria-label="repeat password input"
+            autoComplete="off"
+            textContentType="password"
+            autoCapitalize="none"
+            secureTextEntry={true}
+          />
         </View>
         <View>
           <GroupLabel>Country</GroupLabel>
           <Select
+            aria-label="country select"
             onValueChange={(e) => setCountry(countrySelectData.find(item => item.value === e.value) || countrySelectData[0])}
             items={countrySelectData}
             selectedItem={country}
           />
         </View>
         <View>
-          <TouchableBox onPress={signup} icon="create-outline" center={true} color="primary" isLoading={isLoading}>Sign Up</TouchableBox>
+          <TouchableBox
+            onPress={signup}
+            icon="create-outline"
+            center={true}
+            color="primary"
+            isLoading={isLoading}
+          >
+            Sign Up
+          </TouchableBox>
         </View>
       </ColLayout>
     </Container>

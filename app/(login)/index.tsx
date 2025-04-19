@@ -1,22 +1,21 @@
+import { useEffect, useState } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useUserModel } from '@/view-models/user-view-model';
+import * as LocalAuthentication from 'expo-local-authentication';
+import useErrorBoundary from '@/hooks/useErrorBoundary';
 import { View } from 'react-native';
+import Logo from '@/components/logo';
+import TouchableBox from '@/components/touchable-box';
 import GroupLabel from '@/components/group-label';
 import TextBox from '@/components/text-box';
 import ColLayout from '@/components/col-layout';
-import Logo from '@/components/logo';
-import TouchableBox from '@/components/touchable-box';
-import { useRouter } from 'expo-router';
-import { useUserModel } from '@/view-models/user-view-model';
-import { useEffect, useState } from 'react';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
 import LinkButton from '@/components/link-button';
-import { LoginSchema } from '@/validation-schemas/user-schemas';
-import * as LocalAuthentication from 'expo-local-authentication';
 import ConditionalRenderer from '@/components/conditional-renderer';
 import SuccessBox from '@/components/success-box';
-import { useLocalSearchParams } from 'expo-router';
-import AndroidOffsetContainer from '@/components/android-offset-container';
+import Container from '@/components/container';
+import { LoginSchema } from '@/validation-schemas/user-schemas';
 
-export default function ChangePassword() {
+export default function Login() {
   const router = useRouter();
   const userModel = useUserModel();
   const params = useLocalSearchParams();
@@ -25,7 +24,6 @@ export default function ChangePassword() {
   const [isLoading, setIsLoading] = useState(false);
   const errorBoundary = useErrorBoundary();
   
-
   useEffect(() => {
     (async () => {
       const token = await userModel.getToken();
@@ -51,7 +49,7 @@ export default function ChangePassword() {
   };
 
   return (
-    <AndroidOffsetContainer>
+    <Container>
       <View style={{width: '100%', maxWidth: 420, margin: 'auto'}}>
         <ColLayout spacing="l">
           <View style={{ alignItems: 'center', marginTop: 30, marginBottom: 30}}>
@@ -64,11 +62,30 @@ export default function ChangePassword() {
 
           <View>
             <GroupLabel>Email</GroupLabel>
-            <TextBox autoComplete="email" textContentType="emailAddress" autoCorrect={false} inputMode="email" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+            <TextBox
+              value={email}
+              onChangeText={setEmail}
+              aria-label="email input"
+              autoComplete="email"
+              textContentType="emailAddress"
+              inputMode="email"
+              keyboardType="email-address"
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
           </View>
-          <View>
+          <View style={{ marginBottom: 20 }}>
             <GroupLabel>Password</GroupLabel>
-            <TextBox autoComplete="off" textContentType="password" autoCorrect={false} autoCapitalize="none" value={password} onChangeText={setPassword} secureTextEntry={true} />
+            <TextBox
+              value={password}
+              onChangeText={setPassword}
+              aria-label="password input"
+              textContentType="password"
+              secureTextEntry={true}
+              autoCorrect={false}
+              autoCapitalize="none"
+              autoComplete="off"
+            />
           </View>
           <View>
             <TouchableBox icon="log-in-outline" onPress={login} color="primary" center={true} isLoading={isLoading}>Login</TouchableBox>
@@ -78,6 +95,6 @@ export default function ChangePassword() {
           </View>
         </ColLayout>
       </View>
-    </AndroidOffsetContainer>
+    </Container>
   );
 }

@@ -13,7 +13,7 @@ import { useUserModel } from '@/view-models/user-view-model';
 import useErrorBoundary from '@/hooks/useErrorBoundary';
 import { UserUpdateSchema } from '@/validation-schemas/user-schemas';
 import Dialog from '@/helpers/alert';
-import AndroidOffsetContainer from '@/components/android-offset-container';
+import Container from '@/components/container';
 
 export default function Settings() {
   const userModel = useUserModel();
@@ -103,7 +103,7 @@ export default function Settings() {
   }
 
   return (
-    <AndroidOffsetContainer>
+    <Container>
       <ColLayout>
         <Heading>Settings</Heading>
 
@@ -144,6 +144,6 @@ export default function Settings() {
           <TouchableBox isLoading={isLogoutLoading} onPress={logout} icon="log-out-outline">Logout</TouchableBox>   
         </ColLayout>
       </ColLayout>
-    </AndroidOffsetContainer>
+    </Container>
   );
 };

@@ -7,11 +7,28 @@ export interface ButtonProps {
 }
 
 const Button = (props: ButtonProps) => {
+  const color = useThemeColor({}, 'primary');
+
   return (
-    <TouchableOpacity onPress={props.onPress}>
-      <Text style={{ color: useThemeColor({}, 'primary'), fontSize: 18 }}>{props.children}</Text>
+    <TouchableOpacity style={styles.wrapper} onPress={props.onPress}>
+      <Text style={{ ...styles.inner, color }}>{props.children}</Text>
     </TouchableOpacity>
   )
-}
+};
+
+const styles = {
+  wrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+    minHeight: 50,
+  },
+  inner: {
+    fontSize: 18,
+  },
+};
 
 export default Button;
+

@@ -1,7 +1,8 @@
 import { ThemedText } from './themed-text';
 import { StyleSheet } from 'react-native';
+import { type ThemedTextProps } from '@/components/themed-text';
 
-const GroupLabel = (props: GenericChildrenProps) => (
+const GroupLabel = (props: ThemedTextProps) => (
   <ThemedText style={styles.groupLabel}>
     {props.children}
   </ThemedText>

@@ -1,5 +1,6 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { UserModelContextProvider } from '@/view-models/user-view-model';
@@ -7,6 +8,8 @@ import ErrorBoundary from 'react-native-error-boundary';
 import { SafeAreaView, View, Text } from 'react-native';
 import LinkButton from '@/components/link-button';
 import { Provider } from '@ant-design/react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const ErrorFallbackComponent = () => {
   return (
@@ -35,6 +38,8 @@ const antDesignDarkTheme = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const isIOS = Platform.OS === 'ios';
+  const bgColor = useThemeColor({}, 'background');
 
   return (
     <Provider
@@ -43,6 +48,11 @@ export default function RootLayout() {
       <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
         <UserModelContextProvider>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            {isIOS ? (
+              <StatusBar style="auto" />
+            ) : (
+              <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
+            )}
             <Stack>
               <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

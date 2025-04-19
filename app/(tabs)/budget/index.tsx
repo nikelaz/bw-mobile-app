@@ -15,7 +15,7 @@ import { LoadingLine } from '@/components/loading-line';
 import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import ConditionalRenderer from '@/components/conditional-renderer';
-import AndroidOffsetContainer from '@/components/android-offset-container';
+import Container from '@/components/container';
 
 enum AmountState {
   Planned = 1,
@@ -39,7 +39,7 @@ export default function Budget() {
 
   return (
     <GatedView>
-      <AndroidOffsetContainer>
+      <Container>
         <ColLayout>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10}}>
             <Heading>Budget</Heading>
@@ -251,7 +251,7 @@ export default function Budget() {
             </ColLayout>
           </ConditionalRenderer>
         </ColLayout>
-      </AndroidOffsetContainer>
+      </Container>
     </GatedView>
   );
 };

@@ -12,7 +12,7 @@ import { useUserModel } from '@/view-models/user-view-model';
 import { useState, useRef, MutableRefObject, useEffect } from 'react';
 import { View } from 'react-native';
 import { LoadingLine } from '@/components/loading-line';
-import AndroidOffsetContainer from '@/components/android-offset-container';
+import Container from '@/components/container';
 const html = decodeURIComponent(encodedHtml);
 
 export default function Reporting() {
@@ -41,7 +41,7 @@ export default function Reporting() {
   }, [budgetModel.currentBudget, userModel, webViewRef.current]);
 
   return (
-    <AndroidOffsetContainer>
+    <Container>
       <ColLayout>
         <Heading>Reporting</Heading>
 
@@ -90,6 +90,6 @@ export default function Reporting() {
         </View>
         
       </ColLayout>
-    </AndroidOffsetContainer>
+    </Container>
   );
 };
