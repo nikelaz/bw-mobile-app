@@ -7,12 +7,10 @@ import { useNavigation, useRouter } from 'expo-router';
 import { useBudgetModel } from '@/view-models/budget-view-model';
 import { useTransactionsModel } from '@/view-models/transactions-view-model';
 import months from '@/data/months';
-import { Transaction } from '@nikelaz/bw-shared-libraries';
+import { Transaction, CurrencyFormatter, debounce } from '@nikelaz/bw-shared-libraries';
 import { useUserModel } from '@/view-models/user-view-model';
 import LinkButton from '@/components/link-button';
 import TextBox from '@/components/text-box';
-import { debounce } from '@nikelaz/bw-shared-libraries';
-import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
 import Container from '@/components/container';
 
 export default function Transactions() {

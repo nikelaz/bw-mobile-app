@@ -1,4 +1,4 @@
-import { useAnimatedValue, Animated, View, Easing, Dimensions } from 'react-native';
+import { useAnimatedValue, Animated } from 'react-native';
 import { useEffect } from 'react';
 import { useThemeColor } from '@/hooks/useThemeColor';
 

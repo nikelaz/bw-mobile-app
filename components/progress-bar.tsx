@@ -4,7 +4,9 @@ import { DimensionValue, StyleSheet, View } from 'react-native';
 const ProgressBar = (props: ProgressBarProps) => {
   const bgColor = useThemeColor({}, 'systemGrey4');
   const isOverflowing = props.progress && props.progress > 1;
-  const barColor = isOverflowing ? useThemeColor({}, 'danger') : useThemeColor({}, 'secondary');
+  const colorDanger = useThemeColor({}, 'danger');
+  const colorSecondary = useThemeColor({}, 'secondary');
+  const barColor = isOverflowing ? colorDanger : colorSecondary;
   const width: DimensionValue = `${(props.progress || 0) * 100}%`;
 
   return (

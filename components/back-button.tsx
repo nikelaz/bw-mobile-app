@@ -1,7 +1,6 @@
-import { Platform, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { Platform, TouchableOpacity, StyleSheet, GestureResponderEvent } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { GestureResponderEvent } from 'react-native';
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -17,7 +16,9 @@ export interface BackButtonProps {
 const BackButton = (props: any) => {
   const isIOS = Platform.OS === 'ios';
   const backIcon = isIOS ? 'chevron-back-outline' : 'arrow-back-outline'
-  const color = isIOS ? useThemeColor({}, 'primary') : useThemeColor({}, 'text');
+  const primaryColor = useThemeColor({}, 'primary');
+  const textColor = useThemeColor({}, 'text');
+  const color = isIOS ? primaryColor : textColor;
   const iconSize = isIOS ? 28 : 25;
 
   return (

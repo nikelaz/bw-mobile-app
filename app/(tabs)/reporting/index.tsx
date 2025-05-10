@@ -6,11 +6,10 @@ import { useRouter } from 'expo-router';
 import months from '@/data/months';
 import { WebView } from 'react-native-webview';
 import { html as encodedHtml } from '@nikelaz/bw-reporting-view/dist/index';
-import { useColorScheme, Dimensions } from 'react-native';
+import { useColorScheme, Dimensions, View } from 'react-native';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import { useUserModel } from '@/view-models/user-view-model';
 import { useState, useRef, MutableRefObject, useEffect } from 'react';
-import { View } from 'react-native';
 import { LoadingLine } from '@/components/loading-line';
 import Container from '@/components/container';
 const html = decodeURIComponent(encodedHtml);
@@ -38,7 +37,7 @@ export default function Reporting() {
     if (webViewRef.current && !isLoading) {
       webViewRef.current.injectJavaScript(runFirst);
     }
-  }, [budgetModel.currentBudget, userModel, webViewRef.current]);
+  }, [budgetModel.currentBudget, userModel, isLoading, runFirst]);
 
   return (
     <Container>

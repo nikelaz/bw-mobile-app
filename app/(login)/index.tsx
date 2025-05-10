@@ -33,7 +33,7 @@ export default function Login() {
         router.navigate('/(tabs)/budget');
       }
     })();
-  }, []);
+  }, [userModel, router]);
   
   const login = async () => {
     setIsLoading(true);

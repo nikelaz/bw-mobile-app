@@ -1,9 +1,8 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useState } from 'react';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from './themed-text';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { View } from 'react-native';
 import { Loader } from './loader';
 import ProgressBar from './progress-bar';
 import ConditionalRenderer from './conditional-renderer';
@@ -33,7 +32,9 @@ export interface TouchableBoxProps {
 
 const TouchableBox = (props: TouchableBoxProps) => {
   const [isActive, setIsActive] = useState(false);
-  let bgColor = isActive ? useThemeColor({}, 'systemGrey5') : useThemeColor({light: 'white'}, 'systemGrey6');
+  const colorGrey5 = useThemeColor({}, 'systemGrey5');
+  const colorWhiteOrGrey6 = useThemeColor({light: 'white'}, 'systemGrey6');
+  let bgColor = isActive ? colorGrey5 : colorWhiteOrGrey6;
   let iconColor = useThemeColor({}, 'systemGrey2');
   let additionalTextColor = useThemeColor({}, 'systemGrey');
   let arrowColor = useThemeColor({}, 'systemGrey2');

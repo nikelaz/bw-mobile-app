@@ -8,12 +8,10 @@ import GatedView from '@/components/gated-view';
 import { useUserModel } from '@/view-models/user-view-model';
 import { useBudgetModel } from '@/view-models/budget-view-model';
 import months from '@/data/months';
-import { CategoryType } from '@nikelaz/bw-shared-libraries';
+import { CategoryType, CurrencyFormatter, CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import { useRouter } from 'expo-router';
 import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
 import { LoadingLine } from '@/components/loading-line';
-import { CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
-import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import ConditionalRenderer from '@/components/conditional-renderer';
 import Container from '@/components/container';
 

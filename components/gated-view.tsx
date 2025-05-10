@@ -13,7 +13,7 @@ const GatedView = (props: GenericChildrenProps) => {
       setLocalToken(token);
       setIsLoading(false);
     })()
-  }, [setLocalToken, setIsLoading]);
+  }, [setLocalToken, setIsLoading, userModel]);
 
   if (localToken) return props.children;
 

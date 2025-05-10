@@ -1,8 +1,7 @@
 import Heading from '@/components/heading';
 import Select from '../../../components/select';
 import ColLayout from '@/components/col-layout';
-import { currencies } from '@nikelaz/bw-shared-libraries';
-import { countries } from '@nikelaz/bw-shared-libraries';
+import { currencies, countries } from '@nikelaz/bw-shared-libraries';
 import GroupLabel from '@/components/group-label';
 import { View } from 'react-native';
 import TouchableBox from '@/components/touchable-box';

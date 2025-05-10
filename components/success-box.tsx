@@ -1,8 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from './themed-text';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { View } from 'react-native';
 
 export interface TouchableBoxProps {
   children: React.ReactNode,
