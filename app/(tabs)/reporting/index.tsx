@@ -25,7 +25,7 @@ export default function Reporting() {
   const [isLoading, setIsLoading] = useState(true);
   const webViewRef: MutableRefObject<WebView | null> = useRef(null);
   const screenDimensions = Dimensions.get('screen');
-  const [height, setHeight] = useState(screenDimensions.width * 3.41);
+  const [height, setHeight] = useState(Math.round(screenDimensions.width * 3.41));
 
   const runFirst = `
     window.categoryBudgetModel = ${JSON.stringify(categoryBudgetModel)};
@@ -61,7 +61,7 @@ export default function Reporting() {
           <WebView
             ref={webViewRef}
             source={{ html }}
-            style={{ flex: 1, height: height, backgroundColor: 'transparent', outline: '1px solid', outlineColor: '#fff', overflow: 'hidden' }}
+            style={{ flex: 1, height: height, backgroundColor: 'transparent', overflow: 'hidden' }}
             onLoad={() => setIsLoading(false)}
             injectedJavaScriptBeforeContentLoaded={runFirst}
             scalesPageToFit={true}
@@ -73,7 +73,7 @@ export default function Reporting() {
               if (event.nativeEvent && event.nativeEvent.data) {
                 try {
                   const data = JSON.parse(event.nativeEvent.data);
-                  if (data.height) setHeight(parseInt(data.height) + 1);
+                  if (data.height) setHeight(Math.round(parseFloat(data.height)) + 1);
                 } catch {}
               }
             }}
