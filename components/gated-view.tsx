@@ -1,6 +1,7 @@
 import { Redirect } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { useUserModel } from '@/view-models/user-view-model';
+import LoadingOverlay from './loading-overlay';
 
 interface GenericChildrenProps {
   children: React.ReactNode;
@@ -36,7 +37,7 @@ const GatedView = (props: GenericChildrenProps) => {
     };
   }, [userModel]);
 
-  if (isLoading) return null;
+  if (isLoading) return <LoadingOverlay isVisible={true} />;
 
   if (localToken) return props.children;
 
