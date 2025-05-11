@@ -12,8 +12,7 @@ const styles = StyleSheet.create({
   groupLabel: {
     textTransform: 'uppercase',
     fontSize: 12,
-    marginLeft: 15,
-    marginRight: 15,
+    marginHorizontal: 15,
     marginBottom: 5,
   },
 });
