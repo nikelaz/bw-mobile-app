@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import { useUserModel } from '@/view-models/user-view-model';
 import LoadingOverlay from './loading-overlay';
 
-interface GenericChildrenProps {
-  children: React.ReactNode;
-}
+type GatedViewProps = Readonly<{
+  children: React.ReactNode,
+}>;
 
-const GatedView = (props: GenericChildrenProps) => {
+const GatedView = (props: GatedViewProps) => {
   const userModel = useUserModel();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [localToken, setLocalToken] = useState<string | null>(null);
