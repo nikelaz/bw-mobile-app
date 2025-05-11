@@ -1,4 +1,5 @@
 import { View, StyleSheet, Modal } from 'react-native';
+import { useThemeColor } from '../hooks/useThemeColor';
 import { Loader } from './loader'; 
 
 type LoadingOverlayProps = Readonly<{
@@ -6,6 +7,9 @@ type LoadingOverlayProps = Readonly<{
 }>;
 
 const LoadingOverlay = (props: LoadingOverlayProps) => {
+  const backgroundColor = useThemeColor({}, 'background');
+  const foregroundColor = useThemeColor({}, 'text');
+
   if (!props.isVisible) return null;
  
   return (
@@ -15,11 +19,11 @@ const LoadingOverlay = (props: LoadingOverlayProps) => {
       animationType="fade"
       statusBarTranslucent
     >
-      <View style={styles.overlay}>
+      <View style={[styles.overlay, backgroundColor]}>
         <Loader 
-          width={50}
-          height={50}
-          color="#fff"
+          width={80}
+          height={80}
+          color={foregroundColor}
         />
       </View>
     </Modal>
@@ -28,9 +32,9 @@ const LoadingOverlay = (props: LoadingOverlayProps) => {
 
 const styles = StyleSheet.create({
   overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.89)',
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: '100%',
     zIndex: 10,
   },
 });
