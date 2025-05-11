@@ -53,18 +53,11 @@ export const TransactionsModelContextProvider = (props: TransactionsModelContext
   const [filter, setFilter] = useState<string>('');
   const [category, setCategory] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   const perPage = useMemo(() => calculatePerPageBasedOnHeight(props.height), [props.height]);
 
   const fetchTransactions = useCallback(async (limit: number, offset: number, filter: string = '') => {
     if (!props.token || !budgetModel.currentBudget?.id) return { transactions: [], count: 0 };
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    abortControllerRef.current = new AbortController();
 
     try {
       const req = await fetch(
@@ -72,7 +65,6 @@ export const TransactionsModelContextProvider = (props: TransactionsModelContext
         {
           method: 'GET',
           headers: { authorization: `Bearer ${props.token}` },
-          signal: abortControllerRef.current.signal
         }
       );
 
@@ -191,12 +183,6 @@ export const TransactionsModelContextProvider = (props: TransactionsModelContext
 
   useEffect(() => {
     refresh();
-
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
   }, [budgetModel.currentBudget?.id, currentPage, filter, refresh]);
 
   useEffect(() => {

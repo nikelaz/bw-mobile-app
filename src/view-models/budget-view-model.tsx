@@ -12,7 +12,6 @@ interface BudgetModelContextType {
   create: (budget: Budget, copyFrom: Budget) => Promise<void>;
   budgetExistsForMonth: (monthIndex: number) => boolean;
   isLoading: boolean;
-  error: string | null;
 }
 
 const BudgetModelContext = createContext<BudgetModelContextType | undefined>(undefined);
@@ -26,18 +25,10 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [currentBudget, setCurrentBudget] = useState<Budget | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const userModel = useUserModel();
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchBudgets = useCallback(async (): Promise<Budget[]> => {
     if (!props.token) return [];
-    
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    
-    abortControllerRef.current = new AbortController();
     
     try {
       const reqOptions = {
@@ -45,7 +36,6 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
         headers: {
           authorization: `Bearer ${props.token}`,
         },
-        signal: abortControllerRef.current.signal,
       };
     
       const req = await fetch(`${api}/budgets`, reqOptions);
@@ -58,9 +48,7 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
       const jsonResponse = await req.json(); 
       return jsonResponse.budgets || [];
     } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError') {
-        setError(err.message);
-      }
+      console.error(err);
       return [];
     }
   }, [props.token]);
@@ -74,7 +62,6 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
 
   const refresh = useCallback(async (): Promise<Budget[]> => {
     setIsLoading(true);
-    setError(null);
     
     try {
       const fetchedBudgets = await fetchBudgets();
@@ -95,12 +82,7 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
       
       return parsedBudgets;
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError('An unexpected error occurred while refreshing budgets');
-      }
-      return [];
+      throw new Error('An unexpected error occurred while refreshing budgets');
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +92,6 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
     if (!props.token) return;
     
     setIsLoading(true);
-    setError(null);
     
     try {
       const reqOptions = {
@@ -136,12 +117,7 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
         setCurrentBudget(newBudget);
       }
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError('An unexpected error occurred while creating the budget');
-      }
-      throw error; 
+      throw new Error('An unexpected error occurred while creating the budget'); 
     } finally {
       setIsLoading(false);
     }
@@ -149,12 +125,6 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
 
   useEffect(() => {
     refresh();
-    
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
   }, [props.token, userModel.user, refresh]);
 
   const budgetModel = useMemo((): BudgetModelContextType => ({
@@ -166,7 +136,6 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
     create,
     budgetExistsForMonth,
     isLoading,
-    error
   }), [
     budgets, 
     currentBudget, 
@@ -174,7 +143,6 @@ export const BudgetModelContextProvider = (props: BudgetModelContextProviderProp
     create, 
     budgetExistsForMonth,
     isLoading,
-    error
   ]);
 
   return (
