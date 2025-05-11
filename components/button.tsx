@@ -1,34 +1,38 @@
+import React from 'react';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { TouchableOpacity, GestureResponderEvent, Text } from 'react-native';
+import { TouchableOpacity, GestureResponderEvent, Text, StyleSheet } from 'react-native';
 
-export interface ButtonProps {
+export type ButtonProps = Readonly<{
   children: React.ReactNode;
   onPress?: ((event: GestureResponderEvent) => void) | undefined;
-}
+}>;
 
 const Button = (props: ButtonProps) => {
   const color = useThemeColor({}, 'primary');
 
   return (
-    <TouchableOpacity style={styles.wrapper} onPress={props.onPress}>
-      <Text style={{ ...styles.inner, color }}>{props.children}</Text>
+    <TouchableOpacity
+      style={styles.wrapper}
+      onPress={props.onPress}
+      activeOpacity={0.8}
+      accessibilityRole="button"
+    >
+      <Text style={[styles.inner, { color }]}>{props.children}</Text>
     </TouchableOpacity>
-  )
+  );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   wrapper: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingHorizontal: 10,
     minHeight: 50,
   },
   inner: {
     fontSize: 18,
   },
-};
+});
 
 export default Button;
-
