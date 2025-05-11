@@ -1,7 +1,7 @@
 {
   "name": "bw-mobile-app",
   "main": "expo-router/entry",
-  "version": "1.2.4",
+  "version": "1.3.0",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
