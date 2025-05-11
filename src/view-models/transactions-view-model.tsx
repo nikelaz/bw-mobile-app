@@ -1,184 +1,251 @@
-'use client';
-
-import { createContext, useContext, useState, useEffect } from 'react';
-import { BudgetViewModel, useBudgetModel } from '@/src/view-models/budget-view-model';
-import { calculateTotalPages } from '@nikelaz/bw-shared-libraries';
-import { Transaction } from '@nikelaz/bw-shared-libraries';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef
+} from 'react';
+import { calculateTotalPages, Transaction } from '@nikelaz/bw-shared-libraries';
+import { useBudgetModel } from '@/src/view-models/budget-view-model';
 import { api } from '@/config';
 
+/**
+ * The function below is a generally bad idea that needs to be removed
+ * Ideally pagination should be refactored to loading on scroll
+ */
 const calculatePerPageBasedOnHeight = (height: number) => {
   let coefficient = height < 1000 ? 300 : 100;
   return Math.max(3, Math.ceil((height - coefficient) / 100));
-}
+};
 
-export class TransactionsViewModel {
-  perPage = 5;
-  token: string;
-  budgetModel: BudgetViewModel;
-  transactions: Array<Transaction>;
-  setTransactions: Function;
-  page: number;
-  setPage: Function;
+interface TransactionsModelContextType {
+  transactions: Transaction[];
+  currentPage: number;
   totalPages: number;
-  setTotalPages: Function;
   filter: string;
-  setFilter: Function;
   category: string;
-  setCategory: Function;
-
-
-  constructor(token: string, height: number) {
-    this.token = token;
-    this.budgetModel = useBudgetModel();
-    [this.transactions, this.setTransactions] = useState([]);
-    [this.page, this.setPage] = useState(0);
-    [this.filter, this.setFilter] = useState('');
-    [this.totalPages, this.setTotalPages] = useState(calculateTotalPages(0, this.perPage));
-    [this.category, this.setCategory] = useState('');
-    this.perPage = calculatePerPageBasedOnHeight(height);
-
-    useEffect(() => {
-      this.refresh();
-    }, [this.budgetModel.currentBudget, this.page, this.filter]);
-
-    useEffect(() => {
-      this.setPage(0);
-    }, [this.filter, this.budgetModel.currentBudget]);
-  }
-
-  async refresh() {
-    if (!this.token || !this.budgetModel.currentBudget?.id) return;
-    const response = await this.fetchTransactions(this.perPage, this.page * this.perPage, this.filter);
-    this.setTransactions(response.transactions);
-    this.setTotalPages(calculateTotalPages(parseFloat(response.count),  this.perPage));
-  };
-
-  nextPage() {
-    this.setPage(this.page + 1);
-  }
-
-  prevPage() {
-    this.setPage(this.page - 1);
-  }
-
-  async fetchTransactions(limit: number, offset: number, filter: string = '') {
-    const budgetId = this.budgetModel.currentBudget?.id;
-    
-    if (!this.token || budgetId === undefined) return;
-
-    const reqOptions = {
-      method: 'GET',
-      headers: {
-        authorization: `Bearer ${this.token}`,
-      },
-    };
-  
-    const req = await fetch(`${api}/transactions/${budgetId}?limit=${limit}&offset=${offset}&filter=${filter}`, reqOptions);
-  
-    const jsonResponse = await req.json();
-  
-    return jsonResponse;
-  };
-
-  async create(transaction: Transaction) {
-    if (!this.token) return;
-  
-    const reqOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${this.token}`,
-      },
-      body: JSON.stringify({ transaction })
-    };
-  
-    const req = await fetch(`${api}/transactions`, reqOptions);
-  
-    const jsonResponse = await req.json();
-  
-    if (req.status !== 200 && jsonResponse.message) {
-      throw new Error(jsonResponse.message);
-    }
-  
-    if (req.status !== 200 && !jsonResponse.message) {
-      throw new Error('An unexpected error occured. Please try again later.')
-    }
-  
-    await this.budgetModel.refresh();
-    await this.refresh();
-  };
-
-  async delete(id: number) {
-    if (!this.token) return;
-  
-    const reqOptions = {
-      method: 'DELETE',
-      headers: {
-        authorization: `Bearer ${this.token}`,
-      },
-    };
-  
-    const req = await fetch(`${api}/transactions/${id}`, reqOptions);
-  
-    const jsonResponse = await req.json();
-  
-    if (req.status !== 200 && jsonResponse.message) {
-      throw new Error(jsonResponse.message);
-    }
-  
-    if (req.status !== 200 && !jsonResponse.message) {
-      throw new Error('An unexpected error occured. Please try again later.')
-    }
-  
-    await this.budgetModel.refresh();
-    await this.refresh();
-  };
-
-  async update(transaction: Partial<Transaction>) {
-    if (!this.token) return;
-  
-    const reqOptions = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${this.token}`,
-      },
-      body: JSON.stringify({ transaction })
-    };
-  
-    const req = await fetch(`${api}/transactions`, reqOptions);
-  
-    const jsonResponse = await req.json();
-  
-    if (req.status !== 200 && jsonResponse.message) {
-      throw new Error(jsonResponse.message);
-    }
-  
-    if (req.status !== 200 && !jsonResponse.message) {
-      throw new Error('An unexpected error occured. Please try again later.')
-    }
-  
-    await this.budgetModel.refresh();
-    await this.refresh();
-  };
+  setFilter: React.Dispatch<React.SetStateAction<string>>;
+  setCategory: React.Dispatch<React.SetStateAction<string>>;
+  refresh: () => Promise<void>;
+  nextPage: () => void;
+  prevPage: () => void;
+  create: (transaction: Transaction) => Promise<void>;
+  update: (transaction: Partial<Transaction>) => Promise<void>;
+  remove: (id: number) => Promise<void>;
+  isLoading: boolean;
 }
 
-const TransactionsModelContext = createContext<any>(null);
+const TransactionsModelContext = createContext<TransactionsModelContextType | undefined>(undefined);
 
-type TransactionsModelContextProviderProps = Readonly<{
+type TransactionsModelContextProps = Readonly<{
   children: React.ReactNode,
   token: string,
   height: number,
 }>;
 
-export const TransactionsModelContextProvider = (props: TransactionsModelContextProviderProps) => {
-  const transactionsModel = new TransactionsViewModel(props.token, props.height);
+export const TransactionsModelContextProvider = (props: TransactionsModelContextProps) => {
+  const budgetModel = useBudgetModel();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [filter, setFilter] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const perPage = useMemo(() => calculatePerPageBasedOnHeight(props.height), [props.height]);
+
+  const fetchTransactions = useCallback(async (limit: number, offset: number, filter: string = '') => {
+    if (!props.token || !budgetModel.currentBudget?.id) return { transactions: [], count: 0 };
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    abortControllerRef.current = new AbortController();
+
+    try {
+      const req = await fetch(
+        `${api}/transactions/${budgetModel.currentBudget.id}?limit=${limit}&offset=${offset}&filter=${filter}`,
+        {
+          method: 'GET',
+          headers: { authorization: `Bearer ${props.token}` },
+          signal: abortControllerRef.current.signal
+        }
+      );
+
+      const json = await req.json();
+      return json;
+    } catch (error) {
+      console.error(error);
+      return { transactions: [], count: 0 };
+    }
+  }, [props.token, budgetModel.currentBudget?.id]);
+
+  const refresh = useCallback(async () => {
+    if (!props.token || !budgetModel.currentBudget?.id) return;
+
+    setIsLoading(true);
+
+    try {
+      const offset = currentPage * perPage;
+      const data = await fetchTransactions(perPage, offset, filter);
+      setTransactions(data.transactions);
+      setTotalPages(calculateTotalPages(data.count, perPage));
+    } catch (err) {
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [props.token, budgetModel.currentBudget?.id, currentPage, filter, perPage, fetchTransactions]);
+
+  const nextPage = useCallback(() => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages - 1));
+  }, [totalPages]);
+
+  const prevPage = useCallback(() => {
+    setCurrentPage(prev => Math.max(prev - 1, 0));
+  }, []);
+
+  const create = useCallback(async (transaction: Transaction) => {
+    if (!props.token) return;
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${api}/transactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${props.token}`
+        },
+        body: JSON.stringify({ transaction })
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.message || 'An unexpected error occurred.');
+      }
+
+      await budgetModel.refresh();
+      await refresh();
+    } catch (err) {
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [props.token, budgetModel, refresh]);
+
+  const update = useCallback(async (transaction: Partial<Transaction>) => {
+    if (!props.token) return;
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${api}/transactions`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${props.token}`
+        },
+        body: JSON.stringify({ transaction })
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.message || 'An unexpected error occurred.');
+      }
+
+      await budgetModel.refresh();
+      await refresh();
+    } catch (err) {
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [props.token, budgetModel, refresh]);
+
+  const remove = useCallback(async (id: number) => {
+    if (!props.token) return;
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${api}/transactions/${id}`, {
+        method: 'DELETE',
+        headers: { authorization: `Bearer ${props.token}` }
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.message || 'An unexpected error occurred.');
+      }
+
+      await budgetModel.refresh();
+      await refresh();
+    } catch (err) {
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [props.token, budgetModel, refresh]);
+
+  useEffect(() => {
+    refresh();
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [budgetModel.currentBudget?.id, currentPage, filter, refresh]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [filter, budgetModel.currentBudget?.id]);
+
+  const transactionsModel = useMemo(() => ({
+    transactions,
+    currentPage,
+    totalPages,
+    filter,
+    category,
+    setFilter,
+    setCategory,
+    refresh,
+    nextPage,
+    prevPage,
+    create,
+    update,
+    remove,
+    isLoading,
+  }), [
+    transactions,
+    currentPage,
+    totalPages,
+    filter,
+    category,
+    setFilter,
+    setCategory,
+    refresh,
+    nextPage,
+    prevPage,
+    create,
+    update,
+    remove,
+    isLoading,
+  ]);
 
   return (
     <TransactionsModelContext.Provider value={transactionsModel}>
       {props.children}
     </TransactionsModelContext.Provider>
-  )
+  );
 };
 
-export const useTransactionsModel = () => useContext(TransactionsModelContext);
+export const useTransactionsModel = (): TransactionsModelContextType => {
+  const context = useContext(TransactionsModelContext);
+  if (context === undefined) {
+    throw new Error('useTransactionsModel must be used within a TransactionsModelContextProvider');
+  }
+  return context;
+};
