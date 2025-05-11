@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { BudgetViewModel, useBudgetModel } from '@/view-models/budget-view-model';
+import { BudgetViewModel, useBudgetModel } from '@/src/view-models/budget-view-model';
 import { calculateTotalPages } from '@nikelaz/bw-shared-libraries';
 import { Transaction } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';

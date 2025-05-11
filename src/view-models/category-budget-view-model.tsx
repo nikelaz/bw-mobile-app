@@ -1,11 +1,11 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import { BudgetViewModel, useBudgetModel } from '@/view-models/budget-view-model';
+import { BudgetViewModel, useBudgetModel } from '@/src/view-models/budget-view-model';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import { CategoryType } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
-import { useTransactionsModel } from '@/view-models/transactions-view-model';
+import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
 import { useMemo } from 'react';
 
 export class CategoryBudgetViewModel {

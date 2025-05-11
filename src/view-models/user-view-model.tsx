@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react';
-import { Currency, currencies } from '../data/currencies';
-import { api } from '../config';
+import { Currency, currencies } from '@/data/currencies';
+import { api } from '@/config';
 import React, { useState } from 'react';
-import Storage from '@/helpers/storage';
+import Storage from '@/src/helpers/storage';
 
 export class UserViewModel {
   user: any;
