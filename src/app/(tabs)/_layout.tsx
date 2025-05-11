@@ -2,12 +2,12 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Dimensions } from 'react-native';
 
-import { TabBarIcon } from '@/components/tab-bar-icon';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { BudgetModelContextProvider } from '@/view-models/budget-view-model';
-import { useUserModel } from '@/view-models/user-view-model';
-import { CategoryBudgetModelContextProvider } from '@/view-models/category-budget-view-model';
-import { TransactionsModelContextProvider } from '@/view-models/transactions-view-model';
+import { TabBarIcon } from '@/src/components/tab-bar-icon';
+import { useThemeColor } from '@/src/hooks/useThemeColor';
+import { BudgetModelContextProvider } from '@/src/view-models/budget-view-model';
+import { useUserModel } from '@/src/view-models/user-view-model';
+import { CategoryBudgetModelContextProvider } from '@/src/view-models/category-budget-view-model';
+import { TransactionsModelContextProvider } from '@/src/view-models/transactions-view-model';
 
 export default function TabLayout() {
   const userModel = useUserModel();

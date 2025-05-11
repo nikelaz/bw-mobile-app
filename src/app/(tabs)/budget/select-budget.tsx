@@ -1,13 +1,13 @@
-import Container from '@/components/container';
+import Container from '@/src/components/container';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
-import ColLayout from '@/components/col-layout';
-import { useBudgetModel } from '@/view-models/budget-view-model';
-import TouchableBox from '@/components/touchable-box';
+import ColLayout from '@/src/components/col-layout';
+import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import TouchableBox from '@/src/components/touchable-box';
 import { Budget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
-import BackButton from '@/components/back-button';
-import LinkBox from '@/components/link-box';
+import BackButton from '@/src/components/back-button';
+import LinkBox from '@/src/components/link-box';
 
 export default function SelectBudget() {
   const budgetModel = useBudgetModel();

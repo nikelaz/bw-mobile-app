@@ -1,21 +1,27 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { Budget } from '@nikelaz/bw-shared-libraries';
-import { api } from '@/config';
-import { findClosestBudgetDate } from '@nikelaz/bw-shared-libraries';
-import { parseBudget } from '@nikelaz/bw-shared-libraries';
+import { Budget, findClosestBudgetDate, parseBudget } from '@nikelaz/bw-shared-libraries';
 import { useUserModel } from './user-view-model';
+import { api } from '@/config';
 
 export class BudgetViewModel {
   token: string;
-  budgets: Array<Budget>;
-  setBudgets: Function;
+  budgets: Budget[];
+  setBudgets: React.Dispatch<React.SetStateAction<Budget[]>>;
   currentBudget: Budget | null;
-  setCurrentBudget: Function;
+  setCurrentBudget: React.Dispatch<React.SetStateAction<Budget | null>>;
 
-  constructor(token: string) {
+  constructor(
+    token: string,
+    budgets: Budget[],
+    setBudgets: React.Dispatch<React.SetStateAction<Budget[]>>,
+    currentBudget: Budget | null,
+    setCurrentBudget: React.Dispatch<React.SetStateAction<Budget | null>>
+  ) {
     this.token = token;
-    [this.budgets, this.setBudgets] = useState([]);
-    [this.currentBudget, this.setCurrentBudget] = useState(null);
+    this.budgets = budgets;
+    this.setBudgets = setBudgets;
+    this.currentBudget = currentBudget;
+    this.setCurrentBudget = setCurrentBudget;
   }
 
   async refresh() {
@@ -38,7 +44,7 @@ export class BudgetViewModel {
     return parsedBudgets;
   }
 
-  async fetchBudgets(): Promise<Array<Budget>> {
+  async fetchBudgets(): Promise<Budget[]> {
     if (!this.token) return [];
   
     const reqOptions = {
@@ -103,7 +109,20 @@ type BudgetModelContextProviderProps = Readonly<{
 }>;
 
 export const BudgetModelContextProvider = (props: BudgetModelContextProviderProps) => {
-  const budgetModel = new BudgetViewModel(props.token);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [currentBudget, setCurrentBudget] = useState<Budget | null>(null);
+  const budgetModelRef = useRef<BudgetViewModel | null>(null);
+
+  if (!budgetModelRef.current) {
+    budgetModelRef.current = new BudgetViewModel(
+      props.token,
+      budgets,
+      setBudgets,
+      currentBudget,
+      setCurrentBudget
+    );
+  }
+
   const userModel = useUserModel();
 
   useEffect(() => {

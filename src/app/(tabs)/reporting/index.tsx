@@ -1,17 +1,17 @@
-import ColLayout from '@/components/col-layout';
-import Heading from '@/components/heading';
-import { useBudgetModel } from '@/view-models/budget-view-model';
-import TouchableBox from '@/components/touchable-box';
+import ColLayout from '@/src/components/col-layout';
+import Heading from '@/src/components/heading';
+import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import TouchableBox from '@/src/components/touchable-box';
 import { useRouter } from 'expo-router';
 import months from '@/data/months';
 import { WebView } from 'react-native-webview';
 import { html as encodedHtml } from '@nikelaz/bw-reporting-view/dist/index';
 import { useColorScheme, Dimensions, View } from 'react-native';
-import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
-import { useUserModel } from '@/view-models/user-view-model';
+import { useCategoryBudgetModel } from '@/src/view-models/category-budget-view-model';
+import { useUserModel } from '@/src/view-models/user-view-model';
 import { useState, useRef, MutableRefObject, useEffect } from 'react';
-import { LoadingLine } from '@/components/loading-line';
-import Container from '@/components/container';
+import { LoadingLine } from '@/src/components/loading-line';
+import Container from '@/src/components/container';
 const html = decodeURIComponent(encodedHtml);
 
 export default function Reporting() {

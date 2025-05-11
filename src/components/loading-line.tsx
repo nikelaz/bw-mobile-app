@@ -1,6 +1,6 @@
 import { useAnimatedValue, Animated } from 'react-native';
 import { useEffect } from 'react';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from '@/src/hooks/useThemeColor';
 
 type LoadingLineProps = Readonly<{
   width?: number | string,

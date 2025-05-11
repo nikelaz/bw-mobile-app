@@ -1,15 +1,15 @@
-import Container from '@/components/container';
+import Container from '@/src/components/container';
 import { Stack } from 'expo-router';
 import { View } from 'react-native';
-import GroupLabel from '@/components/group-label';
-import TextBox from '@/components/text-box';
-import ColLayout from '@/components/col-layout';
-import { useUserModel } from '@/view-models/user-view-model';
+import GroupLabel from '@/src/components/group-label';
+import TextBox from '@/src/components/text-box';
+import ColLayout from '@/src/components/col-layout';
+import { useUserModel } from '@/src/view-models/user-view-model';
 import { useState } from 'react';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
-import { ChangePasswordSchema } from '@/validation-schemas/user-schemas';
-import TouchableBox from '@/components/touchable-box';
-import SuccessBox from '@/components/success-box';
+import useErrorBoundary from '@/src/hooks/useErrorBoundary';
+import { ChangePasswordSchema } from '@/src/validation-schemas/user-schemas';
+import TouchableBox from '@/src/components/touchable-box';
+import SuccessBox from '@/src/components/success-box';
 
 export default function ChangePassword() {
   const userModel = useUserModel();

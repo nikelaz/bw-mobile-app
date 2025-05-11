@@ -1,5 +1,5 @@
 import { View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from '@/src/hooks/useThemeColor';
 
 type ContainerProps = Readonly<{
   children: React.ReactNode,

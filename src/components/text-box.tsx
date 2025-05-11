@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { styles as touchableBoxStyleSheet } from './touchable-box';
 import { TextInput, TextInputProps } from 'react-native';
 

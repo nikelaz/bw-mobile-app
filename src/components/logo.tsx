@@ -1,7 +1,7 @@
 import * as React from "react";
 import Svg, { Path } from 'react-native-svg';
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { Colors } from '@/constants/Colors';
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { Colors } from '@/src/constants/Colors';
 
 type LogoProps = Readonly<{
   width: number;

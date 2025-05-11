@@ -1,20 +1,20 @@
-import Container from '@/components/container';
+import Container from '@/src/components/container';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
-import GroupLabel from '@/components/group-label';
-import TextBox from '@/components/text-box';
-import ColLayout from '@/components/col-layout';
-import TouchableBox from '@/components/touchable-box';
-import Select from '@/components/select';
+import GroupLabel from '@/src/components/group-label';
+import TextBox from '@/src/components/text-box';
+import ColLayout from '@/src/components/col-layout';
+import TouchableBox from '@/src/components/touchable-box';
+import Select from '@/src/components/select';
 import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
-import { useTransactionsModel } from '@/view-models/transactions-view-model';
+import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
 import { Transaction, CategoryBudget } from '@nikelaz/bw-shared-libraries';
-import { useBudgetModel } from '@/view-models/budget-view-model';
+import { useBudgetModel } from '@/src/view-models/budget-view-model';
 import months from '@/data/months';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
-import Dialog from '@/helpers/alert';
-import { UpdateTransactionSchema } from '@/validation-schemas/transaction.schemas';
+import useErrorBoundary from '@/src/hooks/useErrorBoundary';
+import Dialog from '@/src/helpers/alert';
+import { UpdateTransactionSchema } from '@/src/validation-schemas/transaction.schemas';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
   const categoriesMap: any = {};

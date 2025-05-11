@@ -1,18 +1,18 @@
-import Heading from '@/components/heading';
+import Heading from '@/src/components/heading';
 import Select from '../../../components/select';
-import ColLayout from '@/components/col-layout';
+import ColLayout from '@/src/components/col-layout';
 import { currencies, countries } from '@nikelaz/bw-shared-libraries';
-import GroupLabel from '@/components/group-label';
+import GroupLabel from '@/src/components/group-label';
 import { View } from 'react-native';
-import TouchableBox from '@/components/touchable-box';
-import TextBox from '@/components/text-box';
+import TouchableBox from '@/src/components/touchable-box';
+import TextBox from '@/src/components/text-box';
 import { useNavigation, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { useUserModel } from '@/view-models/user-view-model';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
-import { UserUpdateSchema } from '@/validation-schemas/user-schemas';
-import Dialog from '@/helpers/alert';
-import Container from '@/components/container';
+import { useUserModel } from '@/src/view-models/user-view-model';
+import useErrorBoundary from '@/src/hooks/useErrorBoundary';
+import { UserUpdateSchema } from '@/src/validation-schemas/user-schemas';
+import Dialog from '@/src/helpers/alert';
+import Container from '@/src/components/container';
 
 export default function Settings() {
   const userModel = useUserModel();

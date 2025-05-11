@@ -1,17 +1,17 @@
-import ColLayout from '@/components/col-layout';
-import Heading from '@/components/heading';
+import ColLayout from '@/src/components/col-layout';
+import Heading from '@/src/components/heading';
 import { View } from 'react-native';
-import TouchableBox from '@/components/touchable-box';
+import TouchableBox from '@/src/components/touchable-box';
 import { useEffect } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
-import { useBudgetModel } from '@/view-models/budget-view-model';
-import { useTransactionsModel } from '@/view-models/transactions-view-model';
+import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
 import months from '@/data/months';
 import { Transaction, CurrencyFormatter, debounce } from '@nikelaz/bw-shared-libraries';
-import { useUserModel } from '@/view-models/user-view-model';
-import LinkButton from '@/components/link-button';
-import TextBox from '@/components/text-box';
-import Container from '@/components/container';
+import { useUserModel } from '@/src/view-models/user-view-model';
+import LinkButton from '@/src/components/link-button';
+import TextBox from '@/src/components/text-box';
+import Container from '@/src/components/container';
 
 export default function Transactions() {
   const budgetModel = useBudgetModel();

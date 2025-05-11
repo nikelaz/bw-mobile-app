@@ -1,12 +1,12 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useState } from 'react';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { ThemedText } from './themed-text';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Loader } from './loader';
 import ProgressBar from './progress-bar';
 import ConditionalRenderer from './conditional-renderer';
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/src/constants/Colors';
 
 export interface TouchableBoxProps {
   children: React.ReactNode,

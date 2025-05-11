@@ -1,13 +1,13 @@
 import 'react-native-reanimated';
 import { Stack } from 'expo-router';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { UserModelContextProvider } from '@/view-models/user-view-model';
+import { UserModelContextProvider } from '@/src/view-models/user-view-model';
 import { SafeAreaView, View, Text, Platform } from 'react-native';
 import ErrorBoundary from 'react-native-error-boundary';
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { Provider } from '@ant-design/react-native';
-import LinkButton from '@/components/link-button';
+import LinkButton from '@/src/components/link-button';
 import { StatusBar } from 'expo-status-bar';
 
 const ErrorFallbackComponent = () => {

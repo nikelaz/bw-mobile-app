@@ -1,15 +1,15 @@
-import Container from '@/components/container';
-import { BudgetViewModel, useBudgetModel } from '@/view-models/budget-view-model';
+import Container from '@/src/components/container';
+import { BudgetViewModel, useBudgetModel } from '@/src/view-models/budget-view-model';
 import { Stack, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useState } from 'react';
-import ColLayout from '@/components/col-layout';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
-import GroupLabel from '@/components/group-label';
-import Select from '@/components/select';
+import ColLayout from '@/src/components/col-layout';
+import useErrorBoundary from '@/src/hooks/useErrorBoundary';
+import GroupLabel from '@/src/components/group-label';
+import Select from '@/src/components/select';
 import { Budget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
-import TouchableBox from '@/components/touchable-box';
+import TouchableBox from '@/src/components/touchable-box';
 
 const generateNewBudgetOptions = (budgetModel: BudgetViewModel) => {
   const now = new Date();

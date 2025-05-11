@@ -1,6 +1,6 @@
 import { Platform, TouchableOpacity, StyleSheet, GestureResponderEvent } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { useMemo } from 'react';
 
 export type BackButtonProps = Readonly<{

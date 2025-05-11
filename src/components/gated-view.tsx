@@ -1,6 +1,6 @@
 import { Redirect } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { useUserModel } from '@/view-models/user-view-model';
+import { useUserModel } from '@/src/view-models/user-view-model';
 import LoadingOverlay from './loading-overlay';
 
 type GatedViewProps = Readonly<{

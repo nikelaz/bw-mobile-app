@@ -1,17 +1,17 @@
-import Container from '@/components/container';
+import Container from '@/src/components/container';
 import { View } from 'react-native';
-import GroupLabel from '@/components/group-label';
-import TextBox from '@/components/text-box';
-import ColLayout from '@/components/col-layout';
-import TouchableBox from '@/components/touchable-box';
+import GroupLabel from '@/src/components/group-label';
+import TextBox from '@/src/components/text-box';
+import ColLayout from '@/src/components/col-layout';
+import TouchableBox from '@/src/components/touchable-box';
 import { useRouter, Stack } from 'expo-router';
-import { useUserModel } from '@/view-models/user-view-model';
+import { useUserModel } from '@/src/view-models/user-view-model';
 import { useState } from 'react';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import Select from '@/components/select';
+import useErrorBoundary from '@/src/hooks/useErrorBoundary';
+import { useThemeColor } from '@/src/hooks/useThemeColor';
+import Select from '@/src/components/select';
 import { countries } from '@nikelaz/bw-shared-libraries';
-import { SignUpSchema } from '@/validation-schemas/user-schemas';
+import { SignUpSchema } from '@/src/validation-schemas/user-schemas';
 
 export default function ChangePassword() {
   const router = useRouter();

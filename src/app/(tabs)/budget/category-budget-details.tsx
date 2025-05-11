@@ -1,17 +1,17 @@
-import Container from '@/components/container';
-import { useBudgetModel } from '@/view-models/budget-view-model';
+import Container from '@/src/components/container';
+import { useBudgetModel } from '@/src/view-models/budget-view-model';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { CategoryBudget, CategoryType } from '@nikelaz/bw-shared-libraries';
-import GroupLabel from '@/components/group-label';
-import TextBox from '@/components/text-box';
+import GroupLabel from '@/src/components/group-label';
+import TextBox from '@/src/components/text-box';
 import { useState } from 'react';
-import ColLayout from '@/components/col-layout';
-import TouchableBox from '@/components/touchable-box';
-import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
-import Dialog from '@/helpers/alert';
-import { CreateCategoryBudgetSchema } from '@/validation-schemas/category-budget.schemas';
+import ColLayout from '@/src/components/col-layout';
+import TouchableBox from '@/src/components/touchable-box';
+import { useCategoryBudgetModel } from '@/src/view-models/category-budget-view-model';
+import useErrorBoundary from '@/src/hooks/useErrorBoundary';
+import Dialog from '@/src/helpers/alert';
+import { CreateCategoryBudgetSchema } from '@/src/validation-schemas/category-budget.schemas';
 
 export default function CategoryBudgetDetails() {
   const budgetModel = useBudgetModel();

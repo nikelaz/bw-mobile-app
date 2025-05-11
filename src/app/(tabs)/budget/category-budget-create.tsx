@@ -1,16 +1,16 @@
-import Container from '@/components/container';
-import { useBudgetModel } from '@/view-models/budget-view-model';
+import Container from '@/src/components/container';
+import { useBudgetModel } from '@/src/view-models/budget-view-model';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
-import TextBox from '@/components/text-box';
+import TextBox from '@/src/components/text-box';
 import { useState } from 'react';
-import ColLayout from '@/components/col-layout';
+import ColLayout from '@/src/components/col-layout';
 import { CategoryType } from '@nikelaz/bw-shared-libraries';
-import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
-import GroupLabel from '@/components/group-label';
-import TouchableBox from '@/components/touchable-box';
-import { CreateCategoryBudgetSchema } from '@/validation-schemas/category-budget.schemas';
+import { useCategoryBudgetModel } from '@/src/view-models/category-budget-view-model';
+import useErrorBoundary from '@/src/hooks/useErrorBoundary';
+import GroupLabel from '@/src/components/group-label';
+import TouchableBox from '@/src/components/touchable-box';
+import { CreateCategoryBudgetSchema } from '@/src/validation-schemas/category-budget.schemas';
 
 const getCategoryPlaceholder = (type: CategoryType) => {
   switch (type) {

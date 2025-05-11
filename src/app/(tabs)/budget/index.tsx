@@ -1,19 +1,19 @@
-import ColLayout from '@/components/col-layout';
-import Heading from '@/components/heading';
+import ColLayout from '@/src/components/col-layout';
+import Heading from '@/src/components/heading';
 import { View } from 'react-native';
-import TouchableBox from '@/components/touchable-box';
+import TouchableBox from '@/src/components/touchable-box';
 import React, { useState } from 'react';
-import LinkButton from '@/components/link-button';
-import GatedView from '@/components/gated-view';
-import { useUserModel } from '@/view-models/user-view-model';
-import { useBudgetModel } from '@/view-models/budget-view-model';
+import LinkButton from '@/src/components/link-button';
+import GatedView from '@/src/components/gated-view';
+import { useUserModel } from '@/src/view-models/user-view-model';
+import { useBudgetModel } from '@/src/view-models/budget-view-model';
 import months from '@/data/months';
 import { CategoryType, CurrencyFormatter, CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import { useRouter } from 'expo-router';
-import { useCategoryBudgetModel } from '@/view-models/category-budget-view-model';
-import { LoadingLine } from '@/components/loading-line';
-import ConditionalRenderer from '@/components/conditional-renderer';
-import Container from '@/components/container';
+import { useCategoryBudgetModel } from '@/src/view-models/category-budget-view-model';
+import { LoadingLine } from '@/src/components/loading-line';
+import ConditionalRenderer from '@/src/components/conditional-renderer';
+import Container from '@/src/components/container';
 
 enum AmountState {
   Planned = 1,

@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useUserModel } from '@/view-models/user-view-model';
+import { useUserModel } from '@/src/view-models/user-view-model';
 import * as LocalAuthentication from 'expo-local-authentication';
-import useErrorBoundary from '@/hooks/useErrorBoundary';
+import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { View } from 'react-native';
-import Logo from '@/components/logo';
-import TouchableBox from '@/components/touchable-box';
-import GroupLabel from '@/components/group-label';
-import TextBox from '@/components/text-box';
-import ColLayout from '@/components/col-layout';
-import LinkButton from '@/components/link-button';
-import ConditionalRenderer from '@/components/conditional-renderer';
-import SuccessBox from '@/components/success-box';
-import Container from '@/components/container';
-import { LoginSchema } from '@/validation-schemas/user-schemas';
+import Logo from '@/src/components/logo';
+import TouchableBox from '@/src/components/touchable-box';
+import GroupLabel from '@/src/components/group-label';
+import TextBox from '@/src/components/text-box';
+import ColLayout from '@/src/components/col-layout';
+import LinkButton from '@/src/components/link-button';
+import ConditionalRenderer from '@/src/components/conditional-renderer';
+import SuccessBox from '@/src/components/success-box';
+import Container from '@/src/components/container';
+import { LoginSchema } from '@/src/validation-schemas/user-schemas';
 
 export default function Login() {
   const router = useRouter();

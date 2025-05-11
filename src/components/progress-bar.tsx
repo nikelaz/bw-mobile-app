@@ -1,4 +1,4 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { DimensionValue, StyleSheet, View } from 'react-native';
 
 const ProgressBar = (props: ProgressBarProps) => {
