@@ -20,14 +20,18 @@ const SPACING_VALUES: Record<Spacing, number> = {
   xl: 35,
 };
 
-const ColLayout = (props: ColLayoutProps) => (
-  <View style={{
-    ...styles.col,
-    gap: SPACING_VALUES[props.spacing]
-  }}>
-    {props.children}
-  </View>
-);
+const ColLayout = (props: ColLayoutProps) => {
+  const spacing = props.spacing || 'xl';
+
+  return (
+    <View style={{
+      ...styles.col,
+      gap: SPACING_VALUES[spacing]
+    }}>
+      {props.children}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   col: {
