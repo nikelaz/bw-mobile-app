@@ -1,14 +1,10 @@
-interface ConditionalRendererProps {
-  children: React.ReactNode;
-  isVisible: boolean;
-};
+type ConditionalRendererProps = Readonly<{
+  children: React.ReactNode,
+  isVisible: boolean,
+}>;
 
 const ConditionalRenderer = (props: ConditionalRendererProps) => {
-  if (props.isVisible) {
-    return props.children;
-  }
-
-  return null;
+  return props.isVisible ? props.children : null;
 };
 
-export default ConditionalRenderer
+export default ConditionalRenderer;
