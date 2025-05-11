@@ -1,4 +1,3 @@
-import React from 'react';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { TouchableOpacity, GestureResponderEvent, Text, StyleSheet } from 'react-native';
 
