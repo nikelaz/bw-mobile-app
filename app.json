@@ -4,15 +4,15 @@
     "slug": "budget-warden",
     "version": "1.3.1",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#000",
     "splash": {
       "backgroundColor": "#fff",
-      "image": "./assets/images/splash-icon-light.png",
+      "image": "./assets/splash-icon-light.png",
       "dark": {
-        "image": "./assets/images/splash-icon-dark.png",
+        "image": "./assets/splash-icon-dark.png",
         "backgroundColor": "#0D1117"
       },
       "imageWidth": 200
@@ -22,9 +22,9 @@
       "userInterfaceStyle": "automatic",
       "bundleIdentifier": "com.lazarovco.budgetwarden",
       "icon": {
-        "dark": "./assets/images/ios-dark.png",
-        "light": "./assets/images/ios-light.png",
-        "tinted": "./assets/images/ios-tinted.png"
+        "dark": "./assets/ios-dark.png",
+        "light": "./assets/ios-light.png",
+        "tinted": "./assets/ios-tinted.png"
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -32,8 +32,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "monochromeImage": "./assets/images/adaptive-icon-monochrome.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "monochromeImage": "./assets/adaptive-icon-monochrome.png",
         "backgroundColor": "#ffffff"
       },
       "userInterfaceStyle": "automatic",
@@ -42,7 +42,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
