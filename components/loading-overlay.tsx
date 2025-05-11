@@ -11,7 +11,7 @@ const LoadingOverlay = (props: LoadingOverlayProps) => {
   return (
     <Modal
       transparent
-      visible={visible}
+      visible={props.isVisible}
       animationType="fade"
       statusBarTranslucent
     >
