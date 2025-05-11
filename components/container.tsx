@@ -1,7 +1,11 @@
 import { View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-const Container = (props: GenericChildrenProps) => (
+type ContainerProps = Readonly<{
+  children: React.ReactNode,
+}>;
+
+const Container = (props: ContainerProps) => (
   <SafeAreaView style={{ backgroundColor: useThemeColor({}, 'background') }}>
     <ScrollView automaticallyAdjustKeyboardInsets={true} style={styles.scrollWrapper}>
       <View
