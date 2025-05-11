@@ -3,16 +3,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useMemo } from 'react';
 
-const styles = StyleSheet.create({
-  wrapper: {
-    paddingRight: 20,
-  },
-});
-
-export interface BackButtonProps {
+export type BackButtonProps = Readonly<{
   onPress: ((event: GestureResponderEvent) => void);
   accessibilityLabel?: string;
-}
+}>;
 
 const BackButton = ({
   onPress,
@@ -45,5 +39,11 @@ const BackButton = ({
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  wrapper: {
+    paddingRight: 20,
+  },
+});
 
 export default BackButton;
