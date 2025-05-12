@@ -2,7 +2,7 @@ import Container from '@/src/components/container';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import ColLayout from '@/src/components/col-layout';
-import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/stores/budget-store';
 import TouchableBox from '@/src/components/touchable-box';
 import { Budget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
@@ -10,16 +10,14 @@ import BackButton from '@/src/components/back-button';
 import LinkBox from '@/src/components/link-box';
 
 export default function SelectBudget() {
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const router = useRouter();
   const params = useLocalSearchParams();
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Budget';
   const backHref: any = (Array.isArray(params.backHref) ? params.backHref[0] : params.backHref) || '/(tabs)/budget';
 
-  if (!budgetModel) return null;
-
   const changeBudgetPeriod = (budget: Budget) => {
-    budgetModel.setCurrentBudget(budget);
+    budgetStore.setCurrentBudget(budget);
     backButtonHandler();
   };
 
@@ -40,7 +38,7 @@ export default function SelectBudget() {
       <Container>
         <ColLayout spacing="l">
           <View>
-            {budgetModel.budgets.map((budget: Budget, index: number) => {
+            {budgetStore.budgets.map((budget: Budget, index: number) => {
               const budgetDate = new Date(budget.month);
               const budgetWithDate: Budget = {
                 ...budget,
@@ -51,7 +49,7 @@ export default function SelectBudget() {
                 <TouchableBox
                   group={true}
                   groupFirst={index === 0}
-                  groupLast={index === budgetModel.budgets.length - 1}
+                  groupLast={index === budgetStore.budgets.length - 1}
                   arrow={false}
                   key={budget.id}
                   onPress={() => changeBudgetPeriod(budgetWithDate)}

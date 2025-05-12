@@ -1,5 +1,5 @@
 import Container from '@/src/components/container';
-import { BudgetViewModel, useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/stores/budget-store';
 import { Stack, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useState } from 'react';
@@ -11,7 +11,7 @@ import { Budget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import TouchableBox from '@/src/components/touchable-box';
 
-const generateNewBudgetOptions = (budgetModel: BudgetViewModel) => {
+const generateNewBudgetOptions = (budgetStore: any) => {
   const now = new Date();
   const currentYear = now.getFullYear();
   const nextYear = currentYear + 1;
@@ -20,7 +20,7 @@ const generateNewBudgetOptions = (budgetModel: BudgetViewModel) => {
   for (let i = 0; i < months.length; i++) {
     const optionDate = new Date();
     optionDate.setMonth(i);
-    const budgetExists = budgetModel.budgetExistsForMonth(i);
+    const budgetExists = budgetStore.budgetExistsForMonth(i);
     const isPast = now.getMonth() > i;
 
     if (budgetExists) continue;
@@ -48,13 +48,13 @@ const generateNewBudgetOptions = (budgetModel: BudgetViewModel) => {
 }
 
 export default function CreateBudget() {
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const router = useRouter();
   const errorBoundary = useErrorBoundary();
   const [isLoading, setIsLoading] = useState(false);
     
-  const newBudgetOptions = generateNewBudgetOptions(budgetModel);
-  const copyFromItems = budgetModel.budgets.map((budget: Budget) => {
+  const newBudgetOptions = generateNewBudgetOptions(budgetStore);
+  const copyFromItems = budgetStore.budgets.map((budget: Budget) => {
     const date = new Date(budget.month);
     return {
       value: budget.id,
@@ -68,7 +68,7 @@ export default function CreateBudget() {
   const createBudget = async () => {
     setIsLoading(true);
     try {
-      await budgetModel.create({ month: newBudget.value }, { id: copyFrom.value });
+      await budgetStore.create({ month: newBudget.value }, { id: copyFrom.value });
       router.dismissTo('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);

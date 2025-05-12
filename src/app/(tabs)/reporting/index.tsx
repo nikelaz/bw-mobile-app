@@ -1,6 +1,6 @@
 import ColLayout from '@/src/components/col-layout';
 import Heading from '@/src/components/heading';
-import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/view-models/budget-view-model';
 import TouchableBox from '@/src/components/touchable-box';
 import { useRouter } from 'expo-router';
 import months from '@/data/months';
@@ -16,10 +16,10 @@ const html = decodeURIComponent(encodedHtml);
 
 export default function Reporting() {
   const router = useRouter();
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const categoryBudgetModel = useCategoryBudgetModel();
   const userModel = useUserModel();
-  const currentBudget = budgetModel.currentBudget;
+  const currentBudget = budgetStore.currentBudget;
   const theme = useColorScheme();
   const [isLoading, setIsLoading] = useState(true);
   const webViewRef: MutableRefObject<WebView | null> = useRef(null);
@@ -37,7 +37,7 @@ export default function Reporting() {
     if (webViewRef.current && !isLoading) {
       webViewRef.current.injectJavaScript(runFirst);
     }
-  }, [budgetModel.currentBudget, userModel, isLoading, runFirst]);
+  }, [budgetStore.currentBudget, userModel, isLoading, runFirst]);
 
   return (
     <Container>

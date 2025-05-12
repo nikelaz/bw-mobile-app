@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import LinkButton from '@/src/components/link-button';
 import GatedView from '@/src/components/gated-view';
 import { useUserModel } from '@/src/view-models/user-view-model';
-import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/stores/budget-store';
 import months from '@/data/months';
 import { CategoryType, CurrencyFormatter, CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import { useRouter } from 'expo-router';
@@ -28,12 +28,12 @@ const getAmountStateCheckbox = (button: AmountState, state: AmountState) => {
 export default function Budget() {
   const [amountState, setAmountState] = useState(AmountState.Planned);
   const userModel = useUserModel();
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const router = useRouter();
   const categoryBudgetModel = useCategoryBudgetModel();
   const currency = userModel.getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
-  let currentBudget = budgetModel.currentBudget;
+  let currentBudget = budgetStore.currentBudget;
 
   return (
     <GatedView>

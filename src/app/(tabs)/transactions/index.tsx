@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import TouchableBox from '@/src/components/touchable-box';
 import { useEffect } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
-import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/stores/budget-store';
 import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
 import months from '@/data/months';
 import { Transaction, CurrencyFormatter, debounce } from '@nikelaz/bw-shared-libraries';
@@ -14,10 +14,10 @@ import TextBox from '@/src/components/text-box';
 import Container from '@/src/components/container';
 
 export default function Transactions() {
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const userModel = useUserModel();
   const transactionsModel = useTransactionsModel();
-  const currentBudget = budgetModel.currentBudget;
+  const currentBudget = budgetStore.currentBudget;
   const currency = userModel.getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
   const navigation = useNavigation();

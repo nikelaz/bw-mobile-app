@@ -1,5 +1,5 @@
 import Container from '@/src/components/container';
-import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/stores/budget-store';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { CategoryBudget, CategoryType } from '@nikelaz/bw-shared-libraries';
@@ -14,12 +14,12 @@ import Dialog from '@/src/helpers/alert';
 import { CreateCategoryBudgetSchema } from '@/src/validation-schemas/category-budget.schemas';
 
 export default function CategoryBudgetDetails() {
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const categoryBudgetModel = useCategoryBudgetModel();
   const router = useRouter();
   const params = useLocalSearchParams();
   const categoryBudgetId = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
-  const categoryBudget: CategoryBudget = budgetModel.currentBudget.categoryBudgets.find((x: CategoryBudget) => x.id === categoryBudgetId);
+  const categoryBudget: CategoryBudget = budgetStore.currentBudget.categoryBudgets.find((x: CategoryBudget) => x.id === categoryBudgetId);
   const [title, setTitle] = useState(categoryBudget?.category?.title);
   const [amount, setAmount] = useState(categoryBudget?.amount.toString());
   const [accAmount, setAccAmount] = useState(categoryBudget?.category?.accAmount?.toString());

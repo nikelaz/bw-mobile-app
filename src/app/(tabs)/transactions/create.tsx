@@ -9,7 +9,7 @@ import Select from '@/src/components/select';
 import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
 import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
-import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/stores/budget-store';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
@@ -34,7 +34,7 @@ const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
 
 export default function TransactionCreate() {
   const transactionsModel = useTransactionsModel();
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const params = useLocalSearchParams();
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Transactions';
   const backHref: any = (Array.isArray(params.backHref) ? params.backHref[0] : params.backHref) || '/(tabs)/transactions';
@@ -43,7 +43,7 @@ export default function TransactionCreate() {
   const [date, setDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
-  const categoryOptions = getOptionsFromCategoryBudgets(budgetModel.currentBudget.categoryBudgets);
+  const categoryOptions = getOptionsFromCategoryBudgets(budgetStore.currentBudget.categoryBudgets);
   const [category, setCategory] = useState(categoryOptions[0]);
   const [isLoading, setIsLoading] = useState(false);
   

@@ -1,5 +1,5 @@
 import Container from '@/src/components/container';
-import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/stores/budget-store';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import TextBox from '@/src/components/text-box';
@@ -41,7 +41,7 @@ const getScreenTitle = (type: CategoryType) => {
 };
 
 export default function CategoryBudgetCreate() {
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const categoryBudgetModel = useCategoryBudgetModel();
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -69,7 +69,7 @@ export default function CategoryBudgetCreate() {
           title: parsedInput.title,
           accAmount: parsedInput.accAmount
         },
-        budget: budgetModel.currentBudget
+        budget: budgetStore.currentBudget
       });
 
       router.dismissTo('/(tabs)/budget');

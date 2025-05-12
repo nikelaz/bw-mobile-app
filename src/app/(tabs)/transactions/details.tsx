@@ -10,7 +10,7 @@ import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
 import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
 import { Transaction, CategoryBudget } from '@nikelaz/bw-shared-libraries';
-import { useBudgetModel } from '@/src/view-models/budget-view-model';
+import { useBudgetStore } from '@/src/stores/budget-store';
 import months from '@/data/months';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import Dialog from '@/src/helpers/alert';
@@ -34,7 +34,7 @@ const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
 
 export default function TransactionDetails() {
   const transactionsModel = useTransactionsModel();
-  const budgetModel = useBudgetModel();
+  const budgetStore = useBudgetStore();
   const params = useLocalSearchParams();
   const id = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
   const router = useRouter();
@@ -45,7 +45,7 @@ export default function TransactionDetails() {
   const [amount, setAmount] = useState(transaction?.amount.toString());
   const [isLoading, setIsLoading] = useState(false);
 
-  const categoryOptions = getOptionsFromCategoryBudgets(budgetModel.currentBudget.categoryBudgets);
+  const categoryOptions = getOptionsFromCategoryBudgets(budgetStore.currentBudget.categoryBudgets);
   const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget.id) || categoryOptions[0]);
   
   const errorBoundary = useErrorBoundary();
