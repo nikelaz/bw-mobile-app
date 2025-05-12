@@ -1,5 +1,3 @@
-'use client';
-
 import { createContext, useContext } from 'react';
 import { BudgetViewModel, useBudgetModel } from '@/view-models/budget-view-model';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
