@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import GroupLabel from '@/src/components/group-label';
 import TextBox from '@/src/components/text-box';
 import ColLayout from '@/src/components/col-layout';
-import { useUserModel } from '@/src/view-models/user-view-model';
+import { useUserStore } from '@/src/stores/user-store';
 import { useState } from 'react';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { ChangePasswordSchema } from '@/src/validation-schemas/user-schemas';
@@ -12,7 +12,7 @@ import TouchableBox from '@/src/components/touchable-box';
 import SuccessBox from '@/src/components/success-box';
 
 export default function ChangePassword() {
-  const userModel = useUserModel();
+  const userStore = useUserStore();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [repeatNewPassword, setRepeatNewPassword] = useState('');
@@ -29,7 +29,7 @@ export default function ChangePassword() {
         repeatPassword: repeatNewPassword
       });
       if (newPassword !== repeatNewPassword) throw new Error('The new passwords do not match');
-      await userModel.changePassword(parsedInput.password, parsedInput.newPassword, parsedInput.repeatPassword);
+      await userStore.changePassword(parsedInput.password, parsedInput.newPassword, parsedInput.repeatPassword);
       setSuccessMessage('Password changed successfully.');
     } catch (error) {
       console.log('error');

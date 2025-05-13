@@ -8,14 +8,14 @@ import TextBox from '@/src/components/text-box';
 import { useState } from 'react';
 import ColLayout from '@/src/components/col-layout';
 import TouchableBox from '@/src/components/touchable-box';
-import { useCategoryBudgetModel } from '@/src/view-models/category-budget-view-model';
+import { useCategoryBudgetStore } from '@/src/stores/category-budget-store';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import Dialog from '@/src/helpers/alert';
 import { CreateCategoryBudgetSchema } from '@/src/validation-schemas/category-budget.schemas';
 
 export default function CategoryBudgetDetails() {
   const budgetStore = useBudgetStore();
-  const categoryBudgetModel = useCategoryBudgetModel();
+  const categoryBudgetStore = useCategoryBudgetStore();
   const router = useRouter();
   const params = useLocalSearchParams();
   const categoryBudgetId = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
@@ -36,7 +36,7 @@ export default function CategoryBudgetDetails() {
         accAmount,
       });
 
-      await categoryBudgetModel.update({
+      await categoryBudgetStore.update({
         id: categoryBudget.id,
         category: {
           id: categoryBudget.category?.id,
@@ -53,7 +53,7 @@ export default function CategoryBudgetDetails() {
   const deleteCategoryBudget = async () => {
     setIsLoading(true);
     try {
-      await categoryBudgetModel.delete({ id: categoryBudgetId });
+      await categoryBudgetStore.delete({ id: categoryBudgetId });
       router.dismissTo('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);

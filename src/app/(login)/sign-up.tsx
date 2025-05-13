@@ -5,7 +5,7 @@ import TextBox from '@/src/components/text-box';
 import ColLayout from '@/src/components/col-layout';
 import TouchableBox from '@/src/components/touchable-box';
 import { useRouter, Stack } from 'expo-router';
-import { useUserModel } from '@/src/view-models/user-view-model';
+import { useUserStore } from '@/src/stores/user-store';
 import { useState } from 'react';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
@@ -15,7 +15,7 @@ import { SignUpSchema } from '@/src/validation-schemas/user-schemas';
 
 export default function ChangePassword() {
   const router = useRouter();
-  const userModel = useUserModel();
+  const userStore = useUserStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
@@ -34,7 +34,7 @@ export default function ChangePassword() {
       if (parsedUser.password !== parsedUser.repeatPassword) {
         throw new Error('The two passwords do not match');
       }
-      await userModel.signup(parsedUser);
+      await userStore.signup(parsedUser);
       router.navigate(`/(login)?signed_up=true&email=${email}`);
     } catch (error: any) {
       errorBoundary(error);

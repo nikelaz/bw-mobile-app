@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useEffect } from 'react';
 import { Budget, findClosestBudgetDate, parseBudget } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
 
@@ -123,7 +124,7 @@ export const useBudgetStoreInit = (token: string) => {
   // Refresh the store when token changes
   const { refresh } = useBudgetStore();
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (token) {
       refresh(token);
     }

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useEffect } from 'react';
 import { Transaction, calculateTotalPages } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
 import { useBudgetStore } from './budget-store'; // Update with correct path
@@ -239,7 +240,7 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
 }));
 
 // A hook to automatically handle refreshing when dependencies change
-export const useTransactionsStoreSync = (token: string, height: number) => {
+export const useTransactionsStoreInit = (token: string, height: number) => {
   const currentBudget = useBudgetStore(state => state.currentBudget);
   const { 
     page, 
@@ -249,12 +250,12 @@ export const useTransactionsStoreSync = (token: string, height: number) => {
   } = useTransactionsStore();
   
   // Set the perPage value based on height
-  React.useEffect(() => {
+  useEffect(() => {
     setPerPage(height);
   }, [height, setPerPage]);
   
   // Refresh when these dependencies change
-  React.useEffect(() => {
+  useEffect(() => {
     if (token && currentBudget) {
       refresh(token);
     }

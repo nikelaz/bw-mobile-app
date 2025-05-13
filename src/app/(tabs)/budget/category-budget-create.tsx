@@ -6,7 +6,7 @@ import TextBox from '@/src/components/text-box';
 import { useState } from 'react';
 import ColLayout from '@/src/components/col-layout';
 import { CategoryType } from '@nikelaz/bw-shared-libraries';
-import { useCategoryBudgetModel } from '@/src/view-models/category-budget-view-model';
+import { useCategoryBudgetStore } from '@/src/stores/category-budget-store';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import GroupLabel from '@/src/components/group-label';
 import TouchableBox from '@/src/components/touchable-box';
@@ -42,7 +42,7 @@ const getScreenTitle = (type: CategoryType) => {
 
 export default function CategoryBudgetCreate() {
   const budgetStore = useBudgetStore();
-  const categoryBudgetModel = useCategoryBudgetModel();
+  const categoryBudgetStore = useCategoryBudgetStore();
   const params = useLocalSearchParams();
   const router = useRouter();
   const type = Array.isArray(params.type) ? parseInt(params.type[0]) : parseInt(params.type);
@@ -62,7 +62,7 @@ export default function CategoryBudgetCreate() {
         accAmount,
       });
 
-      await categoryBudgetModel.create({
+      await categoryBudgetStore.create({
         amount: parsedInput.amount,
         category: {
           type,

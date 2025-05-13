@@ -1,6 +1,6 @@
 import { Redirect } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { useUserModel } from '@/src/view-models/user-view-model';
+import { useUserStore } from '@/src/stores/user-store';
 import LoadingOverlay from './loading-overlay';
 
 type GatedViewProps = Readonly<{
@@ -8,34 +8,15 @@ type GatedViewProps = Readonly<{
 }>;
 
 const GatedView = (props: GatedViewProps) => {
-  const userModel = useUserModel();
+  const userStore = useUserStore();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [localToken, setLocalToken] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchToken = async () => {
-      try {
-        const token = await userModel.getToken();
-        if (isMounted) {
-          setLocalToken(token);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        if (isMounted) {
-          console.error('Error fetching token:', error);
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchToken();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [userModel]);
+    const token = userStore.token;
+    setLocalToken(token);
+    setIsLoading(false);
+  }, [userStore.token]);
 
   if (isLoading) return <LoadingOverlay isVisible={true} />;
 

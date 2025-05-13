@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import { Currency, currencies } from '../data/currencies';
-import { api } from '../config';
-import Storage from '@/helpers/storage';
+import { useEffect } from 'react';
+import { Currency, currencies } from '@/data/currencies';
+import { api } from '@/config';
+import Storage from '@/src/helpers/storage';
 
 interface User {
   id: string;
@@ -287,7 +288,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 export const useUserStoreInit = () => {
   const { initializeFromStorage } = useUserStore();
   
-  React.useEffect(() => {
+  useEffect(() => {
     initializeFromStorage();
   }, []);
   

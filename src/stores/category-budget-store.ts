@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useEffect } from 'react';
 import { CategoryBudget, CategoryType } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
 import { useBudgetStore } from './budget-store'; // Update with the correct path
@@ -160,11 +161,11 @@ export const useCategoryBudgetStore = create<CategoryBudgetState>((set, get) => 
   },
 }));
 
-// Hook to sync categoryBudgets with the current budget
-export const useCategoryBudgetStoreSync = () => {
+// Hook to init/sync categoryBudgets with the current budget
+export const useCategoryBudgetStoreInit = () => {
   const currentBudget = useBudgetStore(state => state.currentBudget);
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentBudget) {
       const categoryBudgets = currentBudget.categoryBudgets || [];
       

@@ -2,7 +2,7 @@ import 'react-native-reanimated';
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { UserModelContextProvider } from '@/src/view-models/user-view-model';
+import { useUserStoreInit } from '@/src/stores/user-store';
 import { SafeAreaView, View, Text, Platform } from 'react-native';
 import ErrorBoundary from 'react-native-error-boundary';
 import { useThemeColor } from "@/src/hooks/useThemeColor";
@@ -36,6 +36,7 @@ const antDesignDarkTheme = {
 };
 
 export default function RootLayout() {
+  useUserStoreInit()
   const colorScheme = useColorScheme();
   const isIOS = Platform.OS === 'ios';
   const bgColor = useThemeColor({}, 'background');
@@ -45,20 +46,18 @@ export default function RootLayout() {
       theme={colorScheme === 'dark' ? antDesignDarkTheme : undefined}
     >
       <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
-        <UserModelContextProvider>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            {isIOS ? (
-              <StatusBar style="auto" />
-            ) : (
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          {isIOS ? (
+            <StatusBar style="auto" />
+          ) : (
               <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
             )}
-            <Stack>
-              <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </ThemeProvider>
-        </UserModelContextProvider>
+          <Stack>
+            <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </ThemeProvider>
       </ErrorBoundary>
     </Provider>
   );

@@ -8,19 +8,19 @@ import TouchableBox from '@/src/components/touchable-box';
 import TextBox from '@/src/components/text-box';
 import { useNavigation, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { useUserModel } from '@/src/view-models/user-view-model';
+import { useUserStore } from '@/src/stores/user-store';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { UserUpdateSchema } from '@/src/validation-schemas/user-schemas';
 import Dialog from '@/src/helpers/alert';
 import Container from '@/src/components/container';
 
 export default function Settings() {
-  const userModel = useUserModel();
+  const userStore = useUserStore();
   const navigation = useNavigation();
   const router = useRouter();
   const errorBoundary = useErrorBoundary();
-  const [firstName, setFirstName] = useState(userModel.user.firstName);
-  const [lastName, setLastName] = useState(userModel.user.lastName);
+  const [firstName, setFirstName] = useState(userStore.user.firstName);
+  const [lastName, setLastName] = useState(userStore.user.lastName);
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
@@ -34,8 +34,8 @@ export default function Settings() {
     value: country
   }));
 
-  const initialCurrency = currencyItems.find(currency => currency.value === userModel.user.currency);
-  const initialCountry = countryItems.find(country => country.value === userModel.user.country);
+  const initialCurrency = currencyItems.find(currency => currency.value === userStore.user.currency);
+  const initialCountry = countryItems.find(country => country.value === userStore.user.country);
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
@@ -48,8 +48,8 @@ export default function Settings() {
         lastName,
       });
 
-      userModel.update({
-        ...userModel.user,
+      userStore.update({
+        ...userStore.user,
         ...parsedInput,
         ...updateObj,
       });
@@ -62,7 +62,7 @@ export default function Settings() {
     setIsLogoutLoading(true);
 
     try {
-      await userModel.logout();
+      await userStore.logout();
       router.replace('/(login)');
     } catch (error) {
       errorBoundary(error);
@@ -74,7 +74,7 @@ export default function Settings() {
   const deleteAccount = async () => {
     setIsDeleteLoading(true);
     try {
-      await userModel.deleteAccount();
+      await userStore.deleteAccount();
       router.navigate('/(login)');
     } catch (error) {
       errorBoundary(error);

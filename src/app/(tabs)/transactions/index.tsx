@@ -5,20 +5,20 @@ import TouchableBox from '@/src/components/touchable-box';
 import { useEffect } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
 import { useBudgetStore } from '@/src/stores/budget-store';
-import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
+import { useTransactionsStore } from '@/src/stores/transactions-store';
 import months from '@/data/months';
 import { Transaction, CurrencyFormatter, debounce } from '@nikelaz/bw-shared-libraries';
-import { useUserModel } from '@/src/view-models/user-view-model';
+import { useUserStore } from '@/src/stores/user-store';
 import LinkButton from '@/src/components/link-button';
 import TextBox from '@/src/components/text-box';
 import Container from '@/src/components/container';
 
 export default function Transactions() {
   const budgetStore = useBudgetStore();
-  const userModel = useUserModel();
-  const transactionsModel = useTransactionsModel();
+  const userStore = useUserStore();
+  const transactionsStore = useTransactionsStore();
   const currentBudget = budgetStore.currentBudget;
-  const currency = userModel.getCurrency();
+  const currency = userStore.getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
   const navigation = useNavigation();
   const router = useRouter();
@@ -28,7 +28,7 @@ export default function Transactions() {
   }, [navigation]);
 
   const changeHandler = (filter: string) => {
-    transactionsModel.setFilter(filter);
+    transactionsStore.setFilter(filter);
   };
 
   return (
@@ -51,18 +51,18 @@ export default function Transactions() {
 
         <TextBox placeholder="Search" onChangeText={debounce(changeHandler)} />
 
-        { !transactionsModel.transactions || transactionsModel.transactions.length === 0 && (
+        { !transactionsStore.transactions || transactionsStore.transactions.length === 0 && (
           <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
         )}
 
         <View>
-          {transactionsModel.transactions.map((transaction: Transaction, index: number) => (
+          {transactionsStore.transactions.map((transaction: Transaction, index: number) => (
             <TouchableBox
               key={transaction.id}
               onPress={() => router.navigate(`/(tabs)/transactions/details?id=${transaction.id}`)}
               group={true}
               groupFirst={index === 0}
-              groupLast={index === transactionsModel.transactions.length - 1}
+              groupLast={index === transactionsStore.transactions.length - 1}
               arrow={true}
               additionalText={currencyFormatter.format(transaction.amount)}
             >
@@ -71,25 +71,25 @@ export default function Transactions() {
           ))}
         </View>
 
-        {transactionsModel.totalPages > 1 ? (
+        {transactionsStore.totalPages > 1 ? (
           <View style={{flexDirection: 'row'}}>
-            {transactionsModel.page !== 0 ? (
+            {transactionsStore.page !== 0 ? (
               <TouchableBox
-                rowGroup={transactionsModel.page !== transactionsModel.totalPages - 1}
-                rowGroupFirst={transactionsModel.page !== transactionsModel.totalPages - 1}
+                rowGroup={transactionsStore.page !== transactionsStore.totalPages - 1}
+                rowGroupFirst={transactionsStore.page !== transactionsStore.totalPages - 1}
                 style={{flex: 1, justifyContent: 'center'}}
-                onPress={() => transactionsModel.prevPage()}
+                onPress={() => transactionsStore.prevPage()}
               >
                 Previous Page
               </TouchableBox>
             ) : null}
             
-            {transactionsModel.page !== transactionsModel.totalPages - 1 ? (
+            {transactionsStore.page !== transactionsStore.totalPages - 1 ? (
               <TouchableBox
-                rowGroup={transactionsModel.page !== 0}
-                rowGroupLast={transactionsModel.page !== 0}
+                rowGroup={transactionsStore.page !== 0}
+                rowGroupLast={transactionsStore.page !== 0}
                 style={{flex: 1, justifyContent: 'center'}}
-                onPress={() => transactionsModel.nextPage()}
+                onPress={() => transactionsStore.nextPage()}
               >
                 Next Page
               </TouchableBox>

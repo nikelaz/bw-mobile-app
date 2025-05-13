@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useUserModel } from '@/src/view-models/user-view-model';
+import { useUserStore } from '@/src/stores/user-store';
 import * as LocalAuthentication from 'expo-local-authentication';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { View } from 'react-native';
@@ -17,7 +17,7 @@ import { LoginSchema } from '@/src/validation-schemas/user-schemas';
 
 export default function Login() {
   const router = useRouter();
-  const userModel = useUserModel();
+  const userStore = useUserStore();
   const params = useLocalSearchParams();
   const [email, setEmail] = useState(params.email ? (Array.isArray(params.email) ? params.email[0] : params.email) : '');
   const [password, setPassword] = useState('');
@@ -26,20 +26,20 @@ export default function Login() {
   
   useEffect(() => {
     (async () => {
-      const token = await userModel.getToken();
+      const token = await userStore.getToken();
       if (!token) return;
       const result = await LocalAuthentication.authenticateAsync();
       if (result.success) {
         router.navigate('/(tabs)/budget');
       }
     })();
-  }, [userModel, router]);
+  }, [userStore, router]);
   
   const login = async () => {
     setIsLoading(true);
     try {
       const parsedUser = LoginSchema.parse({ email, password });
-      await userModel.login(parsedUser.email, parsedUser.password);
+      await userStore.login(parsedUser.email, parsedUser.password);
       router.navigate('/(tabs)/budget');
     } catch (error: any) {
       errorBoundary(error);

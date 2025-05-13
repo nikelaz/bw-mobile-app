@@ -8,7 +8,7 @@ import TouchableBox from '@/src/components/touchable-box';
 import Select from '@/src/components/select';
 import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
-import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
+import { useTransactionsStore } from '@/src/stores/transactions-store';
 import { useBudgetStore } from '@/src/stores/budget-store';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
@@ -33,7 +33,7 @@ const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
 };
 
 export default function TransactionCreate() {
-  const transactionsModel = useTransactionsModel();
+  const transactionsStore = useTransactionsStore();
   const budgetStore = useBudgetStore();
   const params = useLocalSearchParams();
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Transactions';
@@ -60,7 +60,7 @@ export default function TransactionCreate() {
         categoryBudgetId: category.value,
       });
 
-      await transactionsModel.create({
+      await transactionsStore.create({
         title: parsedInput.title,
         date: parsedInput.date,
         amount: parsedInput.amount,

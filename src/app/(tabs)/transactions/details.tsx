@@ -8,7 +8,7 @@ import TouchableBox from '@/src/components/touchable-box';
 import Select from '@/src/components/select';
 import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
-import { useTransactionsModel } from '@/src/view-models/transactions-view-model';
+import { useTransactionsStore } from '@/src/stores/transactions-store';
 import { Transaction, CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import { useBudgetStore } from '@/src/stores/budget-store';
 import months from '@/data/months';
@@ -33,12 +33,12 @@ const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
 };
 
 export default function TransactionDetails() {
-  const transactionsModel = useTransactionsModel();
+  const transactionsStore = useTransactionsStore();
   const budgetStore = useBudgetStore();
   const params = useLocalSearchParams();
   const id = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
   const router = useRouter();
-  const transaction = transactionsModel.transactions.find((transaction: Transaction) => transaction.id === id);
+  const transaction = transactionsStore.transactions.find((transaction: Transaction) => transaction.id === id);
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date(transaction?.date));
   const [title, setTitle] = useState(transaction?.title);
@@ -70,7 +70,7 @@ export default function TransactionDetails() {
         };
       }
   
-      await transactionsModel.update(updateObj);
+      await transactionsStore.update(updateObj);
     } catch (error) {
       errorBoundary(error);
     }
@@ -79,7 +79,7 @@ export default function TransactionDetails() {
   const deleteTransaction = async () => {
     setIsLoading(true);
     try {
-      await transactionsModel.delete(id);
+      await transactionsStore.delete(id);
       router.dismissTo('/(tabs)/transactions');
     } catch (error) {
       errorBoundary(error);
