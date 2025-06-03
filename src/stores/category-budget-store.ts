@@ -1,29 +1,29 @@
-import { create } from 'zustand';
+import { StateCreator } from 'zustand';
 import { useEffect } from 'react';
 import { CategoryBudget, CategoryType } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
-import { useBudgetStore } from './budget-store'; // Update with the correct path
 
-interface CategoryBudgetsByType {
+export type CategoryBudgetsByType = {
   [CategoryType.INCOME]: CategoryBudget[];
   [CategoryType.EXPENSE]: CategoryBudget[];
   [CategoryType.SAVINGS]: CategoryBudget[];
   [CategoryType.DEBT]: CategoryBudget[];
-}
+};
 
-interface CategoryBudgetState {
+export type CategoryBudgetState = {
   categoryBudgets: CategoryBudget[];
   categoryBudgetsByType: CategoryBudgetsByType;
-  isLoading: boolean;
-  
-  // Actions
+  isLoading: boolean; 
+};
+
+export type CategoryBudgetActions = {
   update: (categoryBudget: CategoryBudget, token: string) => Promise<void>;
   create: (categoryBudget: CategoryBudget, token: string) => Promise<void>;
   delete: (categoryBudget: CategoryBudget, token: string) => Promise<void>;
   getCategoryBudgetsByType: () => CategoryBudgetsByType;
-}
+};
 
-export const useCategoryBudgetStore = create<CategoryBudgetState>((set, get) => ({
+export const createCategoryBudgetSlice: StateCreator<CategoryBudgetState & CategoryBudgetActions> = (set, get) => ({
   categoryBudgets: [],
   categoryBudgetsByType: {
     [CategoryType.INCOME]: [],
@@ -50,7 +50,8 @@ export const useCategoryBudgetStore = create<CategoryBudgetState>((set, get) => 
     
     return categoryBudgetsByType;
   },
-  
+ 
+  // Todo: token does not need to be passed
   update: async (categoryBudget, token) => {
     if (!token) return;
     
@@ -159,9 +160,11 @@ export const useCategoryBudgetStore = create<CategoryBudgetState>((set, get) => 
       set({ isLoading: false });
     }
   },
-}));
+});
 
 // Hook to init/sync categoryBudgets with the current budget
+// Todo: rework this so that useEffect is not needed at all
+/*
 export const useCategoryBudgetStoreInit = () => {
   const currentBudget = useBudgetStore(state => state.currentBudget);
   
@@ -178,3 +181,4 @@ export const useCategoryBudgetStoreInit = () => {
   
   return useCategoryBudgetStore();
 };
+*/

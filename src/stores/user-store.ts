@@ -17,6 +17,7 @@ interface UserState {
   currency: string | null;
   cachedCurrency: Currency | null;
   isLoading: boolean;
+  newItem: boolean;
   
   // Actions
   setUser: (user: User | null) => void;

@@ -1,45 +1,41 @@
-import { create } from 'zustand';
-import { useEffect } from 'react';
+import { StateCreator } from 'zustand';
 import { Budget, findClosestBudgetDate, parseBudget } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
 
-interface BudgetState {
+export type BudgetState = {
   budgets: Budget[];
   currentBudget: Budget | null;
   isLoading: boolean;
-  
-  // Actions
-  setBudgets: (budgets: Budget[]) => void;
+};
+
+export type BudgetActions = {
   setCurrentBudget: (budget: Budget | null) => void;
   refresh: (token: string) => Promise<Budget[]>;
   create: (budget: Budget, copyFrom: Budget, token: string) => Promise<void>;
   budgetExistsForMonth: (monthIndex: number) => boolean;
 }
 
-export const useBudgetStore = create<BudgetState>((set, get) => ({
+export const createBudgetSlice: StateCreator<BudgetState & BudgetActions> = (set, get) => ({
   budgets: [],
   currentBudget: null,
   isLoading: false,
+   
+  setCurrentBudget: (budget: Budget | null) => set({ currentBudget: budget }),
   
-  setBudgets: (budgets) => set({ budgets }),
-  
-  setCurrentBudget: (budget) => set({ currentBudget: budget }),
-  
-  budgetExistsForMonth: (monthIndex) => {
+  budgetExistsForMonth: (monthIndex: number) => {
     const { budgets } = get();
-    return budgets.some(budget => {
+    return budgets.some((budget: Budget) => {
       const tmpDate = new Date(budget.month);
       return tmpDate.getMonth() === monthIndex;
     });
   },
   
-  refresh: async (token) => {
+  refresh: async (token: string) => {
     if (!token) return [];
     
     set({ isLoading: true });
     
     try {
-      // Fetch budgets from API
       const reqOptions = {
         method: 'GET',
         headers: {
@@ -49,19 +45,18 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     
       const req = await fetch(`${api}/budgets`, reqOptions);
       
-      if (!req.ok) {
-        const errorData = await req.json().catch(() => ({}));
-        throw new Error(errorData.message || `Error fetching budgets: ${req.status}`);
-      }
-      
       const jsonResponse = await req.json();
-      const fetchedBudgets = jsonResponse.budgets || [];
-      const parsedBudgets = parseBudget(fetchedBudgets);
+
+      if (!req.ok) {
+        throw new Error(jsonResponse.message || `Error fetching budgets: ${req.status}`);
+      }
+     
+      const fetchedBudgets: Budget[] = jsonResponse.budgets || [];
       
-      set({ budgets: parsedBudgets });
+      set({ budgets: fetchedBudgets });
       
       const { currentBudget } = get();
-      const updatedCurrentBudget = parsedBudgets.find(budget => 
+      const updatedCurrentBudget = fetchedBudgets.find(budget => 
         budget.id === currentBudget?.id
       );
       
@@ -69,11 +64,11 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
         set({ currentBudget: updatedCurrentBudget });
       }
       else if (currentBudget === null || !updatedCurrentBudget) {
-        const initiallySelectedBudget = findClosestBudgetDate(new Date(), parsedBudgets);
+        const initiallySelectedBudget = findClosestBudgetDate(new Date(), fetchedBudgets);
         set({ currentBudget: initiallySelectedBudget });
       }
       
-      return parsedBudgets;
+      return fetchedBudgets;
     } catch (error) {
       console.error('Error refreshing budgets:', error);
       throw new Error('An unexpected error occurred while refreshing budgets');
@@ -82,7 +77,7 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     }
   },
   
-  create: async (budget, copyFrom, token) => {
+  create: async (budget: Budget, copyFrom: Budget, token: string) => {
     if (!token) return;
     
     set({ isLoading: true });
@@ -105,7 +100,7 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
       }
     
       const newBudgets = await get().refresh(token);
-      const newBudget = newBudgets.find(budget => budget.id === jsonResponse.budget.id);
+      const newBudget = newBudgets.find((budget: Budget) => budget.id === jsonResponse.budget.id);
       
       if (newBudget) {
         set({ currentBudget: newBudget });
@@ -117,18 +112,17 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-}));
+});
 
-// Hook to initialize the store with a token
-export const useBudgetStoreInit = (token: string) => {
-  // Refresh the store when token changes
+// TODO: Incorporate this logic somewhere else
+/*
+export const initBudgetStore = (token: string) => {
   const { refresh } = useBudgetStore();
   
   useEffect(() => {
     if (token) {
       refresh(token);
     }
-  }, [token, refresh]);
-  
-  return useBudgetStore();
+  }, [token, refresh]); 
 };
+*/
