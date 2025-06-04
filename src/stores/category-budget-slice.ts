@@ -1,5 +1,6 @@
+import type { Store } from './store';
+
 import { StateCreator } from 'zustand';
-import { useEffect } from 'react';
 import { CategoryBudget, CategoryType } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
 
@@ -13,17 +14,24 @@ export type CategoryBudgetsByType = {
 export type CategoryBudgetState = {
   categoryBudgets: CategoryBudget[];
   categoryBudgetsByType: CategoryBudgetsByType;
-  isLoading: boolean; 
 };
+
+type PartialCategoryBudgetWithId = Partial<Omit<CategoryBudget, 'id'>> & Pick<CategoryBudget, 'id'>;
 
 export type CategoryBudgetActions = {
-  update: (categoryBudget: CategoryBudget, token: string) => Promise<void>;
-  create: (categoryBudget: CategoryBudget, token: string) => Promise<void>;
-  delete: (categoryBudget: CategoryBudget, token: string) => Promise<void>;
+  updateCategoryBudget: (categoryBudget: PartialCategoryBudgetWithId) => Promise<void>;
+  createCategoryBudget: (categoryBudget: Partial<CategoryBudget>) => Promise<void>;
+  deleteCategoryBudget: (categoryBudget: PartialCategoryBudgetWithId) => Promise<void>;
   getCategoryBudgetsByType: () => CategoryBudgetsByType;
+  refreshCategoryBudgets: () => void;
 };
 
-export const createCategoryBudgetSlice: StateCreator<CategoryBudgetState & CategoryBudgetActions> = (set, get) => ({
+export const createCategoryBudgetSlice: StateCreator<
+  Store,
+  [],
+  [],
+  CategoryBudgetState & CategoryBudgetActions
+> = (set, get) => ({
   categoryBudgets: [],
   categoryBudgetsByType: {
     [CategoryType.INCOME]: [],
@@ -31,7 +39,6 @@ export const createCategoryBudgetSlice: StateCreator<CategoryBudgetState & Categ
     [CategoryType.SAVINGS]: [],
     [CategoryType.DEBT]: [],
   },
-  isLoading: false,
   
   getCategoryBudgetsByType: () => {
     const { categoryBudgets } = get();
@@ -51,8 +58,14 @@ export const createCategoryBudgetSlice: StateCreator<CategoryBudgetState & Categ
     return categoryBudgetsByType;
   },
  
-  // Todo: token does not need to be passed
-  update: async (categoryBudget, token) => {
+  updateCategoryBudget: async (categoryBudget) => {
+    const {
+      token,
+      refreshBudgets,
+      currentBudget,
+      getCategoryBudgetsByType,
+    } = get();
+
     if (!token) return;
     
     set({ isLoading: true });
@@ -75,21 +88,27 @@ export const createCategoryBudgetSlice: StateCreator<CategoryBudgetState & Categ
       }
 
       // Refresh related stores
-      const budgetStore = useBudgetStore.getState();
-      await budgetStore.refresh(token);
+      await refreshBudgets();
       
       // Update our local state based on updated budget store data
-      const updatedCategoryBudgets = useBudgetStore.getState().currentBudget?.categoryBudgets || [];
+      const updatedCategoryBudgets = currentBudget?.categoryBudgets || [];
       set({ 
         categoryBudgets: updatedCategoryBudgets,
-        categoryBudgetsByType: get().getCategoryBudgetsByType()
+        categoryBudgetsByType: getCategoryBudgetsByType()
       });
     } finally {
       set({ isLoading: false });
     }
   },
   
-  delete: async (categoryBudget, token) => {
+  deleteCategoryBudget: async (categoryBudget) => {
+    const {
+      token,
+      refreshBudgets,
+      currentBudget,
+      getCategoryBudgetsByType,
+    } = get();
+
     if (!token) return;
     
     set({ isLoading: true });
@@ -110,21 +129,27 @@ export const createCategoryBudgetSlice: StateCreator<CategoryBudgetState & Categ
       }
 
       // Refresh related stores
-      const budgetStore = useBudgetStore.getState();
-      await budgetStore.refresh(token);
+      await refreshBudgets();
       
       // Update our local state based on updated budget store data
-      const updatedCategoryBudgets = useBudgetStore.getState().currentBudget?.categoryBudgets || [];
+      const updatedCategoryBudgets = currentBudget?.categoryBudgets || [];
       set({ 
         categoryBudgets: updatedCategoryBudgets,
-        categoryBudgetsByType: get().getCategoryBudgetsByType()
+        categoryBudgetsByType: getCategoryBudgetsByType()
       });
     } finally {
       set({ isLoading: false });
     }
   },
   
-  create: async (categoryBudget, token) => {
+  createCategoryBudget: async (categoryBudget) => {
+    const {
+      token,
+      refreshBudgets,
+      currentBudget,
+      getCategoryBudgetsByType,
+    } = get();
+
     if (!token) return;
     
     set({ isLoading: true });
@@ -147,38 +172,34 @@ export const createCategoryBudgetSlice: StateCreator<CategoryBudgetState & Categ
       }
 
       // Refresh related stores
-      const budgetStore = useBudgetStore.getState();
-      await budgetStore.refresh(token);
+      await refreshBudgets();
       
       // Update our local state based on updated budget store data
-      const updatedCategoryBudgets = useBudgetStore.getState().currentBudget?.categoryBudgets || [];
+      const updatedCategoryBudgets = currentBudget?.categoryBudgets || [];
       set({ 
         categoryBudgets: updatedCategoryBudgets,
-        categoryBudgetsByType: get().getCategoryBudgetsByType()
+        categoryBudgetsByType: getCategoryBudgetsByType()
       });
     } finally {
       set({ isLoading: false });
     }
   },
+
+  refreshCategoryBudgets: () => {
+    const {
+      currentBudget,
+      getCategoryBudgetsByType,
+    } = get();
+
+    if (!currentBudget) return;
+
+    const categoryBudgets = currentBudget.categoryBudgets || [];
+
+    set({ categoryBudgets });
+
+    set({
+      categoryBudgetsByType: getCategoryBudgetsByType(),
+    });
+  },
 });
 
-// Hook to init/sync categoryBudgets with the current budget
-// Todo: rework this so that useEffect is not needed at all
-/*
-export const useCategoryBudgetStoreInit = () => {
-  const currentBudget = useBudgetStore(state => state.currentBudget);
-  
-  useEffect(() => {
-    if (currentBudget) {
-      const categoryBudgets = currentBudget.categoryBudgets || [];
-      
-      useCategoryBudgetStore.setState({
-        categoryBudgets,
-        categoryBudgetsByType: useCategoryBudgetStore.getState().getCategoryBudgetsByType()
-      });
-    }
-  }, [currentBudget]);
-  
-  return useCategoryBudgetStore();
-};
-*/

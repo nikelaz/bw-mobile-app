@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useUserStore } from '@/src/stores/user-store';
+import { useStore } from '@/src/stores/store';
 import * as LocalAuthentication from 'expo-local-authentication';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { View } from 'react-native';
@@ -17,7 +17,9 @@ import { LoginSchema } from '@/src/validation-schemas/user-schemas';
 
 export default function Login() {
   const router = useRouter();
-  const userStore = useUserStore();
+  const token = useStore((state) => state.token);
+  const login = useStore((state) => state.login);
+
   const params = useLocalSearchParams();
   const [email, setEmail] = useState(params.email ? (Array.isArray(params.email) ? params.email[0] : params.email) : '');
   const [password, setPassword] = useState('');
@@ -26,20 +28,19 @@ export default function Login() {
   
   useEffect(() => {
     (async () => {
-      const token = await userStore.getToken();
       if (!token) return;
       const result = await LocalAuthentication.authenticateAsync();
       if (result.success) {
         router.navigate('/(tabs)/budget');
       }
     })();
-  }, [userStore, router]);
+  }, [token, router]);
   
-  const login = async () => {
+  const formSubmitHandler = async () => {
     setIsLoading(true);
     try {
       const parsedUser = LoginSchema.parse({ email, password });
-      await userStore.login(parsedUser.email, parsedUser.password);
+      await login(parsedUser.email, parsedUser.password);
       router.navigate('/(tabs)/budget');
     } catch (error: any) {
       errorBoundary(error);
@@ -88,7 +89,7 @@ export default function Login() {
             />
           </View>
           <View>
-            <TouchableBox icon="log-in-outline" onPress={login} color="primary" center={true} isLoading={isLoading}>Login</TouchableBox>
+            <TouchableBox icon="log-in-outline" onPress={formSubmitHandler} color="primary" center={true} isLoading={isLoading}>Login</TouchableBox>
           </View>
           <View style={{alignItems: 'center'}}>
             <LinkButton href="/(login)/sign-up">Sign Up</LinkButton>

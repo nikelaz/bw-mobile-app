@@ -1,12 +1,11 @@
 import Container from '@/src/components/container';
-import { useBudgetStore } from '@/src/stores/budget-store';
+import { useStore } from '@/src/stores/store';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import TextBox from '@/src/components/text-box';
 import { useState } from 'react';
 import ColLayout from '@/src/components/col-layout';
 import { CategoryType } from '@nikelaz/bw-shared-libraries';
-import { useCategoryBudgetStore } from '@/src/stores/category-budget-store';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import GroupLabel from '@/src/components/group-label';
 import TouchableBox from '@/src/components/touchable-box';
@@ -41,8 +40,8 @@ const getScreenTitle = (type: CategoryType) => {
 };
 
 export default function CategoryBudgetCreate() {
-  const budgetStore = useBudgetStore();
-  const categoryBudgetStore = useCategoryBudgetStore();
+  const currentBudget = useStore(state => state.currentBudget);
+  const createCategoryBudget = useStore(state => state.createCategoryBudget);
   const params = useLocalSearchParams();
   const router = useRouter();
   const type = Array.isArray(params.type) ? parseInt(params.type[0]) : parseInt(params.type);
@@ -52,7 +51,7 @@ export default function CategoryBudgetCreate() {
   const [isLoading, setIsLoading] = useState(false);
   const errorBoundary = useErrorBoundary();
 
-  const createCategoryBudget = async () => {
+  const formSubmitHandler = async () => {
     setIsLoading(true);
 
     try {
@@ -62,14 +61,14 @@ export default function CategoryBudgetCreate() {
         accAmount,
       });
 
-      await categoryBudgetStore.create({
+      await createCategoryBudget({
         amount: parsedInput.amount,
         category: {
           type,
           title: parsedInput.title,
           accAmount: parsedInput.accAmount
         },
-        budget: budgetStore.currentBudget
+        budget: currentBudget
       });
 
       router.dismissTo('/(tabs)/budget');
@@ -111,7 +110,7 @@ export default function CategoryBudgetCreate() {
             </View>
           ) : null}
 
-          <TouchableBox isLoading={isLoading} icon='create-outline' color="primary" center={true} onPress={createCategoryBudget}>Create</TouchableBox>
+          <TouchableBox isLoading={isLoading} icon='create-outline' color="primary" center={true} onPress={formSubmitHandler}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>

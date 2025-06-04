@@ -2,13 +2,13 @@ import 'react-native-reanimated';
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useUserStoreInit } from '@/src/stores/user-store';
 import { SafeAreaView, View, Text, Platform } from 'react-native';
 import ErrorBoundary from 'react-native-error-boundary';
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { Provider } from '@ant-design/react-native';
 import LinkButton from '@/src/components/link-button';
 import { StatusBar } from 'expo-status-bar';
+import { useStore } from '@/src/stores/store';
 
 const ErrorFallbackComponent = () => {
   return (
@@ -36,7 +36,9 @@ const antDesignDarkTheme = {
 };
 
 export default function RootLayout() {
-  useUserStoreInit()
+  const loginFromStorage = useStore((state) => state.loginFromStorage);
+  loginFromStorage();
+
   const colorScheme = useColorScheme();
   const isIOS = Platform.OS === 'ios';
   const bgColor = useThemeColor({}, 'background');

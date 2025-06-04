@@ -1,85 +1,103 @@
-import { create } from 'zustand';
-import { useEffect } from 'react';
+import type { StateCreator } from 'zustand';
+import type { Store } from './store';
+
 import { Transaction, calculateTotalPages } from '@nikelaz/bw-shared-libraries';
 import { api } from '@/config';
-import { useBudgetStore } from './budget-store'; // Update with correct path
 
-// Helper function moved outside the store
-const calculatePerPageBasedOnHeight = (height: number) => {
-  let coefficient = height < 1000 ? 300 : 100;
-  return Math.max(3, Math.ceil((height - coefficient) / 100));
+type PartialTransactionWithId = Pick<Transaction, 'id'> & Partial<Omit<Transaction, 'id'>>;
+
+export type TransactionsState = {
+  transactions: Transaction[];
+  transactionsPage: number;
+  transactionsTotalPages: number;
+  transactionsFilter: string;
+  transactionsCategory: string;
+  transactionsPerPage: number;
 };
 
-interface TransactionsState {
-  transactions: Transaction[];
-  page: number;
-  totalPages: number;
-  filter: string;
-  category: string;
-  perPage: number;
-  isLoading: boolean;
-  
-  // Actions
-  setPage: (page: number) => void;
-  setFilter: (filter: string) => void;
-  setCategory: (category: string) => void;
-  nextPage: () => void;
-  prevPage: () => void;
+export type TransactionsActions = {
+  setTransactionsPage: (page: number) => Promise<void>;
+  setTransactionsFilter: (filter: string) => Promise<void>;
+  setTransactionsCategory: (category: string) => void;
+  nextTransactionsPage: () => Promise<void>;
+  prevTransactionsPage: () => Promise<void>;
   fetchTransactions: (
     limit: number, 
     offset: number, 
     filter?: string,
-    token?: string
   ) => Promise<{ transactions: Transaction[], count: string }>;
-  refresh: (token: string) => Promise<void>;
-  create: (transaction: Transaction, token: string) => Promise<void>;
-  update: (transaction: Partial<Transaction>, token: string) => Promise<void>;
-  delete: (id: number, token: string) => Promise<void>;
-  setPerPage: (height: number) => void;
-}
+  refreshTransactions: () => Promise<void>;
+  createTransaction: (transaction: Transaction) => Promise<void>;
+  updateTransaction: (transaction: PartialTransactionWithId) => Promise<void>;
+  deleteTransaction: (id: number) => Promise<void>;
+};
 
-export const useTransactionsStore = create<TransactionsState>((set, get) => ({
+export const createTransactionsSlice: StateCreator<
+  Store,
+  [],
+  [],
+  TransactionsState & TransactionsActions
+> = (set, get) => ({
   transactions: [],
-  page: 0,
-  totalPages: 1,
-  filter: '',
-  category: '',
-  perPage: 5, // Default value, will be recalculated based on height
-  isLoading: false,
+  transactionsPage: 0,
+  transactionsTotalPages: 1,
+  transactionsFilter: '',
+  transactionsCategory: '',
+  transactionsPerPage: 20,
   
-  setPage: (page) => set({ page }),
-  
-  setFilter: (filter) => {
-    // Reset to first page when filter changes
-    set({ filter, page: 0 });
+  setTransactionsPage: async (page) => {
+    const { refreshTransactions } = get();
+    set({ transactionsPage: page });
+    await refreshTransactions();
   },
   
-  setCategory: (category) => set({ category }),
+  setTransactionsFilter: async (filter) => {
+    const { refreshTransactions } = get();
+    set({
+      transactionsFilter: filter,
+      transactionsPage: 0,
+    });
+    await refreshTransactions();
+  },
   
-  nextPage: () => {
-    const { page, totalPages } = get();
-    if (page < totalPages - 1) {
-      set({ page: page + 1 });
+  setTransactionsCategory: (category) => set({ transactionsCategory: category }),
+  
+  nextTransactionsPage: async () => {
+    const {
+      transactionsPage,
+      transactionsTotalPages,
+      refreshTransactions,
+    } = get();
+
+    if (transactionsPage < transactionsTotalPages - 1) {
+      set({ transactionsPage: transactionsPage + 1 });
     }
+
+    await refreshTransactions();
   },
   
-  prevPage: () => {
-    const { page } = get();
-    if (page > 0) {
-      set({ page: page - 1 });
+  prevTransactionsPage: async () => {
+    const {
+      transactionsPage,
+      refreshTransactions,
+    } = get();
+
+    if (transactionsPage > 0) {
+      set({ transactionsPage: transactionsPage - 1 });
     }
+
+    await refreshTransactions();
   },
   
-  setPerPage: (height) => {
-    const perPage = calculatePerPageBasedOnHeight(height);
-    set({ perPage });
-  },
-  
-  fetchTransactions: async (limit, offset, filter = '', token) => {
+  fetchTransactions: async (limit, offset, filter = '') => {
+    const {
+      token,
+      currentBudget,
+    } = get();
+
     if (!token) return { transactions: [], count: '0' };
     
-    const budgetStore = useBudgetStore.getState();
-    const budgetId = budgetStore.currentBudget?.id;
+    const budgetId = currentBudget?.id;
     
     if (!budgetId) return { transactions: [], count: '0' };
     
@@ -112,18 +130,22 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
     }
   },
   
-  refresh: async (token) => {
-    if (!token) return;
-    
+  refreshTransactions: async () => {
+    const {
+      fetchTransactions,
+      transactionsPerPage,
+      transactionsPage,
+      transactionsFilter,
+    } = get();
+ 
     set({ isLoading: true });
     
     try {
-      const { perPage, page, filter } = get();
-      const response = await get().fetchTransactions(perPage, page * perPage, filter, token);
+      const response = await fetchTransactions(transactionsPerPage, transactionsPage * transactionsPerPage, transactionsFilter);
       
       set({
         transactions: response.transactions,
-        totalPages: calculateTotalPages(parseFloat(response.count), perPage)
+        transactionsTotalPages: calculateTotalPages(parseFloat(response.count), transactionsPerPage)
       });
     } catch (error) {
       console.error('Error refreshing transactions:', error);
@@ -132,7 +154,13 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
     }
   },
   
-  create: async (transaction, token) => {
+  createTransaction: async (transaction) => {
+    const {
+      token,
+      refreshBudgets,
+      refreshTransactions,
+    } = get();
+
     if (!token) return;
     
     set({ isLoading: true });
@@ -155,9 +183,8 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
       }
     
       // Refresh budget store first, then transactions
-      const budgetStore = useBudgetStore.getState();
-      await budgetStore.refresh(token);
-      await get().refresh(token);
+      await refreshBudgets();
+      await refreshTransactions();
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -168,7 +195,13 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
     }
   },
   
-  delete: async (id, token) => {
+  deleteTransaction: async (id) => {
+    const {
+      token,
+      refreshBudgets,
+      refreshTransactions,
+    } = get();
+
     if (!token) return;
     
     set({ isLoading: true });
@@ -189,9 +222,8 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
       }
     
       // Refresh budget store first, then transactions
-      const budgetStore = useBudgetStore.getState();
-      await budgetStore.refresh(token);
-      await get().refresh(token);
+      await refreshBudgets();
+      await refreshTransactions();
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -202,7 +234,13 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
     }
   },
   
-  update: async (transaction, token) => {
+  updateTransaction: async (transaction) => {
+    const {
+      token,
+      refreshBudgets,
+      refreshTransactions,
+    } = get();
+
     if (!token) return;
     
     set({ isLoading: true });
@@ -225,9 +263,8 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
       }
     
       // Refresh budget store first, then transactions
-      const budgetStore = useBudgetStore.getState();
-      await budgetStore.refresh(token);
-      await get().refresh(token);
+      await refreshBudgets();
+      await refreshTransactions();
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -237,29 +274,5 @@ export const useTransactionsStore = create<TransactionsState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-}));
+});
 
-// A hook to automatically handle refreshing when dependencies change
-export const useTransactionsStoreInit = (token: string, height: number) => {
-  const currentBudget = useBudgetStore(state => state.currentBudget);
-  const { 
-    page, 
-    filter, 
-    refresh, 
-    setPerPage 
-  } = useTransactionsStore();
-  
-  // Set the perPage value based on height
-  useEffect(() => {
-    setPerPage(height);
-  }, [height, setPerPage]);
-  
-  // Refresh when these dependencies change
-  useEffect(() => {
-    if (token && currentBudget) {
-      refresh(token);
-    }
-  }, [token, currentBudget, page, filter, refresh]);
-  
-  return useTransactionsStore();
-};

@@ -5,7 +5,7 @@ import TextBox from '@/src/components/text-box';
 import ColLayout from '@/src/components/col-layout';
 import TouchableBox from '@/src/components/touchable-box';
 import { useRouter, Stack } from 'expo-router';
-import { useUserStore } from '@/src/stores/user-store';
+import { useStore } from '@/src/stores/store';
 import { useState } from 'react';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
@@ -15,7 +15,7 @@ import { SignUpSchema } from '@/src/validation-schemas/user-schemas';
 
 export default function ChangePassword() {
   const router = useRouter();
-  const userStore = useUserStore();
+  const signup = useStore(state => state.signup);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
@@ -26,7 +26,7 @@ export default function ChangePassword() {
   const errorBoundary = useErrorBoundary();
   const [isLoading, setIsLoading] = useState(false);
 
-  const signup = async () => {
+  const formSubmitHandler = async () => {
     setIsLoading(true);
 
     try {
@@ -34,7 +34,7 @@ export default function ChangePassword() {
       if (parsedUser.password !== parsedUser.repeatPassword) {
         throw new Error('The two passwords do not match');
       }
-      await userStore.signup(parsedUser);
+      await signup(parsedUser);
       router.navigate(`/(login)?signed_up=true&email=${email}`);
     } catch (error: any) {
       errorBoundary(error);
@@ -129,7 +129,7 @@ export default function ChangePassword() {
         </View>
         <View>
           <TouchableBox
-            onPress={signup}
+            onPress={formSubmitHandler}
             icon="create-outline"
             center={true}
             color="primary"

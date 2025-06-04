@@ -1,5 +1,5 @@
 import Container from '@/src/components/container';
-import { useBudgetStore } from '@/src/stores/budget-store';
+import { useStore } from '@/src/stores/store';
 import { Stack, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useState } from 'react';
@@ -48,16 +48,18 @@ const generateNewBudgetOptions = (budgetStore: any) => {
 }
 
 export default function CreateBudget() {
-  const budgetStore = useBudgetStore();
+  const budgets = useStore(state => state.budgets);
+  const budgetExistsForMonth = useStore(state => state.budgetExistsForMonth);
+  const createBudget = useStore(state => state.createBudget);
   const router = useRouter();
   const errorBoundary = useErrorBoundary();
   const [isLoading, setIsLoading] = useState(false);
     
-  const newBudgetOptions = generateNewBudgetOptions(budgetStore);
-  const copyFromItems = budgetStore.budgets.map((budget: Budget) => {
+  const newBudgetOptions = generateNewBudgetOptions(budgetExistsForMonth);
+  const copyFromItems = budgets.map((budget: Budget) => {
     const date = new Date(budget.month);
     return {
-      value: budget.id,
+      value: budget.id.toString(),
       label: `${months[date.getMonth()]} ${date.getFullYear()}`
     };
   });
@@ -65,10 +67,10 @@ export default function CreateBudget() {
   const [copyFrom, setCopyFrom] = useState(copyFromItems[0]);
   const [newBudget, setNewBudget] = useState(newBudgetOptions[0]);
 
-  const createBudget = async () => {
+  const createBudgetHandler = async () => {
     setIsLoading(true);
     try {
-      await budgetStore.create({ month: newBudget.value }, { id: copyFrom.value });
+      await createBudget({ month: newBudget.value }, { id: parseInt(copyFrom.value) });
       router.dismissTo('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);
@@ -103,7 +105,7 @@ export default function CreateBudget() {
             />
           </View>
 
-          <TouchableBox isLoading={isLoading} color="primary" center={true} icon='create-outline' onPress={createBudget}>Create</TouchableBox>
+          <TouchableBox isLoading={isLoading} color="primary" center={true} icon='create-outline' onPress={createBudgetHandler}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>

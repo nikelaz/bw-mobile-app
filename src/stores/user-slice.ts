@@ -1,71 +1,80 @@
-import { create } from 'zustand';
-import { useEffect } from 'react';
+import type { Store } from './store';
+
+import { StateCreator } from 'zustand';
 import { Currency, currencies } from '@/data/currencies';
 import { api } from '@/config';
 import Storage from '@/src/helpers/storage';
 
-interface User {
+type User = {
   id: string;
   email: string;
   currency: string;
-  [key: string]: any; // For other user properties
-}
+  [key: string]: any;
+};
 
-interface UserState {
+type PartialUserWithId = Pick<User, 'id'> & Partial<Omit<User, 'id'>>;
+
+export type UserState = {
   user: User | null;
   token: string | null;
   currency: string | null;
   cachedCurrency: Currency | null;
-  isLoading: boolean;
-  newItem: boolean;
-  
-  // Actions
+};
+
+export type UserActions = {
   setUser: (user: User | null) => void;
-  setToken: (token: string | null) => void;
+  setToken: (token: string | null) => Promise<void>;
   setCurrency: (currency: string | null) => void;
-  getCurrency: () => string | null;
+  getCurrency: () => string;
   login: (email: string, password: string) => Promise<void>;
   signup: (user: Partial<User>) => Promise<void>;
   logout: () => Promise<void>;
-  initializeFromStorage: () => Promise<string | null>;
-  update: (userData: Partial<User>) => Promise<void>;
+  loginFromStorage: () => Promise<string | null>;
+  updateUser: (userData: PartialUserWithId) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string, repeatNewPassword: string) => Promise<any>;
   deleteAccount: () => Promise<void>;
-}
+};
 
-export const useUserStore = create<UserState>((set, get) => ({
+export const createUserSlice: StateCreator<
+  Store,
+  [],
+  [],
+  UserState & UserActions
+> = (set, get) => ({
   user: null,
   token: null,
   currency: null,
   cachedCurrency: null,
-  isLoading: false,
   
   setUser: (user) => set({ user }),
   
-  setToken: (token) => set({ token }),
+  setToken: async (token) => {
+    const { refreshBudgets } = get();
+    set({ token });
+    await refreshBudgets();
+  },
   
   setCurrency: (currency) => set({ currency }),
   
   getCurrency: () => {
     const { currency, cachedCurrency } = get();
     
-    // Return from cache if possible
     if (cachedCurrency !== null && currency === cachedCurrency.iso) {
-      return cachedCurrency.iso || cachedCurrency.symbol;
+      return cachedCurrency.iso || cachedCurrency.symbol || 'USD';
     }
 
-    // Find the currency in our list
     const currencyObj = currencies.find(x => x.iso === currency);
     
-    if (!currencyObj) return null;
+    if (!currencyObj) return 'USD';
 
-    // Update cache
     set({ cachedCurrency: currencyObj });
-    
-    return currencyObj.iso || currencyObj.symbol;
+   
+    return currencyObj.iso || currencyObj.symbol || 'USD';
   },
   
   login: async (email, password) => {
+    const { setToken } = get();
+
     set({ isLoading: true });
     
     try {
@@ -89,8 +98,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       await Storage.setItem('token', jsonResponse.token);
       await Storage.setItem('user', JSON.stringify(jsonResponse.user));
 
+      setToken(jsonResponse.token);
+
       set({
-        token: jsonResponse.token,
         user: jsonResponse.user,
         currency: jsonResponse.user.currency
       });
@@ -141,21 +151,26 @@ export const useUserStore = create<UserState>((set, get) => ({
   },
   
   logout: async () => {
-    set({ token: null, user: null, currency: null });
+    const { setToken } = get();
+    setToken(null);
+    set({ user: null, currency: null });
     await Storage.removeItem('token');
     await Storage.removeItem('user');
   },
   
-  initializeFromStorage: async () => {
-    // Initialize from storage if we don't have a token yet
-    const { token, user } = get();
+  loginFromStorage: async () => {
+    const {
+      token,
+      setToken,
+      user,
+    } = get();
     
     if (token) return token;
     
     const storedToken = await Storage.getItem('token');
     
     if (storedToken) {
-      set({ token: storedToken });
+      setToken(storedToken);
     }
 
     if (!user) {
@@ -176,10 +191,12 @@ export const useUserStore = create<UserState>((set, get) => ({
     return storedToken;
   },
   
-  update: async (userData) => {
+  updateUser: async (userData) => {
+    if (!userData) return;
+
     const { token, user } = get();
     
-    if (!token || !userData) return;
+    if (!token) return;
     
     set({ isLoading: true });
     
@@ -283,15 +300,5 @@ export const useUserStore = create<UserState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-}));
+});
 
-// Hook to initialize the user store
-export const useUserStoreInit = () => {
-  const { initializeFromStorage } = useUserStore();
-  
-  useEffect(() => {
-    initializeFromStorage();
-  }, []);
-  
-  return useUserStore();
-};

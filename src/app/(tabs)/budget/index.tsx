@@ -5,12 +5,10 @@ import TouchableBox from '@/src/components/touchable-box';
 import React, { useState } from 'react';
 import LinkButton from '@/src/components/link-button';
 import GatedView from '@/src/components/gated-view';
-import { useUserStore } from '@/src/stores/user-store';
-import { useBudgetStore } from '@/src/stores/budget-store';
+import { useStore } from '@/src/stores/store';
 import months from '@/data/months';
 import { CategoryType, CurrencyFormatter, CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import { useRouter } from 'expo-router';
-import { useCategoryBudgetStore } from '@/src/stores/category-budget-store';
 import { LoadingLine } from '@/src/components/loading-line';
 import ConditionalRenderer from '@/src/components/conditional-renderer';
 import Container from '@/src/components/container';
@@ -26,14 +24,13 @@ const getAmountStateCheckbox = (button: AmountState, state: AmountState) => {
 };
 
 export default function Budget() {
+  const getCurrency = useStore(state => state.getCurrency);
+  const currentBudget = useStore(state => state.currentBudget);
+  const categoryBudgetsByType = useStore(state => state.categoryBudgetsByType);
   const [amountState, setAmountState] = useState(AmountState.Planned);
-  const userStore = useUserStore();
-  const budgetStore = useBudgetStore();
   const router = useRouter();
-  const categoryBudgetStore = useCategoryBudgetStore();
-  const currency = userStore.getCurrency();
+  const currency = getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
-  let currentBudget = budgetStore.currentBudget;
 
   return (
     <GatedView>
@@ -42,30 +39,30 @@ export default function Budget() {
           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10}}>
             <Heading>Budget</Heading>
 
-            <ConditionalRenderer isVisible={currentBudget}>
+            <ConditionalRenderer isVisible={Boolean(currentBudget)}>
               <LinkButton href={`/(tabs)/transactions/create?backText=Budget&backHref=${encodeURIComponent('/(tabs)/budget')}`}>
                 + New Transaction
               </LinkButton>
             </ConditionalRenderer>
-            <ConditionalRenderer isVisible={!currentBudget}>
+            <ConditionalRenderer isVisible={!Boolean(currentBudget)}>
               <LoadingLine width={150} height={30} />
             </ConditionalRenderer>
           </View>
 
-          <ConditionalRenderer isVisible={currentBudget}>
+          <ConditionalRenderer isVisible={Boolean(currentBudget)}>
             <TouchableBox
               icon="calendar-outline"
               arrow={true}
               onPress={() => router.navigate('/budget/select-budget')}
             >
-              {months[currentBudget?.month.getMonth()]} {currentBudget?.month.getFullYear()}
+              {currentBudget ? months[currentBudget.month.getMonth()] : null} {currentBudget?.month.getFullYear()}
             </TouchableBox>
           </ConditionalRenderer>
-          <ConditionalRenderer isVisible={!currentBudget}>
+          <ConditionalRenderer isVisible={!Boolean(currentBudget)}>
             <LoadingLine height={47} />
           </ConditionalRenderer>
 
-          <ConditionalRenderer isVisible={currentBudget}>
+          <ConditionalRenderer isVisible={Boolean(currentBudget)}>
             <View style={{flexDirection: 'row'}}>
               <TouchableBox
                 icon={getAmountStateCheckbox(AmountState.Planned, amountState)}
@@ -87,14 +84,14 @@ export default function Budget() {
               </TouchableBox>
             </View>
           </ConditionalRenderer>
-          <ConditionalRenderer isVisible={!currentBudget}>
+          <ConditionalRenderer isVisible={!Boolean(currentBudget)}>
             <LoadingLine height={47} />
           </ConditionalRenderer>
 
-          <ConditionalRenderer isVisible={currentBudget}>
+          <ConditionalRenderer isVisible={Boolean(currentBudget)}>
             <ColLayout>
               <ColLayout spacing="m">
-                {categoryBudgetStore.categoryBudgetsByType && categoryBudgetStore.categoryBudgetsByType[CategoryType.INCOME] ? (
+                {categoryBudgetsByType && categoryBudgetsByType[CategoryType.INCOME] ? (
                   <ColLayout spacing="m">
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10}}>
                       <Heading level={2}>Income</Heading>
@@ -104,11 +101,11 @@ export default function Budget() {
                     </View>
 
                     <View>
-                      {categoryBudgetStore.categoryBudgetsByType[CategoryType.INCOME].map((categoryBudget: CategoryBudget, index: number) => (
+                      {categoryBudgetsByType[CategoryType.INCOME].map((categoryBudget: CategoryBudget, index: number) => (
                         <TouchableBox
                           group={true}
                           groupFirst={index === 0}
-                          groupLast={index === categoryBudgetStore.categoryBudgetsByType[CategoryType.INCOME].length - 1}
+                          groupLast={index === categoryBudgetsByType[CategoryType.INCOME].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
                           key={categoryBudget.id}
@@ -122,13 +119,13 @@ export default function Budget() {
                   </ColLayout>
                 ) : null}
 
-                <ConditionalRenderer isVisible={categoryBudgetStore.categoryBudgetsByType[CategoryType.INCOME].length === 0}>
+                <ConditionalRenderer isVisible={categoryBudgetsByType[CategoryType.INCOME].length === 0}>
                   <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
                 </ConditionalRenderer>
               </ColLayout>
 
               <ColLayout spacing="m">
-                {categoryBudgetStore.categoryBudgetsByType && categoryBudgetStore.categoryBudgetsByType[CategoryType.EXPENSE] ? (
+                {categoryBudgetsByType && categoryBudgetsByType[CategoryType.EXPENSE] ? (
                   <ColLayout spacing="m">
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                       <Heading level={2}>Expenses</Heading>
@@ -138,11 +135,11 @@ export default function Budget() {
                     </View>
                     
                     <View>
-                      {categoryBudgetStore.categoryBudgetsByType[CategoryType.EXPENSE].map((categoryBudget: CategoryBudget, index: number) => (
+                      {categoryBudgetsByType[CategoryType.EXPENSE].map((categoryBudget: CategoryBudget, index: number) => (
                         <TouchableBox
                           group={true}
                           groupFirst={index === 0}
-                          groupLast={index === categoryBudgetStore.categoryBudgetsByType[CategoryType.EXPENSE].length - 1}
+                          groupLast={index === categoryBudgetsByType[CategoryType.EXPENSE].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
                           key={categoryBudget.id}
@@ -156,13 +153,13 @@ export default function Budget() {
                   </ColLayout>
                 ) : null}
 
-                <ConditionalRenderer isVisible={categoryBudgetStore.categoryBudgetsByType[CategoryType.EXPENSE].length === 0}>
+                <ConditionalRenderer isVisible={categoryBudgetsByType[CategoryType.EXPENSE].length === 0}>
                   <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
                 </ConditionalRenderer>
               </ColLayout>
 
               <ColLayout spacing="m">
-                {categoryBudgetStore.categoryBudgetsByType && categoryBudgetStore.categoryBudgetsByType[CategoryType.SAVINGS] ? (
+                {categoryBudgetsByType && categoryBudgetsByType[CategoryType.SAVINGS] ? (
                   <ColLayout spacing="m">
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                       <Heading level={2}>Savings</Heading>
@@ -172,11 +169,11 @@ export default function Budget() {
                     </View>
                     
                     <View>
-                      {categoryBudgetStore.categoryBudgetsByType[CategoryType.SAVINGS].map((categoryBudget: CategoryBudget, index: number) => (
+                      {categoryBudgetsByType[CategoryType.SAVINGS].map((categoryBudget: CategoryBudget, index: number) => (
                         <TouchableBox
                           group={true}
                           groupFirst={index === 0}
-                          groupLast={index === categoryBudgetStore.categoryBudgetsByType[CategoryType.SAVINGS].length - 1}
+                          groupLast={index === categoryBudgetsByType[CategoryType.SAVINGS].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
                           key={categoryBudget.id}
@@ -190,13 +187,13 @@ export default function Budget() {
                   </ColLayout>
                 ) : null}
 
-                <ConditionalRenderer isVisible={categoryBudgetStore.categoryBudgetsByType[CategoryType.SAVINGS].length === 0}>
+                <ConditionalRenderer isVisible={categoryBudgetsByType[CategoryType.SAVINGS].length === 0}>
                   <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
                 </ConditionalRenderer>
               </ColLayout>
 
               <ColLayout spacing="m">
-                {categoryBudgetStore.categoryBudgetsByType && categoryBudgetStore.categoryBudgetsByType[CategoryType.DEBT] ? (
+                {categoryBudgetsByType && categoryBudgetsByType[CategoryType.DEBT] ? (
                   <ColLayout spacing="m">
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                       <Heading level={2}>Debt</Heading>
@@ -206,11 +203,11 @@ export default function Budget() {
                     </View>
 
                     <View>
-                      {categoryBudgetStore.categoryBudgetsByType[CategoryType.DEBT].map((categoryBudget: CategoryBudget, index: number) => (
+                      {categoryBudgetsByType[CategoryType.DEBT].map((categoryBudget: CategoryBudget, index: number) => (
                         <TouchableBox
                           group={true}
                           groupFirst={index === 0}
-                          groupLast={index === categoryBudgetStore.categoryBudgetsByType[CategoryType.DEBT].length - 1}
+                          groupLast={index === categoryBudgetsByType[CategoryType.DEBT].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
                           key={categoryBudget.id}
@@ -221,7 +218,7 @@ export default function Budget() {
                         </TouchableBox>
                       ))}
                       
-                      <ConditionalRenderer isVisible={categoryBudgetStore.categoryBudgetsByType[CategoryType.DEBT].length === 0}>
+                      <ConditionalRenderer isVisible={categoryBudgetsByType[CategoryType.DEBT].length === 0}>
                         <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
                       </ConditionalRenderer>
                     </View>
