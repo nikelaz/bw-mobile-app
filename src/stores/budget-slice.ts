@@ -35,7 +35,7 @@ export const createBudgetSlice: StateCreator<
 
     let budgetCopy: BudgetWithDate | null = null;
 
-    if (budget !== null && typeof budget.month === 'string') {
+    if (budget !== null) {
       budgetCopy = { ...budget, month: new Date(budget.month) }; 
     }
 

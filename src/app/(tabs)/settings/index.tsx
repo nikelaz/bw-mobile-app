@@ -8,19 +8,23 @@ import TouchableBox from '@/src/components/touchable-box';
 import TextBox from '@/src/components/text-box';
 import { useNavigation, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { useUserStore } from '@/src/stores/user-store';
+import { useStore } from '@/src/stores/store';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { UserUpdateSchema } from '@/src/validation-schemas/user-schemas';
 import Dialog from '@/src/helpers/alert';
 import Container from '@/src/components/container';
 
 export default function Settings() {
-  const userStore = useUserStore();
+  const user = useStore(state => state.user);
+  const updateUser = useStore(state => state.updateUser);
+  const deleteAccount = useStore(state => state.deleteAccount);
+  const logout = useStore(state => state.logout);
+
   const navigation = useNavigation();
   const router = useRouter();
   const errorBoundary = useErrorBoundary();
-  const [firstName, setFirstName] = useState(userStore.user.firstName);
-  const [lastName, setLastName] = useState(userStore.user.lastName);
+  const [firstName, setFirstName] = useState(user ? user.firstName : '');
+  const [lastName, setLastName] = useState(user ? user.lastName : '');
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
@@ -34,22 +38,22 @@ export default function Settings() {
     value: country
   }));
 
-  const initialCurrency = currencyItems.find(currency => currency.value === userStore.user.currency);
-  const initialCountry = countryItems.find(country => country.value === userStore.user.country);
+  const initialCurrency = user ? currencyItems.find(currency => currency.value === user.currency) : null;
+  const initialCountry = user ? countryItems.find(country => country.value === user.country) : null;
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
-  const updateUser = async (updateObj: any) => {
+  const updateUserHandler = async (updateObj: any) => {
     try {
       const parsedInput = UserUpdateSchema.parse({
         firstName,
         lastName,
       });
 
-      userStore.update({
-        ...userStore.user,
+      updateUser({
+        ...user,
         ...parsedInput,
         ...updateObj,
       });
@@ -58,11 +62,11 @@ export default function Settings() {
     }
   };
 
-  const logout = async () => {
+  const logoutHandler = async () => {
     setIsLogoutLoading(true);
 
     try {
-      await userStore.logout();
+      await logout();
       router.replace('/(login)');
     } catch (error) {
       errorBoundary(error);
@@ -71,10 +75,10 @@ export default function Settings() {
     }
   }
 
-  const deleteAccount = async () => {
+  const deleteAccountHandler = async () => {
     setIsDeleteLoading(true);
     try {
-      await userStore.deleteAccount();
+      await deleteAccount();
       router.navigate('/(login)');
     } catch (error) {
       errorBoundary(error);
@@ -88,7 +92,7 @@ export default function Settings() {
       'Delete Account',
       `This is permanent and you will lose all of your data \nAre you sure?`,
       'Yes, Delete',
-      () => deleteAccount()
+      () => deleteAccountHandler()
     );
   }
 
@@ -111,7 +115,7 @@ export default function Settings() {
           <View>
             <GroupLabel>Currency</GroupLabel>
             <Select
-              onValueChange={(val) => updateUser({ currency: val.value })}
+              onValueChange={(val) => updateUserHandler({ currency: val.value })}
               items={currencyItems}
               selectedItem={initialCurrency || currencyItems[0]}
             />
@@ -123,16 +127,16 @@ export default function Settings() {
           <Heading level={2}>User Details</Heading>
           <View>
             <GroupLabel>First Name</GroupLabel>
-            <TextBox value={firstName} onChangeText={setFirstName} onBlur={() =>  updateUser({firstName})}/>
+            <TextBox value={firstName} onChangeText={setFirstName} onBlur={() =>  updateUserHandler({firstName})}/>
           </View>
           <View>
             <GroupLabel>Last Name</GroupLabel>
-            <TextBox value={lastName} onChangeText={setLastName} onBlur={() => updateUser({lastName})}/>
+            <TextBox value={lastName} onChangeText={setLastName} onBlur={() => updateUserHandler({lastName})}/>
           </View>
           <View>
             <GroupLabel>Country</GroupLabel>
             <Select
-              onValueChange={(item) => updateUser({country: item.value})}
+              onValueChange={(item) => updateUserHandler({country: item.value})}
               items={countryItems}
               selectedItem={initialCountry || countryItems[0]}
             />
@@ -140,7 +144,7 @@ export default function Settings() {
           </ColLayout>
           <TouchableBox onPress={() => router.navigate('/(tabs)/settings/change-password')} icon="lock-closed-outline" arrow={true}>Change Password</TouchableBox>
           <TouchableBox onPress={confirmDelete} icon="trash-outline" color="danger" isLoading={isDeleteLoading}>Delete Account</TouchableBox>
-          <TouchableBox isLoading={isLogoutLoading} onPress={logout} icon="log-out-outline">Logout</TouchableBox>   
+          <TouchableBox isLoading={isLogoutLoading} onPress={logoutHandler} icon="log-out-outline">Logout</TouchableBox>   
         </ColLayout>
       </ColLayout>
     </Container>

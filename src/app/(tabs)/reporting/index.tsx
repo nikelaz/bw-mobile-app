@@ -7,7 +7,7 @@ import months from '@/data/months';
 import { WebView } from 'react-native-webview';
 import { html as encodedHtml } from '@nikelaz/bw-reporting-view/dist/index';
 import { useColorScheme, Dimensions, View } from 'react-native';
-import { useState, useRef, MutableRefObject, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { LoadingLine } from '@/src/components/loading-line';
 import Container from '@/src/components/container';
 const html = decodeURIComponent(encodedHtml);
@@ -20,22 +20,22 @@ export default function Reporting() {
   const currency = useStore(state => state.currency);
   const theme = useColorScheme();
   const [isLoading, setIsLoading] = useState(true);
-  const webViewRef: MutableRefObject<WebView | null> = useRef(null);
+  const webViewRef = useRef<WebView | null>(null);
   const screenDimensions = Dimensions.get('screen');
   const [height, setHeight] = useState(Math.round(screenDimensions.width * 3.41));
 
-  const runFirst = `
+  const runFirst = useMemo(() => `
     window.categoryBudgetsByType = ${JSON.stringify(categoryBudgetsByType)};
     window.theme = '${theme}';
     window.currency = '${getCurrency()}';
     window.dispatchEvent(new Event('load'));
-  `;
+  `, [categoryBudgetsByType, currency, theme, isLoading]);
 
   useEffect(() => {
     if (webViewRef.current && !isLoading) {
       webViewRef.current.injectJavaScript(runFirst);
     }
-  }, [currentBudget, currency, isLoading, runFirst]);
+  }, [runFirst]);
 
   return (
     <Container>

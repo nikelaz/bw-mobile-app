@@ -8,16 +8,19 @@ import TouchableBox from '@/src/components/touchable-box';
 import Select from '@/src/components/select';
 import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
-import { useTransactionsStore } from '@/src/stores/transactions-store';
+import { useStore } from '@/src/stores/store';
 import { Transaction, CategoryBudget } from '@nikelaz/bw-shared-libraries';
-import { useBudgetStore } from '@/src/stores/budget-store';
 import months from '@/data/months';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import Dialog from '@/src/helpers/alert';
 import { UpdateTransactionSchema } from '@/src/validation-schemas/transaction.schemas';
 
-const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
+const getOptionsFromCategoryBudgets = (categoryBudgets?: CategoryBudget[]) => {
   const categoriesMap: any = {};
+
+  if (!categoryBudgets || categoryBudgets.length === 0) {
+    return [];
+  }
 
   categoryBudgets.forEach((categoryBudget: CategoryBudget) => {
     if (!categoryBudget.category) return;
@@ -33,24 +36,26 @@ const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
 };
 
 export default function TransactionDetails() {
-  const transactionsStore = useTransactionsStore();
-  const budgetStore = useBudgetStore();
+  const transactions = useStore(state => state.transactions);
+  const updateTransaction = useStore(state => state.updateTransaction);
+  const deleteTransaction = useStore(state => state.deleteTransaction);
+  const currentBudget = useStore(state => state.currentBudget);
   const params = useLocalSearchParams();
   const id = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
   const router = useRouter();
-  const transaction = transactionsStore.transactions.find((transaction: Transaction) => transaction.id === id);
+  const transaction = transactions.find((transaction: Transaction) => transaction.id === id);
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(new Date(transaction?.date));
+  const [date, setDate] = useState(transaction ? transaction.date : new Date());
   const [title, setTitle] = useState(transaction?.title);
   const [amount, setAmount] = useState(transaction?.amount.toString());
   const [isLoading, setIsLoading] = useState(false);
 
-  const categoryOptions = getOptionsFromCategoryBudgets(budgetStore.currentBudget.categoryBudgets);
-  const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget.id) || categoryOptions[0]);
+  const categoryOptions = getOptionsFromCategoryBudgets(currentBudget?.categoryBudgets);
+  const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget?.id) || categoryOptions[0]);
   
   const errorBoundary = useErrorBoundary();
 
-  const updateTransaction = async (passedDate?: Date, category?: any) => {
+  const updateTransactionHandler = async (passedDate?: Date, category?: any) => {
     try {
       const updateObj: any = UpdateTransactionSchema.parse({
         id,
@@ -70,16 +75,16 @@ export default function TransactionDetails() {
         };
       }
   
-      await transactionsStore.update(updateObj);
+      await updateTransaction(updateObj);
     } catch (error) {
       errorBoundary(error);
     }
   };
 
-  const deleteTransaction = async () => {
+  const deleteTransactionHandler = async () => {
     setIsLoading(true);
     try {
-      await transactionsStore.delete(id);
+      await deleteTransaction(id);
       router.dismissTo('/(tabs)/transactions');
     } catch (error) {
       errorBoundary(error);
@@ -93,7 +98,7 @@ export default function TransactionDetails() {
       'Delete Transaction',
       `You are about to delete a transaction: \n${title} \nAre you sure?`,
       'Delete',
-      () => deleteTransaction()
+      () => deleteTransactionHandler()
     );
   }
 
@@ -109,7 +114,7 @@ export default function TransactionDetails() {
           <ColLayout spacing="m">
             <View>
               <GroupLabel>Title</GroupLabel>
-              <TextBox value={title} onChangeText={setTitle} onBlur={() => updateTransaction()} />
+              <TextBox value={title} onChangeText={setTitle} onBlur={() => updateTransactionHandler()} />
             </View>
             <View>
               <GroupLabel>Date</GroupLabel>
@@ -122,7 +127,7 @@ export default function TransactionDetails() {
                 onConfirm={(date) => {
                   setOpen(false);
                   setDate(date);
-                  updateTransaction(date);
+                  updateTransactionHandler(date);
                 }}
                 onCancel={() => {
                   setOpen(false);
@@ -134,7 +139,7 @@ export default function TransactionDetails() {
               <Select
                 onValueChange={(category) => {
                   setCategory(category);
-                  updateTransaction(undefined, category);
+                  updateTransactionHandler(undefined, category);
                 }}
                 items={categoryOptions}
                 selectedItem={category}
@@ -142,7 +147,7 @@ export default function TransactionDetails() {
             </View>
             <View>
               <GroupLabel>Amount</GroupLabel>
-              <TextBox value={amount} onChangeText={setAmount} onBlur={() => updateTransaction()} />
+              <TextBox value={amount} onChangeText={setAmount} onBlur={() => updateTransactionHandler()} />
             </View>
           </ColLayout>
 

@@ -6,6 +6,10 @@ import { api } from '@/config';
 
 type PartialTransactionWithId = Pick<Transaction, 'id'> & Partial<Omit<Transaction, 'id'>>;
 
+type CreateTransactionObj = 
+  Omit<Transaction, 'categoryBudget' | 'id'>
+  & { categoryBudget: { id: number } };
+
 export type TransactionsState = {
   transactions: Transaction[];
   transactionsPage: number;
@@ -27,7 +31,7 @@ export type TransactionsActions = {
     filter?: string,
   ) => Promise<{ transactions: Transaction[], count: string }>;
   refreshTransactions: () => Promise<void>;
-  createTransaction: (transaction: Transaction) => Promise<void>;
+  createTransaction: (transaction: CreateTransactionObj) => Promise<void>;
   updateTransaction: (transaction: PartialTransactionWithId) => Promise<void>;
   deleteTransaction: (id: number) => Promise<void>;
 };

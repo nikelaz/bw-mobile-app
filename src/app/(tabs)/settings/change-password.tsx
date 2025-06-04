@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import GroupLabel from '@/src/components/group-label';
 import TextBox from '@/src/components/text-box';
 import ColLayout from '@/src/components/col-layout';
-import { useUserStore } from '@/src/stores/user-store';
+import { useStore } from '@/src/stores/store';
 import { useState } from 'react';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { ChangePasswordSchema } from '@/src/validation-schemas/user-schemas';
@@ -12,7 +12,7 @@ import TouchableBox from '@/src/components/touchable-box';
 import SuccessBox from '@/src/components/success-box';
 
 export default function ChangePassword() {
-  const userStore = useUserStore();
+  const changePassword = useStore(state => state.changePassword);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [repeatNewPassword, setRepeatNewPassword] = useState('');
@@ -20,7 +20,7 @@ export default function ChangePassword() {
   const [isLoading, setIsLoading] = useState(false);
   const errorBoundary = useErrorBoundary();
 
-  const changePassword = async () => {
+  const changePasswordHandler = async () => {
     setIsLoading(true);
     try {
       const parsedInput = ChangePasswordSchema.parse({
@@ -29,7 +29,7 @@ export default function ChangePassword() {
         repeatPassword: repeatNewPassword
       });
       if (newPassword !== repeatNewPassword) throw new Error('The new passwords do not match');
-      await userStore.changePassword(parsedInput.password, parsedInput.newPassword, parsedInput.repeatPassword);
+      await changePassword(parsedInput.password, parsedInput.newPassword, parsedInput.repeatPassword);
       setSuccessMessage('Password changed successfully.');
     } catch (error) {
       console.log('error');
@@ -60,7 +60,7 @@ export default function ChangePassword() {
             <GroupLabel>Repeat New Password</GroupLabel>
             <TextBox secureTextEntry={true} value={repeatNewPassword} onChangeText={setRepeatNewPassword} />
           </View>
-          <TouchableBox isLoading={isLoading} icon='save-outline' center={true} color="primary" onPress={changePassword}>Save Changes</TouchableBox>
+          <TouchableBox isLoading={isLoading} icon='save-outline' center={true} color="primary" onPress={changePasswordHandler}>Save Changes</TouchableBox>
           { successMessage ? (
             <SuccessBox>{successMessage}</SuccessBox>
           ) : null }

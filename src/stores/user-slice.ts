@@ -54,26 +54,35 @@ export const createUserSlice: StateCreator<
     await refreshBudgets();
   },
   
-  setCurrency: (currency) => set({ currency }),
-  
-  getCurrency: () => {
-    const { currency, cachedCurrency } = get();
-    
-    if (cachedCurrency !== null && currency === cachedCurrency.iso) {
-      return cachedCurrency.iso || cachedCurrency.symbol || 'USD';
+  setCurrency: (currency) => {
+    const currencyObj = currencies.find(x => x.iso === currency);
+
+    if (!currencyObj) {
+      return set({
+        currency: 'USD',
+        cachedCurrency: currencies.find(x => x.iso === 'USD'),
+      });
     }
 
-    const currencyObj = currencies.find(x => x.iso === currency);
-    
-    if (!currencyObj) return 'USD';
-
-    set({ cachedCurrency: currencyObj });
-   
-    return currencyObj.iso || currencyObj.symbol || 'USD';
+    set({
+      currency,
+      cachedCurrency: currencyObj,
+    });
+  },
+  
+  getCurrency: () => {
+    const { cachedCurrency } = get();
+     
+    if (!cachedCurrency) return 'USD';
+ 
+    return cachedCurrency.iso || cachedCurrency.symbol || 'USD';
   },
   
   login: async (email, password) => {
-    const { setToken } = get();
+    const {
+      setToken,
+      setCurrency,
+    } = get();
 
     set({ isLoading: true });
     
@@ -99,11 +108,8 @@ export const createUserSlice: StateCreator<
       await Storage.setItem('user', JSON.stringify(jsonResponse.user));
 
       setToken(jsonResponse.token);
-
-      set({
-        user: jsonResponse.user,
-        currency: jsonResponse.user.currency
-      });
+      setCurrency(jsonResponse.user.currency);
+      set({ user: jsonResponse.user });
     } catch (error) {
       throw error;
     } finally {
@@ -151,9 +157,14 @@ export const createUserSlice: StateCreator<
   },
   
   logout: async () => {
-    const { setToken } = get();
+    const {
+      setToken,
+      setCurrency,
+    } = get();
+
     setToken(null);
-    set({ user: null, currency: null });
+    setCurrency(null);
+    set({ user: null });
     await Storage.removeItem('token');
     await Storage.removeItem('user');
   },
@@ -163,6 +174,7 @@ export const createUserSlice: StateCreator<
       token,
       setToken,
       user,
+      setCurrency,
     } = get();
     
     if (token) return token;
@@ -178,10 +190,8 @@ export const createUserSlice: StateCreator<
       if (storedUser) {
         try {
           const parsedUser = JSON.parse(storedUser);
-          set({ 
-            user: parsedUser,
-            currency: parsedUser.currency
-          });
+          setCurrency(parsedUser.currency);
+          set({ user: parsedUser });
         } catch (e) {
           console.error('Failed to parse stored user data');
         }
@@ -194,9 +204,13 @@ export const createUserSlice: StateCreator<
   updateUser: async (userData) => {
     if (!userData) return;
 
-    const { token, user } = get();
+    const {
+      token,
+      user,
+      setCurrency
+    } = get();
     
-    if (!token) return;
+    if (!token || !user) return;
     
     set({ isLoading: true });
     
@@ -221,13 +235,14 @@ export const createUserSlice: StateCreator<
         ...user,
         ...userData
       };
-      
+ 
       await Storage.setItem('user', JSON.stringify(updatedUser));
-      
-      set({ 
-        user: updatedUser,
-        currency: userData.currency || get().currency,
-      });
+     
+      if (userData.currency) {
+        setCurrency(userData.currency);
+      }
+
+      set({ user: updatedUser });
     } finally {
       set({ isLoading: false });
     }

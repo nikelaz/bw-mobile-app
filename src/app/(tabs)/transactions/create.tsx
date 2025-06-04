@@ -8,16 +8,19 @@ import TouchableBox from '@/src/components/touchable-box';
 import Select from '@/src/components/select';
 import DatePicker from 'react-native-date-picker';
 import { useState } from 'react';
-import { useTransactionsStore } from '@/src/stores/transactions-store';
-import { useBudgetStore } from '@/src/stores/budget-store';
+import { useStore } from '@/src/stores/store';
 import { CategoryBudget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import BackButton from '@/src/components/back-button';
 import { CreateTransactionSchema } from '@/src/validation-schemas/transaction.schemas';
 
-const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
+const getOptionsFromCategoryBudgets = (categoryBudgets?: CategoryBudget[]) => {
   const categoriesMap: any = {};
+  
+  if (!categoryBudgets || categoryBudgets.length === 0) {
+    return [];
+  }
 
   categoryBudgets.forEach((categoryBudget: CategoryBudget) => {
     if (!categoryBudget.category) return;
@@ -33,8 +36,8 @@ const getOptionsFromCategoryBudgets = (categoryBudgets: CategoryBudget[]) => {
 };
 
 export default function TransactionCreate() {
-  const transactionsStore = useTransactionsStore();
-  const budgetStore = useBudgetStore();
+  const createTransaction = useStore(state => state.createTransaction);
+  const currentBudget = useStore(state => state.currentBudget);
   const params = useLocalSearchParams();
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Transactions';
   const backHref: any = (Array.isArray(params.backHref) ? params.backHref[0] : params.backHref) || '/(tabs)/transactions';
@@ -43,13 +46,13 @@ export default function TransactionCreate() {
   const [date, setDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
-  const categoryOptions = getOptionsFromCategoryBudgets(budgetStore.currentBudget.categoryBudgets);
+  const categoryOptions = getOptionsFromCategoryBudgets(currentBudget?.categoryBudgets);
   const [category, setCategory] = useState(categoryOptions[0]);
   const [isLoading, setIsLoading] = useState(false);
   
   const errorBoundary = useErrorBoundary();
 
-  const createTransaction = async () => {
+  const createTransactionHandler = async () => {
     setIsLoading(true);
 
     try {
@@ -60,9 +63,9 @@ export default function TransactionCreate() {
         categoryBudgetId: category.value,
       });
 
-      await transactionsStore.create({
+      await createTransaction({
         title: parsedInput.title,
-        date: parsedInput.date,
+        date: new Date(parsedInput.date),
         amount: parsedInput.amount,
         categoryBudget: {
           id: parsedInput.categoryBudgetId,
@@ -89,7 +92,7 @@ export default function TransactionCreate() {
       <Stack.Screen options={{
         title: 'Create New Transaction',
         headerLeft: () => (
-          <BackButton label={backText} onPress={backButtonHandler} />
+          <BackButton aria-label={backText} onPress={backButtonHandler} />
         )
       }} />
 
@@ -133,7 +136,7 @@ export default function TransactionCreate() {
             </View>
           </ColLayout>
 
-          <TouchableBox isLoading={isLoading} icon='create-outline' color="primary" center={true} onPress={createTransaction}>Create</TouchableBox>
+          <TouchableBox isLoading={isLoading} icon='create-outline' color="primary" center={true} onPress={createTransactionHandler}>Create</TouchableBox>
         </ColLayout>
       </Container>
     </View>      

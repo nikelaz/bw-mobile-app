@@ -6,6 +6,7 @@ import { SafeAreaView, View, Text, Platform } from 'react-native';
 import ErrorBoundary from 'react-native-error-boundary';
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { Provider } from '@ant-design/react-native';
+import { useEffect } from 'react';
 import LinkButton from '@/src/components/link-button';
 import { StatusBar } from 'expo-status-bar';
 import { useStore } from '@/src/stores/store';
@@ -37,7 +38,10 @@ const antDesignDarkTheme = {
 
 export default function RootLayout() {
   const loginFromStorage = useStore((state) => state.loginFromStorage);
-  loginFromStorage();
+  
+  useEffect(() => {
+    loginFromStorage();
+  }, []);
 
   const colorScheme = useColorScheme();
   const isIOS = Platform.OS === 'ios';
