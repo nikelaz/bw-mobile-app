@@ -24,11 +24,12 @@ export default function Login() {
   const [email, setEmail] = useState(params.email ? (Array.isArray(params.email) ? params.email[0] : params.email) : '');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const errorBoundary = useErrorBoundary();
   
   useEffect(() => {
     (async () => {
-      if (!token) return;
+      if (!token || isLoggingIn) return;
       const result = await LocalAuthentication.authenticateAsync();
       if (result.success) {
         router.navigate('/(tabs)/budget');
@@ -38,6 +39,7 @@ export default function Login() {
   
   const formSubmitHandler = async () => {
     setIsLoading(true);
+    setIsLoggingIn(true);
     try {
       const parsedUser = LoginSchema.parse({ email, password });
       await login(parsedUser.email, parsedUser.password);

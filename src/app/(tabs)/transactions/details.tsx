@@ -45,7 +45,7 @@ export default function TransactionDetails() {
   const router = useRouter();
   const transaction = transactions.find((transaction: Transaction) => transaction.id === id);
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(transaction ? transaction.date : new Date());
+  const [date, setDate] = useState(transaction ? new Date(transaction.date) : new Date());
   const [title, setTitle] = useState(transaction?.title);
   const [amount, setAmount] = useState(transaction?.amount.toString());
   const [isLoading, setIsLoading] = useState(false);

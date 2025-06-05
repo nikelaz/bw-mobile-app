@@ -11,7 +11,7 @@ import { Budget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import TouchableBox from '@/src/components/touchable-box';
 
-const generateNewBudgetOptions = (budgetStore: any) => {
+const generateNewBudgetOptions = (budgetExistsForMonth: any) => {
   const now = new Date();
   const currentYear = now.getFullYear();
   const nextYear = currentYear + 1;
@@ -20,7 +20,7 @@ const generateNewBudgetOptions = (budgetStore: any) => {
   for (let i = 0; i < months.length; i++) {
     const optionDate = new Date();
     optionDate.setMonth(i);
-    const budgetExists = budgetStore.budgetExistsForMonth(i);
+    const budgetExists = budgetExistsForMonth(i);
     const isPast = now.getMonth() > i;
 
     if (budgetExists) continue;

@@ -19,7 +19,7 @@ export default function CategoryBudgetDetails() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const categoryBudgetId = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
-  const categoryBudget: CategoryBudget = budgetStore.currentBudget.categoryBudgets.find((x: CategoryBudget) => x.id === categoryBudgetId);
+  const categoryBudget = currentBudget?.categoryBudgets?.find((x: CategoryBudget) => x.id === categoryBudgetId);
   const [title, setTitle] = useState(categoryBudget?.category?.title);
   const [amount, setAmount] = useState(categoryBudget?.amount.toString());
   const [accAmount, setAccAmount] = useState(categoryBudget?.category?.accAmount?.toString());
