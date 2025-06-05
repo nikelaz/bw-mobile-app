@@ -7,9 +7,9 @@
     "icon": "./assets/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#000",
+    "backgroundColor": "#000000",
     "splash": {
-      "backgroundColor": "#fff",
+      "backgroundColor": "#ffffff",
       "image": "./assets/splash-icon-light.png",
       "dark": {
         "image": "./assets/splash-icon-dark.png",
