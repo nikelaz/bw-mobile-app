@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useStore } from '@/src/stores/store';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -14,6 +14,7 @@ import ConditionalRenderer from '@/src/components/conditional-renderer';
 import SuccessBox from '@/src/components/success-box';
 import Container from '@/src/components/container';
 import { LoginSchema } from '@/src/validation-schemas/user-schemas';
+import { TextInput } from 'react-native';
 
 export default function Login() {
   const router = useRouter();
@@ -21,12 +22,13 @@ export default function Login() {
   const login = useStore((state) => state.login);
 
   const params = useLocalSearchParams();
-  const [email, setEmail] = useState(params.email ? (Array.isArray(params.email) ? params.email[0] : params.email) : '');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const passwordInputRef = useRef<TextInput | null>(null);
   const errorBoundary = useErrorBoundary();
-  
+ 
   useEffect(() => {
     (async () => {
       if (!token || isLoggingIn) return;
@@ -36,10 +38,18 @@ export default function Login() {
       }
     })();
   }, [token, router]);
+
+  useEffect(() => {
+    if (Boolean(params.email) && !isLoggingIn) {
+      setEmail(Array.isArray(params.email) ? params.email[0] : params.email);
+      if (passwordInputRef.current) {
+        passwordInputRef.current.focus();
+      }
+    }
+  }, [params.email]);
   
   const formSubmitHandler = async () => {
     setIsLoading(true);
-    setIsLoggingIn(true);
     try {
       const parsedUser = LoginSchema.parse({ email, password });
       await login(parsedUser.email, parsedUser.password);
@@ -50,6 +60,15 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+
+  const proxyChangeHandler = (setter: React.Dispatch<React.SetStateAction<string>>) => {
+    return (text: string) => {
+      setter(text);
+      if (text.length > 0 && !isLoggingIn) {
+        setIsLoggingIn(true);
+      }
+    };
+  }
 
   return (
     <Container>
@@ -67,7 +86,7 @@ export default function Login() {
             <GroupLabel>Email</GroupLabel>
             <TextBox
               value={email}
-              onChangeText={setEmail}
+              onChangeText={proxyChangeHandler(setEmail)}
               aria-label="email input"
               autoComplete="email"
               textContentType="emailAddress"
@@ -80,8 +99,9 @@ export default function Login() {
           <View style={{ marginBottom: 20 }}>
             <GroupLabel>Password</GroupLabel>
             <TextBox
+              ref={passwordInputRef}
               value={password}
-              onChangeText={setPassword}
+              onChangeText={proxyChangeHandler(setPassword)}
               aria-label="password input"
               textContentType="password"
               secureTextEntry={true}

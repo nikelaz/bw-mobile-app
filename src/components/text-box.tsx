@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { styles as touchableBoxStyleSheet } from './touchable-box';
 import { TextInput, TextInputProps } from 'react-native';
 
-const TextBox = (props: TextInputProps) => {
+const TextBox = forwardRef<TextInput, TextInputProps>((props, ref) => {
   const [isActive] = useState(false);
   
   const colorGrey5 = useThemeColor({}, 'systemGrey5');
@@ -18,6 +18,7 @@ const TextBox = (props: TextInputProps) => {
 
   return (
     <TextInput
+      ref={ref}
       style={{
         backgroundColor: bgColor,
         color: useThemeColor({}, 'text'),
@@ -28,6 +29,7 @@ const TextBox = (props: TextInputProps) => {
       {...props}
     />
   );
-}
+});
 
 export default TextBox;
+
