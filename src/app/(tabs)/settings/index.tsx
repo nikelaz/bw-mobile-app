@@ -105,6 +105,7 @@ export default function Settings() {
     );
   }
 
+  console.log('user', user);
   return (
     <Container>
       <ColLayout>
@@ -124,23 +125,23 @@ export default function Settings() {
 
         <ColLayout>
           <ColLayout spacing='m'>
-          <Heading level={2}>User Details</Heading>
-          <View>
-            <GroupLabel>First Name</GroupLabel>
-            <TextBox value={firstName} onChangeText={setFirstName} onBlur={() =>  updateUserHandler({firstName})}/>
-          </View>
-          <View>
-            <GroupLabel>Last Name</GroupLabel>
-            <TextBox value={lastName} onChangeText={setLastName} onBlur={() => updateUserHandler({lastName})}/>
-          </View>
-          <View>
-            <GroupLabel>Country</GroupLabel>
-            <Select
-              onValueChange={(item) => updateUserHandler({country: item.value})}
-              items={countryItems}
-              selectedItem={initialCountry || countryItems[0]}
-            />
-          </View>
+            <Heading level={2}>User Details</Heading>
+            <View>
+              <GroupLabel>First Name</GroupLabel>
+              <TextBox value={firstName} onChangeText={setFirstName} onBlur={() =>  updateUserHandler({firstName})}/>
+            </View>
+            <View>
+              <GroupLabel>Last Name</GroupLabel>
+              <TextBox value={lastName} onChangeText={setLastName} onBlur={() => updateUserHandler({lastName})}/>
+            </View>
+            <View>
+              <GroupLabel>Country</GroupLabel>
+              <Select
+                onValueChange={(item) => updateUserHandler({country: item.value})}
+                items={countryItems}
+                selectedItem={initialCountry || countryItems[0]}
+              />
+            </View>
           </ColLayout>
           <TouchableBox onPress={() => router.navigate('/(tabs)/settings/change-password')} icon="lock-closed-outline" arrow={true}>Change Password</TouchableBox>
           <TouchableBox onPress={confirmDelete} icon="trash-outline" color="danger" isLoading={isDeleteLoading}>Delete Account</TouchableBox>

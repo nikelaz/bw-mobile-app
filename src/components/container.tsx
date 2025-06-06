@@ -1,13 +1,21 @@
-import { View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView, ScrollViewProps } from 'react-native';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
 
 type ContainerProps = Readonly<{
   children: React.ReactNode,
+  onScroll?: ScrollViewProps['onScroll'],
+  scrollEventThrottle?: number,
+  style?: any,
 }>;
 
 const Container = (props: ContainerProps) => (
   <SafeAreaView style={{ backgroundColor: useThemeColor({}, 'background') }}>
-    <ScrollView automaticallyAdjustKeyboardInsets={true} style={styles.scrollWrapper}>
+    <ScrollView 
+      automaticallyAdjustKeyboardInsets={true} 
+      style={styles.scrollWrapper}
+      onScroll={props.onScroll}
+      scrollEventThrottle={props.scrollEventThrottle}
+    >
       <View
         style={{
           ...styles.container,

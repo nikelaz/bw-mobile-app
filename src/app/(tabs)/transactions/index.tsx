@@ -1,5 +1,5 @@
 import ColLayout from '@/src/components/col-layout'; import Heading from '@/src/components/heading';
-import { View } from 'react-native';
+import { View, ActivityIndicator, ScrollView } from 'react-native';
 import TouchableBox from '@/src/components/touchable-box';
 import { useEffect } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
@@ -15,10 +15,9 @@ export default function Transactions() {
   const getCurrency = useStore(state => state.getCurrency);
   const transactions = useStore(state => state.transactions);
   const setTransactionsFilter = useStore(state => state.setTransactionsFilter);
-  const transactionsTotalPages = useStore(state => state.transactionsTotalPages);
-  const transactionsPage = useStore(state => state.transactionsPage);
-  const prevTransactionsPage = useStore(state => state.prevTransactionsPage);
-  const nextTransactionsPage = useStore(state => state.nextTransactionsPage);
+  const loadMoreTransactions = useStore(state => state.loadMoreTransactions);
+  const hasMoreTransactions = useStore(state => state.hasMoreTransactions);
+  const isLoadingMoreTransactions = useStore(state => state.isLoadingMoreTransactions);
   const currency = getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
   const navigation = useNavigation();
@@ -32,8 +31,22 @@ export default function Transactions() {
     setTransactionsFilter(filter);
   };
 
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const paddingToBottom = 100; // How close to bottom to trigger loading
+    
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
+      if (hasMoreTransactions && !isLoadingMoreTransactions) {
+        loadMoreTransactions();
+      }
+    }
+  };
+
   return (
-    <Container>
+    <Container 
+      onScroll={handleScroll}
+      scrollEventThrottle={400}
+    >
       <ColLayout>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
           <Heading>Transactions</Heading>
@@ -52,52 +65,32 @@ export default function Transactions() {
 
         <TextBox placeholder="Search" onChangeText={debounce(changeHandler)} />
 
-        { !transactions || transactions.length === 0 && (
+        {!transactions || transactions.length === 0 ? (
           <TouchableBox disabled={true}>There are currently no records to display.</TouchableBox>
-        )}
-
-        <View>
-          {transactions.map((transaction: Transaction, index: number) => (
-            <TouchableBox
-              key={transaction.id}
-              onPress={() => router.navigate(`/(tabs)/transactions/details?id=${transaction.id}`)}
-              group={true}
-              groupFirst={index === 0}
-              groupLast={index === transactions.length - 1}
-              arrow={true}
-              additionalText={currencyFormatter.format(transaction.amount)}
-            >
-              {transaction.title}
-            </TouchableBox>
-          ))}
-        </View>
-
-        {transactionsTotalPages > 1 ? (
-          <View style={{flexDirection: 'row'}}>
-            {transactionsPage !== 0 ? (
+        ) : (
+          <View>
+            {transactions.map((transaction: Transaction, index: number) => (
               <TouchableBox
-                rowGroup={transactionsPage !== transactionsTotalPages - 1}
-                rowGroupFirst={transactionsPage !== transactionsTotalPages - 1}
-                style={{flex: 1, justifyContent: 'center'}}
-                onPress={() => prevTransactionsPage()}
+                key={transaction.id}
+                onPress={() => router.navigate(`/(tabs)/transactions/details?id=${transaction.id}`)}
+                group={true}
+                groupFirst={index === 0}
+                groupLast={index === transactions.length - 1}
+                arrow={true}
+                additionalText={currencyFormatter.format(transaction.amount)}
               >
-                Previous Page
+                {transaction.title}
               </TouchableBox>
-            ) : null}
+            ))}
             
-            {transactionsPage !== transactionsTotalPages - 1 ? (
-              <TouchableBox
-                rowGroup={transactionsPage !== 0}
-                rowGroupLast={transactionsPage !== 0}
-                style={{flex: 1, justifyContent: 'center'}}
-                onPress={() => nextTransactionsPage()}
-              >
-                Next Page
-              </TouchableBox>
-            ) : null}
+            {isLoadingMoreTransactions && (
+              <View style={{ padding: 20, alignItems: 'center' }}>
+                <ActivityIndicator size="small" />
+              </View>
+            )}
           </View>
-        ) : null}
+        )}
       </ColLayout>
     </Container>
   );
-};
+}

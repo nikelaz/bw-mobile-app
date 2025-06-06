@@ -47,7 +47,7 @@ export const createTransactionsSlice: StateCreator<
   transactionsTotalPages: 1,
   transactionsFilter: '',
   transactionsCategory: '',
-  transactionsPerPage: 20,
+  transactionsPerPage: 40,
   
   setTransactionsPage: async (page) => {
     const { refreshTransactions } = get();
