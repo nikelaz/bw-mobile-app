@@ -15,6 +15,7 @@ export type BudgetActions = {
   setCurrentBudget: (budget: Budget | null) => void;
   refreshBudgets: () => Promise<BudgetWithDate[]>;
   createBudget: (budget: Omit<Budget, 'id'>, copyFrom: Pick<Budget, 'id'>) => Promise<void>;
+  deleteBudget: (budgetId: string | number) => Promise<void>;
   budgetExistsForMonth: (monthIndex: number) => boolean;
 }
 
@@ -146,6 +147,46 @@ export const createBudgetSlice: StateCreator<
     } catch (error) {
       console.error('Error creating budget:', error);
       throw new Error('An unexpected error occurred while creating the budget'); 
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  deleteBudget: async (budgetId) => {
+    const {
+      token,
+      refreshBudgets,
+      setCurrentBudget,
+      currentBudget,
+    } = get();
+
+    if (!token) return;
+
+    set({ isLoading: true });
+
+    try {
+      const reqOptions = {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+
+      const req = await fetch(`${api}/budgets/${budgetId}`, reqOptions);
+      const jsonResponse = await req.json();
+
+      if (!req.ok) {
+        throw new Error(jsonResponse.message || `Error deleting budget: ${req.status}`);
+      }
+
+      if (currentBudget?.id === budgetId) {
+        setCurrentBudget(null);
+      }
+
+      await refreshBudgets();
+    } catch (error) {
+      console.error('Error deleting budget:', error);
+      throw new Error('An unexpected error occurred while deleting the budget');
     } finally {
       set({ isLoading: false });
     }
