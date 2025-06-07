@@ -14,6 +14,7 @@ import months from '@/data/months';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import BackButton from '@/src/components/back-button';
 import { CreateTransactionSchema } from '@/src/validation-schemas/transaction.schemas';
+import { useForm, Controller } from 'react-hook-form';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets?: CategoryBudget[]) => {
   const categoriesMap: any = {};
@@ -35,34 +36,41 @@ const getOptionsFromCategoryBudgets = (categoryBudgets?: CategoryBudget[]) => {
   });
 };
 
+type TransactionCreateFormData = {
+  title: string;
+  amount: string;
+  category: { value: string; label: string };
+};
+
 export default function TransactionCreate() {
-  const createTransaction = useStore(state => state.createTransaction);
   const currentBudget = useStore(state => state.currentBudget);
   const params = useLocalSearchParams();
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Transactions';
   const backHref: any = (Array.isArray(params.backHref) ? params.backHref[0] : params.backHref) || '/(tabs)/transactions';
   const router = useRouter();
+  const categoryOptions = getOptionsFromCategoryBudgets(currentBudget?.categoryBudgets);
+  const { control, handleSubmit } = useForm<TransactionCreateFormData>({
+    defaultValues: {
+      title: '',
+      amount: '',
+      category: categoryOptions[0],
+    },
+  });
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
-  const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState('');
-  const categoryOptions = getOptionsFromCategoryBudgets(currentBudget?.categoryBudgets);
-  const [category, setCategory] = useState(categoryOptions[0]);
   const [isLoading, setIsLoading] = useState(false);
-  
   const errorBoundary = useErrorBoundary();
+  const createTransaction = useStore(state => state.createTransaction);
 
-  const createTransactionHandler = async () => {
+  const createTransactionHandler = handleSubmit(async (data) => {
     setIsLoading(true);
-
     try {
       const parsedInput = CreateTransactionSchema.parse({
-        title,
+        title: data.title,
         date: date.toISOString(),
-        amount,
-        categoryBudgetId: category.value,
+        amount: data.amount,
+        categoryBudgetId: data.category.value,
       });
-
       await createTransaction({
         title: parsedInput.title,
         date: new Date(parsedInput.date),
@@ -77,11 +85,10 @@ export default function TransactionCreate() {
     } finally {
       setIsLoading(false);
     }
-  }
+  });
 
   const backButtonHandler = () => {
     router.dismissTo('/(tabs)/transactions');
-
     if (backHref !== '/(tabs)/transactions') {
       router.navigate(backHref);
     }
@@ -95,13 +102,18 @@ export default function TransactionCreate() {
           <BackButton aria-label={backText} onPress={backButtonHandler} />
         )
       }} />
-
       <Container>
         <ColLayout>
           <ColLayout spacing="m">
             <View>
               <GroupLabel>Title</GroupLabel>
-              <TextBox value={title} onChangeText={setTitle} />
+              <Controller
+                control={control}
+                name="title"
+                render={({ field: { onChange, value } }) => (
+                  <TextBox value={value} onChangeText={onChange} />
+                )}
+              />
             </View>
             <View>
               <GroupLabel>Date</GroupLabel>
@@ -111,9 +123,9 @@ export default function TransactionCreate() {
                 open={open}
                 date={date}
                 mode="date"
-                onConfirm={async (date) => {
+                onConfirm={async (dateVal) => {
                   setOpen(false);
-                  setDate(date);
+                  setDate(dateVal);
                 }}
                 onCancel={() => {
                   setOpen(false);
@@ -122,23 +134,32 @@ export default function TransactionCreate() {
             </View>
             <View>
               <GroupLabel>Category</GroupLabel>
-              <Select
-                onValueChange={(category) => {
-                  setCategory(category);
-                }}
-                items={categoryOptions}
-                selectedItem={category}
+              <Controller
+                control={control}
+                name="category"
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    onValueChange={onChange}
+                    items={categoryOptions}
+                    selectedItem={value}
+                  />
+                )}
               />
             </View>
             <View>
               <GroupLabel>Amount</GroupLabel>
-              <TextBox value={amount} onChangeText={setAmount} />
+              <Controller
+                control={control}
+                name="amount"
+                render={({ field: { onChange, value } }) => (
+                  <TextBox value={value} onChangeText={onChange} />
+                )}
+              />
             </View>
           </ColLayout>
-
           <TouchableBox isLoading={isLoading} icon='create-outline' color="primary" center={true} onPress={createTransactionHandler}>Create</TouchableBox>
         </ColLayout>
       </Container>
-    </View>      
+    </View>
   );
 };

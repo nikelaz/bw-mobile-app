@@ -10,6 +10,8 @@ import Select from '@/src/components/select';
 import { Budget } from '@nikelaz/bw-shared-libraries';
 import months from '@/data/months';
 import TouchableBox from '@/src/components/touchable-box';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
 
 const generateNewBudgetOptions = (budgetExistsForMonth: any) => {
   const now = new Date();
@@ -47,14 +49,18 @@ const generateNewBudgetOptions = (budgetExistsForMonth: any) => {
   return newBudgetOptions;
 }
 
+const CreateBudgetSchema = z.object({
+  newBudget: z.object({ label: z.string(), value: z.string() }),
+  copyFrom: z.object({ label: z.string(), value: z.string() }),
+});
+
+type CreateBudgetFormData = z.infer<typeof CreateBudgetSchema>;
+
 export default function CreateBudget() {
   const budgets = useStore(state => state.budgets);
   const budgetExistsForMonth = useStore(state => state.budgetExistsForMonth);
   const createBudget = useStore(state => state.createBudget);
   const router = useRouter();
-  const errorBoundary = useErrorBoundary();
-  const [isLoading, setIsLoading] = useState(false);
-    
   const newBudgetOptions = generateNewBudgetOptions(budgetExistsForMonth);
   const copyFromItems = budgets.map((budget: Budget) => {
     const date = new Date(budget.month);
@@ -64,20 +70,34 @@ export default function CreateBudget() {
     };
   });
 
-  const [copyFrom, setCopyFrom] = useState(copyFromItems[0]);
-  const [newBudget, setNewBudget] = useState(newBudgetOptions[0]);
+  const { control, handleSubmit } = useForm<CreateBudgetFormData>({
+    defaultValues: {
+      newBudget: newBudgetOptions[0],
+      copyFrom: copyFromItems[0],
+    },
+    resolver: async (values) => {
+      try {
+        CreateBudgetSchema.parse(values);
+        return { values, errors: {} };
+      } catch (e: any) {
+        return { values: {}, errors: e.formErrors?.fieldErrors || {} };
+      }
+    },
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const errorBoundary = useErrorBoundary();
 
-  const createBudgetHandler = async () => {
+  const createBudgetHandler = handleSubmit(async (data) => {
     setIsLoading(true);
     try {
-      await createBudget({ month: newBudget.value }, { id: parseInt(copyFrom.value) });
+      await createBudget({ month: data.newBudget.value }, { id: parseInt(data.copyFrom.value) });
       router.dismissTo('/(tabs)/budget');
     } catch (error) {
       errorBoundary(error);
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   return (
     <View>
@@ -89,22 +109,32 @@ export default function CreateBudget() {
         <ColLayout spacing='l'>
           <View>
             <GroupLabel>For Month</GroupLabel>
-            <Select
-              items={newBudgetOptions}
-              selectedItem={newBudget}
-              onValueChange={val => setNewBudget(val)}
+            <Controller
+              control={control}
+              name="newBudget"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  items={newBudgetOptions}
+                  selectedItem={value}
+                  onValueChange={onChange}
+                />
+              )}
             />
           </View>
-
           <View>
             <GroupLabel>Copy From</GroupLabel>
-            <Select
-              items={copyFromItems}
-              selectedItem={copyFrom}
-              onValueChange={val => setCopyFrom(val)}
+            <Controller
+              control={control}
+              name="copyFrom"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  items={copyFromItems}
+                  selectedItem={value}
+                  onValueChange={onChange}
+                />
+              )}
             />
           </View>
-
           <TouchableBox isLoading={isLoading} color="primary" center={true} icon='create-outline' onPress={createBudgetHandler}>Create</TouchableBox>
         </ColLayout>
       </Container>

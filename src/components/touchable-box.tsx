@@ -89,8 +89,6 @@ const TouchableBox = (props: TouchableBoxProps) => {
 
   const smallSizeStyles = props.size === 's' ? { paddingTop: 5, paddingBottom: 5 } : {};
 
-  
-
   return (
     <Pressable
       onPressIn={() => !props.isLoading && setIsActive(true)}

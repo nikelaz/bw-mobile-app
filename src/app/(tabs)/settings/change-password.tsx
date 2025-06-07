@@ -9,35 +9,41 @@ import { useState } from 'react';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { ChangePasswordSchema } from '@/src/validation-schemas/user-schemas';
 import TouchableBox from '@/src/components/touchable-box';
-import SuccessBox from '@/src/components/success-box';
+import FeedbackBox from '@/src/components/feedback-box';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+type ChangePasswordFormData = z.infer<typeof ChangePasswordSchema>;
 
 export default function ChangePassword() {
   const changePassword = useStore(state => state.changePassword);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [repeatNewPassword, setRepeatNewPassword] = useState('');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const errorBoundary = useErrorBoundary();
 
-  const changePasswordHandler = async () => {
+  const { control, handleSubmit, reset } = useForm<ChangePasswordFormData>({
+    resolver: zodResolver(ChangePasswordSchema),
+    defaultValues: {
+      password: '',
+      newPassword: '',
+      repeatPassword: '',
+    },
+  });
+
+  const changePasswordHandler = handleSubmit(async (data) => {
     setIsLoading(true);
     try {
-      const parsedInput = ChangePasswordSchema.parse({
-        password: currentPassword,
-        newPassword,
-        repeatPassword: repeatNewPassword
-      });
-      if (newPassword !== repeatNewPassword) throw new Error('The new passwords do not match');
-      await changePassword(parsedInput.password, parsedInput.newPassword, parsedInput.repeatPassword);
+      if (data.newPassword !== data.repeatPassword) throw new Error('The new passwords do not match');
+      await changePassword(data.password, data.newPassword, data.repeatPassword);
       setSuccessMessage('Password changed successfully.');
+      reset();
     } catch (error) {
-      console.log('error');
       errorBoundary(error);
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   return (
     <View>
@@ -45,29 +51,44 @@ export default function ChangePassword() {
         title: 'Change Password',
         headerBackTitle: 'Settings',
       }} />
-
       <Container>
         <ColLayout spacing="l">
           <View>
             <GroupLabel>Current Password</GroupLabel>
-            <TextBox secureTextEntry={true} value={currentPassword} onChangeText={setCurrentPassword} />
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <TextBox secureTextEntry={true} value={value} onChangeText={onChange} />
+              )}
+            />
           </View>
           <View>
             <GroupLabel>New Password</GroupLabel>
-            <TextBox secureTextEntry={true} value={newPassword} onChangeText={setNewPassword} />
+            <Controller
+              control={control}
+              name="newPassword"
+              render={({ field: { onChange, value } }) => (
+                <TextBox secureTextEntry={true} value={value} onChangeText={onChange} />
+              )}
+            />
           </View>
           <View>
             <GroupLabel>Repeat New Password</GroupLabel>
-            <TextBox secureTextEntry={true} value={repeatNewPassword} onChangeText={setRepeatNewPassword} />
+            <Controller
+              control={control}
+              name="repeatPassword"
+              render={({ field: { onChange, value } }) => (
+                <TextBox secureTextEntry={true} value={value} onChangeText={onChange} />
+              )}
+            />
           </View>
           <TouchableBox isLoading={isLoading} icon='save-outline' center={true} color="primary" onPress={changePasswordHandler}>Save Changes</TouchableBox>
           { successMessage ? (
-            <SuccessBox>{successMessage}</SuccessBox>
+            <FeedbackBox color="success">{successMessage}</FeedbackBox>
           ) : null }
         </ColLayout>
       </Container>
     </View>
-    
-      
   );
 }

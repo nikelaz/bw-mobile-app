@@ -3,13 +3,16 @@ import { useStore } from '@/src/stores/store';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import TextBox from '@/src/components/text-box';
-import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import ColLayout from '@/src/components/col-layout';
 import { CategoryType } from '@nikelaz/bw-shared-libraries';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
-import GroupLabel from '@/src/components/group-label';
 import TouchableBox from '@/src/components/touchable-box';
 import { CreateCategoryBudgetSchema } from '@/src/validation-schemas/category-budget.schemas';
+import { useState } from 'react';
+import FormField from '@/src/components/form-field';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
 
 const getCategoryPlaceholder = (type: CategoryType) => {
   switch (type) {
@@ -39,48 +42,51 @@ const getScreenTitle = (type: CategoryType) => {
   }
 };
 
+type CategoryBudgetFormData = z.infer<typeof CreateCategoryBudgetSchema>;
+
 export default function CategoryBudgetCreate() {
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CategoryBudgetFormData>({
+    resolver: zodResolver(CreateCategoryBudgetSchema),
+    defaultValues: {
+      title: '',
+      amount: '',
+      accAmount: '',
+    },
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const errorBoundary = useErrorBoundary();
+  const router = useRouter();
   const currentBudget = useStore(state => state.currentBudget);
   const createCategoryBudget = useStore(state => state.createCategoryBudget);
   const params = useLocalSearchParams();
-  const router = useRouter();
   const type = Array.isArray(params.type) ? parseInt(params.type[0]) : parseInt(params.type);
-  const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState('');
-  const [accAmount, setAccAmount] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const errorBoundary = useErrorBoundary();
 
-  const formSubmitHandler = async () => {
+  const formSubmitHandler = handleSubmit(async (data) => {
     setIsLoading(true);
-
     try {
-      const parsedInput = CreateCategoryBudgetSchema.parse({
-        amount,
-        title,
-        accAmount,
-      });
-
+      const parsedData = CreateCategoryBudgetSchema.parse(data);
       await createCategoryBudget({
-        amount: parsedInput.amount,
+        amount: parseFloat(parsedData.amount),
         category: {
           type,
-          title: parsedInput.title,
-          accAmount: parsedInput.accAmount
+          title: parsedData.title,
+          accAmount: parseFloat(parsedData.accAmount || '0'),
         },
         budget: currentBudget
       });
-
       router.dismissTo('/(tabs)/budget');
-      setTitle('');
-      setAmount('');
-      setAccAmount('');
+      reset();
     } catch (error) {
       errorBoundary(error);
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   return (
     <View>
@@ -89,28 +95,64 @@ export default function CategoryBudgetCreate() {
         headerBackButtonDisplayMode: 'minimal',
       }} />
       <Container>
-        <ColLayout spacing='l'>
-          <View>
-            <GroupLabel>Title</GroupLabel>
-            <TextBox inputMode="text" value={title} onChangeText={setTitle} placeholder={`e.g. ${getCategoryPlaceholder(type)}`} />
-          </View>
+        <ColLayout spacing='s'>
+          <FormField label="Title" error={errors.title?.message}>
+            <Controller
+              control={control}
+              name="title"
+              render={({ field: { onChange, value } }) => (
+                <TextBox 
+                  inputMode="text" 
+                  value={value} 
+                  onChangeText={onChange} 
+                  placeholder={`e.g. ${getCategoryPlaceholder(type)}`}
+                  isInvalid={Boolean(errors.title)}
+                />
+              )}
+            />
+          </FormField>
 
-          <View>
-            <GroupLabel>Planned Amount</GroupLabel>
-            <TextBox inputMode="decimal" value={amount} onChangeText={setAmount} />
-          </View>
+          <FormField label="Planned Amount" error={errors.amount?.message}>
+            <Controller
+              control={control}
+              name="amount"
+              render={({ field: { onChange, value } }) => (
+                <TextBox 
+                  inputMode="decimal" 
+                  value={value} 
+                  onChangeText={onChange}
+                  isInvalid={Boolean(errors.amount)}
+                />
+              )}
+            />
+          </FormField>
 
-          {type === CategoryType.SAVINGS || type === CategoryType.DEBT ? (
-            <View>
-              <GroupLabel>{type === CategoryType.DEBT ? 'Leftover Debt' : 'Accumulated'}</GroupLabel>
-              <TextBox
-                value={accAmount}
-                onChangeText={setAccAmount}
+          {(type === CategoryType.SAVINGS || type === CategoryType.DEBT) && (
+            <FormField label={type === CategoryType.DEBT ? 'Leftover Debt' : 'Accumulated'} error={errors.accAmount?.message}>
+              <Controller
+                control={control}
+                name="accAmount"
+                render={({ field: { onChange, value } }) => (
+                  <TextBox 
+                    inputMode="decimal"
+                    value={value} 
+                    onChangeText={onChange}
+                    isInvalid={Boolean(errors.accAmount)}
+                  />
+                )}
               />
-            </View>
-          ) : null}
+            </FormField>
+          )}
 
-          <TouchableBox isLoading={isLoading} icon='create-outline' color="primary" center={true} onPress={formSubmitHandler}>Create</TouchableBox>
+          <TouchableBox 
+            isLoading={isLoading} 
+            icon='create-outline' 
+            color="primary" 
+            center={true} 
+            onPress={formSubmitHandler}
+          >
+            Create
+          </TouchableBox>
         </ColLayout>
       </Container>
     </View>

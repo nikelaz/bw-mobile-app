@@ -13,6 +13,11 @@ import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { UserUpdateSchema } from '@/src/validation-schemas/user-schemas';
 import Dialog from '@/src/helpers/alert';
 import Container from '@/src/components/container';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+type UserUpdateFormData = z.infer<typeof UserUpdateSchema> & { country: string };
 
 export default function Settings() {
   const user = useStore(state => state.user);
@@ -23,8 +28,6 @@ export default function Settings() {
   const navigation = useNavigation();
   const router = useRouter();
   const errorBoundary = useErrorBoundary();
-  const [firstName, setFirstName] = useState(user ? user.firstName : '');
-  const [lastName, setLastName] = useState(user ? user.lastName : '');
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
@@ -38,29 +41,28 @@ export default function Settings() {
     value: country
   }));
 
-  const initialCurrency = user ? currencyItems.find(currency => currency.value === user.currency) : null;
-  const initialCountry = user ? countryItems.find(country => country.value === user.country) : null;
+  const { control, handleSubmit } = useForm<UserUpdateFormData>({
+    resolver: zodResolver(UserUpdateSchema.extend({ country: z.string().min(1) })),
+    defaultValues: {
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      country: user?.country || countryItems[0].value,
+      currency: currencyItems.find(c => c.value === user?.currency)?.value || currencyItems[0].value,
+    },
+  });
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
-  const updateUserHandler = async (updateObj: any) => {
+  const updateUserHandler = handleSubmit(async (data) => {
     try {
-      const parsedInput = UserUpdateSchema.parse({
-        firstName,
-        lastName,
-      });
-
-      updateUser({
-        ...user,
-        ...parsedInput,
-        ...updateObj,
-      });
+      if (!user || !user.id) throw new Error('User not loaded');
+      await updateUser({ id: user.id, ...data });
     } catch (error) {
       errorBoundary(error);
     }
-  };
+  });
 
   const logoutHandler = async () => {
     setIsLogoutLoading(true);
@@ -114,10 +116,19 @@ export default function Settings() {
           <Heading level={2}>Preferences</Heading>
           <View>
             <GroupLabel>Currency</GroupLabel>
-            <Select
-              onValueChange={(val) => updateUserHandler({ currency: val.value })}
-              items={currencyItems}
-              selectedItem={initialCurrency || currencyItems[0]}
+            <Controller
+              control={control}
+              name="currency"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  onValueChange={(val) => {
+                    onChange(val.value);
+                    updateUserHandler();
+                  }}
+                  items={currencyItems}
+                  selectedItem={currencyItems.find(c => c.value === value) || currencyItems[0]}
+                />
+              )}
             />
           </View>
         </ColLayout>
@@ -127,18 +138,36 @@ export default function Settings() {
           <Heading level={2}>User Details</Heading>
           <View>
             <GroupLabel>First Name</GroupLabel>
-            <TextBox value={firstName} onChangeText={setFirstName} onBlur={() =>  updateUserHandler({firstName})}/>
+            <Controller
+              control={control}
+              name="firstName"
+              render={({ field: { onChange, value } }) => (
+                <TextBox value={value} onChangeText={onChange} onBlur={updateUserHandler} />
+              )}
+            />
           </View>
           <View>
             <GroupLabel>Last Name</GroupLabel>
-            <TextBox value={lastName} onChangeText={setLastName} onBlur={() => updateUserHandler({lastName})}/>
+            <Controller
+              control={control}
+              name="lastName"
+              render={({ field: { onChange, value } }) => (
+                <TextBox value={value} onChangeText={onChange} onBlur={updateUserHandler} />
+              )}
+            />
           </View>
           <View>
             <GroupLabel>Country</GroupLabel>
-            <Select
-              onValueChange={(item) => updateUserHandler({country: item.value})}
-              items={countryItems}
-              selectedItem={initialCountry || countryItems[0]}
+            <Controller
+              control={control}
+              name="country"
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  onValueChange={(item) => { onChange(item.value); updateUserHandler(); }}
+                  items={countryItems}
+                  selectedItem={countryItems.find(c => c.value === value) || countryItems[0]}
+                />
+              )}
             />
           </View>
           </ColLayout>

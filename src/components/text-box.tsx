@@ -3,12 +3,17 @@ import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { styles as touchableBoxStyleSheet } from './touchable-box';
 import { TextInput, TextInputProps } from 'react-native';
 
-const TextBox = forwardRef<TextInput, TextInputProps>((props, ref) => {
+type TextBoxProps = TextInputProps & {
+  isInvalid?: boolean;
+}
+
+const TextBox = forwardRef<TextInput, TextBoxProps>((props, ref) => {
   const [isActive] = useState(false);
   
   const colorGrey5 = useThemeColor({}, 'systemGrey5');
   const colorWhiteOrGrey6 = useThemeColor({light: 'white'}, 'systemGrey6');
   const colorBlackOrBg = useThemeColor({ dark: 'black', light: 'background' }, 'background'); 
+  const colorInvalid = useThemeColor({}, 'red');
   
   let bgColor = isActive ? colorGrey5 : colorWhiteOrGrey6;
 
@@ -23,7 +28,9 @@ const TextBox = forwardRef<TextInput, TextInputProps>((props, ref) => {
         backgroundColor: bgColor,
         color: useThemeColor({}, 'text'),
         ...touchableBoxStyleSheet.touchableBox,
-        fontSize: 16
+        fontSize: 16,
+        borderColor: props.isInvalid ? colorInvalid : bgColor,
+        borderWidth: 1,
       }}
       placeholderTextColor={useThemeColor({}, 'systemGrey')}
       {...props}

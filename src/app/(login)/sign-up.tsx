@@ -1,6 +1,5 @@
 import Container from '@/src/components/container';
 import { View } from 'react-native';
-import GroupLabel from '@/src/components/group-label';
 import TextBox from '@/src/components/text-box';
 import ColLayout from '@/src/components/col-layout';
 import TouchableBox from '@/src/components/touchable-box';
@@ -8,40 +7,54 @@ import { useRouter, Stack } from 'expo-router';
 import { useStore } from '@/src/stores/store';
 import { useState } from 'react';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
+import FormField from '@/src/components/form-field';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
 import Select from '@/src/components/select';
 import { countries } from '@nikelaz/bw-shared-libraries';
 import { SignUpSchema } from '@/src/validation-schemas/user-schemas';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
-export default function ChangePassword() {
+type SignUpFormData = z.infer<typeof SignUpSchema>;
+
+export default function SignUp() {
   const router = useRouter();
   const signup = useStore(state => state.signup);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatPassword, setRepeatPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const countrySelectData = countries.map(country => ({ label: country, value: country }));
-  const [country, setCountry] = useState(countrySelectData[0]);
   const errorBoundary = useErrorBoundary();
   const [isLoading, setIsLoading] = useState(false);
 
-  const formSubmitHandler = async () => {
-    setIsLoading(true);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(SignUpSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      repeatPassword: '',
+      firstName: '',
+      lastName: '',
+      country: countrySelectData[0].value,
+    },
+  });
 
+  const formSubmitHandler = handleSubmit(async (data) => {
+    setIsLoading(true);
     try {
-      const parsedUser = SignUpSchema.parse({ email, password, repeatPassword, firstName, lastName, country: country.value });
-      if (parsedUser.password !== parsedUser.repeatPassword) {
+      if (data.password !== data.repeatPassword) {
         throw new Error('The two passwords do not match');
       }
-      await signup(parsedUser);
-      router.navigate(`/(login)?signed_up=true&email=${email}`);
+      await signup(data);
+      router.navigate(`/(login)?signed_up=true&email=${data.email}`);
     } catch (error: any) {
       errorBoundary(error);
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   return (
     <Container>
@@ -55,78 +68,113 @@ export default function ChangePassword() {
           color: useThemeColor({ light: 'black', dark: 'text' }, 'text'),
         }
       }} />
-      <ColLayout spacing="l">
-        <View>
-          <GroupLabel>Email</GroupLabel>
-          <TextBox
-            value={email}
-            onChangeText={setEmail}
-            aria-label="email input"
-            autoComplete="email"
-            textContentType="emailAddress"
-            inputMode="email"
-            keyboardType="email-address"
-            autoCorrect={false}
-            autoCapitalize="none"
+      <ColLayout spacing="s">
+        <FormField label="Email" error={errors.email?.message}>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <TextBox
+                value={value}
+                onChangeText={onChange}
+                aria-label="email input"
+                autoComplete="email"
+                textContentType="emailAddress"
+                inputMode="email"
+                keyboardType="email-address"
+                autoCorrect={false}
+                autoCapitalize="none"
+                isInvalid={Boolean(errors.email)}
+              />
+            )}
           />
-        </View>
-        <View>
-          <GroupLabel>First Name</GroupLabel>
-          <TextBox
-            value={firstName}
-            onChangeText={setFirstName}
-            aria-label="first name input"
-            autoComplete="name-given"
-            textContentType="givenName"
-            inputMode="text"
-            autoCapitalize="words"
+        </FormField>
+        <FormField label="First Name" error={errors.firstName?.message}>
+          <Controller
+            control={control}
+            name="firstName"
+            render={({ field: { onChange, value } }) => (
+              <TextBox
+                value={value}
+                onChangeText={onChange}
+                aria-label="first name input"
+                autoComplete="name-given"
+                textContentType="givenName"
+                inputMode="text"
+                autoCapitalize="words"
+                isInvalid={Boolean(errors.firstName)}
+              />
+            )}
           />
-        </View>
-        <View>
-          <GroupLabel>Last Name</GroupLabel>
-          <TextBox
-            value={lastName}
-            onChangeText={setLastName}
-            aria-label="last name input"
-            autoComplete="name-family"
-            textContentType="familyName"
-            inputMode="text"
-            autoCapitalize="words"
+        </FormField>
+        <FormField label="Last Name" error={errors.lastName?.message}>
+          <Controller
+            control={control}
+            name="lastName"
+            render={({ field: { onChange, value } }) => (
+              <TextBox
+                value={value}
+                onChangeText={onChange}
+                aria-label="last name input"
+                autoComplete="name-family"
+                textContentType="familyName"
+                inputMode="text"
+                autoCapitalize="words"
+                isInvalid={Boolean(errors.lastName)}
+              />
+            )}
           />
-        </View>
-        <View>
-          <GroupLabel>Password</GroupLabel>
-          <TextBox
-            value={password}
-            onChangeText={setPassword}
-            aria-label="password input"
-            autoComplete="off"
-            textContentType="newPassword"
-            autoCapitalize="none"
-            secureTextEntry={true}
+        </FormField>
+        <FormField label="Password" error={errors.password?.message}>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <TextBox
+                value={value}
+                onChangeText={onChange}
+                aria-label="password input"
+                autoComplete="off"
+                textContentType="newPassword"
+                autoCapitalize="none"
+                secureTextEntry={true}
+                isInvalid={Boolean(errors.password)}
+              />
+            )}
           />
-        </View>
-        <View>
-          <GroupLabel>Repeat Password</GroupLabel>
-          <TextBox 
-            value={repeatPassword}
-            onChangeText={setRepeatPassword}
-            aria-label="repeat password input"
-            autoComplete="off"
-            textContentType="password"
-            autoCapitalize="none"
-            secureTextEntry={true}
+        </FormField>
+        <FormField label="Repeat Password" error={errors.repeatPassword?.message}>
+          <Controller
+            control={control}
+            name="repeatPassword"
+            render={({ field: { onChange, value } }) => (
+              <TextBox
+                value={value}
+                onChangeText={onChange}
+                aria-label="repeat password input"
+                autoComplete="off"
+                textContentType="password"
+                autoCapitalize="none"
+                secureTextEntry={true}
+                isInvalid={Boolean(errors.repeatPassword)}
+              />
+            )}
           />
-        </View>
-        <View>
-          <GroupLabel>Country</GroupLabel>
-          <Select
-            aria-label="country select"
-            onValueChange={(e) => setCountry(countrySelectData.find(item => item.value === e.value) || countrySelectData[0])}
-            items={countrySelectData}
-            selectedItem={country}
+        </FormField>
+        <FormField label="Country" error={errors.country?.message}>
+          <Controller
+            control={control}
+            name="country"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                aria-label="country select"
+                onValueChange={(e) => onChange(e.value)}
+                items={countrySelectData}
+                selectedItem={countrySelectData.find(item => item.value === value) || countrySelectData[0]}
+              />
+            )}
           />
-        </View>
+        </FormField>
         <View>
           <TouchableBox
             onPress={formSubmitHandler}

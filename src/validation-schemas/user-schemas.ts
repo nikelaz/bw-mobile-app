@@ -22,8 +22,8 @@ export const SignUpSchema = z.object({
 
 export const LoginSchema = z.object({
   email: z.string()
-    .email({ message: 'Invalid credentials' })
-    .min(5, { message: 'Email must be 5 or more characters long' }),
+    .email({ message: 'A valid email is required' })
+    .min(5, { message: 'A valid email is required' }),
   password: z.string()
     .min(1, { message: 'Password is required' })
 });
@@ -46,4 +46,7 @@ export const UserUpdateSchema = z.object({
     .min(1, { message: 'First name is required' }),
   lastName: z.string()
     .min(1, { message: 'Last name is required' }),
+  currency:
+    z.string()
+    .min(1, { message: 'Currency is required' }),
 });

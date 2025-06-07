@@ -19,6 +19,7 @@ export const Colors = {
     systemGrey4: '#d1d1d6',
     systemGrey5: '#e5e5ea',
     systemGrey6: '#f2f2f7',
+    red: '#e03131',
   },
   dark: {
     text: '#ECEDEE',
@@ -40,5 +41,6 @@ export const Colors = {
     systemGrey4: '#3a3a3c',
     systemGrey5: '#2c2c2e',
     systemGrey6: '#1c1c1e',
+    red: '#fa5252',
   },
 };

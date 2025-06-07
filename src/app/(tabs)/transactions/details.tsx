@@ -14,6 +14,7 @@ import months from '@/data/months';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import Dialog from '@/src/helpers/alert';
 import { UpdateTransactionSchema } from '@/src/validation-schemas/transaction.schemas';
+import { useForm, Controller } from 'react-hook-form';
 
 const getOptionsFromCategoryBudgets = (categoryBudgets?: CategoryBudget[]) => {
   const categoriesMap: any = {};
@@ -35,6 +36,12 @@ const getOptionsFromCategoryBudgets = (categoryBudgets?: CategoryBudget[]) => {
   });
 };
 
+type TransactionDetailsFormData = {
+  title: string;
+  amount: string;
+  category: { value: string; label: string };
+};
+
 export default function TransactionDetails() {
   const transactions = useStore(state => state.transactions);
   const updateTransaction = useStore(state => state.updateTransaction);
@@ -44,42 +51,32 @@ export default function TransactionDetails() {
   const id = Array.isArray(params.id) ? parseInt(params.id[0]) : parseInt(params.id);
   const router = useRouter();
   const transaction = transactions.find((transaction: Transaction) => transaction.id === id);
+  const categoryOptions = getOptionsFromCategoryBudgets(currentBudget?.categoryBudgets);
+  const { control, handleSubmit } = useForm<TransactionDetailsFormData>({
+    defaultValues: {
+      title: transaction?.title || '',
+      amount: transaction?.amount?.toString() || '',
+      category: categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget?.id) || categoryOptions[0],
+    },
+  });
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(transaction ? new Date(transaction.date) : new Date());
-  const [title, setTitle] = useState(transaction?.title);
-  const [amount, setAmount] = useState(transaction?.amount.toString());
   const [isLoading, setIsLoading] = useState(false);
-
-  const categoryOptions = getOptionsFromCategoryBudgets(currentBudget?.categoryBudgets);
-  const [category, setCategory] = useState(categoryOptions.find(option => parseInt(option.value) === transaction?.categoryBudget?.id) || categoryOptions[0]);
-  
   const errorBoundary = useErrorBoundary();
-
-  const updateTransactionHandler = async (passedDate?: Date, category?: any) => {
+  const updateTransactionHandler = handleSubmit(async (data) => {
     try {
       const updateObj: any = UpdateTransactionSchema.parse({
         id,
-        title,
-        amount
+        title: data.title,
+        amount: data.amount,
       });
-  
-      if (passedDate) {
-        updateObj.date = passedDate.toISOString();
-      } else {
-        updateObj.date = date.toISOString()
-      }
-  
-      if (category) {
-        updateObj.categoryBudget = {
-          id: parseInt(category.value),
-        };
-      }
-  
+      updateObj.date = date.toISOString();
+      updateObj.categoryBudget = { id: parseInt(data.category.value) };
       await updateTransaction(updateObj);
     } catch (error) {
       errorBoundary(error);
     }
-  };
+  });
 
   const deleteTransactionHandler = async () => {
     setIsLoading(true);
@@ -96,7 +93,7 @@ export default function TransactionDetails() {
   const confirmDelete = () => {
     Dialog.confirm(
       'Delete Transaction',
-      `You are about to delete a transaction: \n${title} \nAre you sure?`,
+      `You are about to delete a transaction: \n${transaction?.title} \nAre you sure?`,
       'Delete',
       () => deleteTransactionHandler()
     );
@@ -105,16 +102,21 @@ export default function TransactionDetails() {
   return (
     <View>
       <Stack.Screen options={{
-        title: title,
+        title: transaction?.title,
         headerBackButtonDisplayMode: 'minimal',
       }} />
-
       <Container>
         <ColLayout>
           <ColLayout spacing="m">
             <View>
               <GroupLabel>Title</GroupLabel>
-              <TextBox value={title} onChangeText={setTitle} onBlur={() => updateTransactionHandler()} />
+              <Controller
+                control={control}
+                name="title"
+                render={({ field: { onChange, value } }) => (
+                  <TextBox value={value} onChangeText={onChange} onBlur={updateTransactionHandler} />
+                )}
+              />
             </View>
             <View>
               <GroupLabel>Date</GroupLabel>
@@ -124,10 +126,10 @@ export default function TransactionDetails() {
                 open={open}
                 date={date}
                 mode="date"
-                onConfirm={(date) => {
+                onConfirm={(dateVal) => {
                   setOpen(false);
-                  setDate(date);
-                  updateTransactionHandler(date);
+                  setDate(dateVal);
+                  updateTransactionHandler();
                 }}
                 onCancel={() => {
                   setOpen(false);
@@ -136,21 +138,29 @@ export default function TransactionDetails() {
             </View>
             <View>
               <GroupLabel>Category</GroupLabel>
-              <Select
-                onValueChange={(category) => {
-                  setCategory(category);
-                  updateTransactionHandler(undefined, category);
-                }}
-                items={categoryOptions}
-                selectedItem={category}
+              <Controller
+                control={control}
+                name="category"
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    onValueChange={onChange}
+                    items={categoryOptions}
+                    selectedItem={value}
+                  />
+                )}
               />
             </View>
             <View>
               <GroupLabel>Amount</GroupLabel>
-              <TextBox value={amount} onChangeText={setAmount} onBlur={() => updateTransactionHandler()} />
+              <Controller
+                control={control}
+                name="amount"
+                render={({ field: { onChange, value } }) => (
+                  <TextBox value={value} onChangeText={onChange} onBlur={updateTransactionHandler} />
+                )}
+              />
             </View>
           </ColLayout>
-
           <TouchableBox isLoading={isLoading} color="danger" center={true} onPress={confirmDelete} icon="trash-bin">Delete Transaction</TouchableBox>   
         </ColLayout>
       </Container>

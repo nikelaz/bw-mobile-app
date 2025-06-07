@@ -3,16 +3,20 @@ import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { ThemedText } from './themed-text';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export interface TouchableBoxProps {
+export interface FeedbackBoxProps {
   children: React.ReactNode,
+  color: 'success' | 'error',
 }
 
-const SuccessBox = (props: TouchableBoxProps) => {
+const FeedbackBox = (props: FeedbackBoxProps) => {
   const iconColor = useThemeColor({}, 'text');
+  const icon = props.color === 'success' ? 'checkmark-outline' : 'close-outline';
+  const backgroundColor = props.color === 'success' ? 'rgba(52, 199, 89, 0.4)' : 'rgba(255, 59, 48, 0.4)';
+  const borderColor = props.color === 'success' ? 'rgba(52, 199, 89, 0.45)' : 'rgba(255, 59, 48, 0.45)';
 
   return (
-    <View style={styles.successBox}>
-      <Ionicons name='checkmark-outline' size={24} color={iconColor} />
+    <View style={{ ...styles.successBox, backgroundColor, borderColor }}>
+      <Ionicons name={icon} size={24} color={iconColor} />
       <ThemedText>
         {props.children}
       </ThemedText>
@@ -31,11 +35,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,
-    backgroundColor: 'rgba(52, 199, 89, 0.4)',
     borderStyle: 'solid',
     borderWidth: 1,
-    borderColor: 'rgba(52, 199, 89, 0.45)',
   }
 });
 
-export default SuccessBox;
+export default FeedbackBox;

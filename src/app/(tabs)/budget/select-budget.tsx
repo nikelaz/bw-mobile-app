@@ -12,6 +12,7 @@ import LinkBox from '@/src/components/link-box';
 export default function SelectBudget() {
   const budgets = useStore(state => state.budgets);
   const setCurrentBudget = useStore(state => state.setCurrentBudget);
+  const deleteBudget = useStore(state => state.deleteBudget);
   const router = useRouter();
   const params = useLocalSearchParams();
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Budget';
@@ -26,6 +27,8 @@ export default function SelectBudget() {
     router.dismissTo('/(tabs)/budget');
     if (backHref !== '/(tabs)/budget') router.navigate(backHref);
   }
+
+  console.log('budgets', budgets);
 
   return (
     <View>
@@ -57,9 +60,10 @@ export default function SelectBudget() {
                 >
                   {months[budgetDate.getMonth()]} {budgetDate.getFullYear()}
                 </TouchableBox>
-              )
+              );
             })}   
           </View>
+          <TouchableBox onPress={() => { console.log('delete budget, id:', budgets[budgets.length - 1].id); deleteBudget(budgets[budgets.length - 1].id);}}>Delete Budget</TouchableBox>
 
           <LinkBox icon="add-outline" color="primary" center={true} href="/(tabs)/budget/create">Create New Budget</LinkBox>
         </ColLayout>
