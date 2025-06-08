@@ -8,7 +8,7 @@ import months from '@/data/months';
 import BackButton from '@/src/components/back-button';
 import LinkBox from '@/src/components/link-box';
 import Dialog from '@/src/helpers/alert';
-import SwipableBudgetItem, { SwipableBudgetItemHandle } from '@/src/components/swipable-budget-item';
+import SwipableTouchableBox, { SwipableTouchableBoxHandle } from '@/src/components/swipable-touchable-box';
 import { useRef } from 'react';
 
 export default function SelectBudget() {
@@ -20,7 +20,7 @@ export default function SelectBudget() {
   const params = useLocalSearchParams();
   const backText = (Array.isArray(params.backText) ? params.backText[0] : params.backText) || 'Budget';
   const backHref: any = (Array.isArray(params.backHref) ? params.backHref[0] : params.backHref) || '/(tabs)/budget';
-  const itemRefs = useRef<Record<string, SwipableBudgetItemHandle | null>>({});
+  const itemRefs = useRef<Record<string, SwipableTouchableBoxHandle | null>>({});
 
   const changeBudgetPeriod = (budget: Budget) => {
     setCurrentBudget(budget);
@@ -72,10 +72,9 @@ export default function SelectBudget() {
               };
 
               return (
-                <SwipableBudgetItem
+                <SwipableTouchableBox
                   key={budget.id}
                   ref={(ref) => { itemRefs.current[budget.id] = ref; }}
-                  budget={budget}
                   onPress={() => {
                     resetOtherItems(budget.id.toString());
                     changeBudgetPeriod(budgetWithDate);
@@ -85,7 +84,9 @@ export default function SelectBudget() {
                   isLoading={isLoading}
                   groupFirst={index === 0}
                   groupLast={index === budgets.length - 1}
-                />
+                >
+                  {months[budgetDate.getMonth()]} {budgetDate.getFullYear()}
+                </SwipableTouchableBox>
               )
             })}   
           </View>

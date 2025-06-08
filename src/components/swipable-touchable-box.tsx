@@ -2,17 +2,17 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useState, useImperativeHandle, forwardRef } from 'react';
-import type { Budget } from '@nikelaz/bw-shared-libraries';
 import TouchableBox from '@/src/components/touchable-box';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { Loader } from '@/src/components/loader';
-import months from '@/data/months';
 
 const SWIPE_THRESHOLD = -75;
 const OVER_SWIPE_THRESHOLD = -100;
 
-type SwipableBudgetItemProps = Readonly<{
-  budget: Budget; 
+type SwipableTouchableBoxProps = Readonly<{
+  children: React.ReactNode;
+  additionalText?: string;
+  arrow?: boolean;
   onPress: () => void; 
   onDelete: () => void; 
   onInteractionStart?: () => void;
@@ -21,11 +21,11 @@ type SwipableBudgetItemProps = Readonly<{
   isLoading?: boolean;
 }>;
 
-export interface SwipableBudgetItemHandle {
+export interface SwipableTouchableBoxHandle {
   resetPosition: () => void;
 }
 
-const SwipableBudgetItem = forwardRef<SwipableBudgetItemHandle, SwipableBudgetItemProps>(
+const SwipableTouchableBox = forwardRef<SwipableTouchableBoxHandle, SwipableTouchableBoxProps>(
   (props, ref) => {
     const translateX = useSharedValue(0);
     const [isSwiping, setIsSwiping] = useState(false);
@@ -68,7 +68,6 @@ const SwipableBudgetItem = forwardRef<SwipableBudgetItemHandle, SwipableBudgetIt
     };
   });
 
-  const budgetDate = new Date(props.budget.month);
 
   const onPressProxy = (fn: () => void) => {
     return () => {
@@ -98,11 +97,12 @@ const SwipableBudgetItem = forwardRef<SwipableBudgetItemHandle, SwipableBudgetIt
         <Animated.View style={animatedStyle}>
           <TouchableBox
             group={true}
-            arrow={false}
+            arrow={props.arrow}
+            additionalText={props.additionalText}
             onPress={onPressProxy(props.onPress)}
             noSeparator={props.groupLast}
           >
-            {months[budgetDate.getMonth()]} {budgetDate.getFullYear()}
+            {props.children}
           </TouchableBox>
         </Animated.View>
       </GestureDetector>
@@ -145,4 +145,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SwipableBudgetItem;
+export default SwipableTouchableBox;
