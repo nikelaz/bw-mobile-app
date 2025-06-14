@@ -55,7 +55,18 @@
       [
         "expo-font",
         {
-          "fonts": ["node_modules/@ant-design/icons-react-native/fonts/antoutline.ttf"]
+          "fonts": [
+            "node_modules/@ant-design/icons-react-native/fonts/antoutline.ttf"
+          ]
+        }
+      ],
+      "react-native-bottom-tabs",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
         }
       ]
     ],

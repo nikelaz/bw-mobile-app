@@ -16,6 +16,7 @@
   "dependencies": {
     "@ant-design/icons-react-native": "2.3.2",
     "@ant-design/react-native": "5.4.1",
+    "@bottom-tabs/react-navigation": "^0.9.2",
     "@expo/vector-icons": "14.1.0",
     "@nikelaz/bw-reporting-view": "0.3.0",
     "@nikelaz/bw-shared-libraries": "1.0.5",
@@ -35,6 +36,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.3",
+    "react-native-bottom-tabs": "^0.9.2",
     "react-native-date-picker": "5.0.12",
     "react-native-error-boundary": "2.0.0",
     "react-native-gesture-handler": "~2.24.0",
@@ -44,7 +46,8 @@
     "react-native-svg": "15.11.2",
     "react-native-webview": "13.13.5",
     "zod": "3.24.4",
-    "zustand": "5.0.4"
+    "zustand": "5.0.4",
+    "expo-build-properties": "~0.14.6"
   },
   "devDependencies": {
     "@babel/core": "7.27.1",

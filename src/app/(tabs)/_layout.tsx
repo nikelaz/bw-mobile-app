@@ -1,54 +1,51 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
-import { TabBarIcon } from '@/src/components/tab-bar-icon';
-import { useThemeColor } from '@/src/hooks/useThemeColor';
+import { withLayoutContext } from 'expo-router';
+import {
+  createNativeBottomTabNavigator,
+  NativeBottomTabNavigationOptions,
+  NativeBottomTabNavigationEventMap,
+} from '@bottom-tabs/react-navigation';
+import { ParamListBase, TabNavigationState } from '@react-navigation/native';
+
+const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
+
+const Tabs = withLayoutContext<
+  NativeBottomTabNavigationOptions,
+  typeof BottomTabNavigator,
+  TabNavigationState<ParamListBase>,
+  NativeBottomTabNavigationEventMap
+>(BottomTabNavigator);
 
 export default function TabLayout() {
   return (
     <>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            borderTopColor: useThemeColor({}, 'systemGrey2'),
-            backgroundColor: useThemeColor({ light: 'white', dark: 'black' }, 'background')
-          },
-          tabBarActiveTintColor: useThemeColor({}, 'primary'),
-        }}>
+      <Tabs>
         <Tabs.Screen
           name="budget"
           options={{
             title: 'Budget',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'wallet' : 'wallet-outline'} color={color} />
-            ),
+            tabBarIcon: () => require('@/assets/icons/wallet.svg'),
           }}
         />
         <Tabs.Screen
           name="reporting"
           options={{
             title: 'Reporting',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'stats-chart' : 'stats-chart-outline'} color={color} />
-            ),
+            tabBarIcon: () => require('@/assets/icons/stats-chart.svg'),
           }}
         />
         <Tabs.Screen
           name="transactions"
           options={{
             title: 'Transactions',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'card' : 'card-outline'} color={color} />
-            ),
+            tabBarIcon: () => require('@/assets/icons/card.svg'),
           }}
         />
         <Tabs.Screen
           name="settings"
           options={{
             title: 'Settings',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={color} />
-            ),
+            tabBarIcon: () => require('@/assets/icons/settings.svg'),
           }}
         />
       </Tabs>
