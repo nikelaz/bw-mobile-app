@@ -6,18 +6,20 @@ type ContainerProps = Readonly<{
 }>;
 
 const Container = (props: ContainerProps) => (
-  <SafeAreaView style={{ backgroundColor: useThemeColor({}, 'background') }}>
+  <View style={{ backgroundColor: useThemeColor({}, 'background') }}>
     <ScrollView automaticallyAdjustKeyboardInsets={true} style={styles.scrollWrapper}>
-      <View
-        style={{
-          ...styles.container,
-          ...props.style,
-        }}
-      >
-        {props.children}
-      </View>
+      <SafeAreaView>
+        <View
+          style={{
+            ...styles.container,
+            ...props.style,
+          }}
+        >
+          {props.children}
+        </View>
+      </SafeAreaView>
     </ScrollView>
-  </SafeAreaView>
+  </View>
 );
 
 const styles = StyleSheet.create({
