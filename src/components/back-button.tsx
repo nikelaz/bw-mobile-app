@@ -42,7 +42,8 @@ const BackButton = ({
 
 const styles = StyleSheet.create({
   wrapper: {
-    paddingRight: 20,
+    paddingTop: 4,
+    paddingLeft: 2,
   },
 });
 
