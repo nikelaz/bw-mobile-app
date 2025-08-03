@@ -38,8 +38,15 @@ export default function SelectBudget() {
       'Delete Budget',
       `Are you sure you want to delete the budget for ${months[date.getMonth()]} ${date.getFullYear()}?`,
       'Delete',
-      () => {
-        deleteBudget(budget.id);
+      async () => {
+        try {
+          await deleteBudget(budget.id);
+        } catch (error) {
+          Dialog.alert(
+            'Error',
+            'Failed to delete the budget. Please try again.'
+          );
+        }
       }
     );
   };
