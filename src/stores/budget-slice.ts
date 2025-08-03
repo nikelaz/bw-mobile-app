@@ -179,7 +179,7 @@ export const createBudgetSlice: StateCreator<
         throw new Error(jsonResponse.message || `Error deleting budget: ${req.status}`);
       }
 
-      if (currentBudget?.id === budgetId) {
+      if (currentBudget && String(currentBudget.id) === String(budgetId)) {
         setCurrentBudget(null);
       }
 
