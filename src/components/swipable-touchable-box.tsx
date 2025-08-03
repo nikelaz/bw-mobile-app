@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     color: '#fff',
-    fontWeight: 500,
+    fontWeight: '500',
   },
 });
 
