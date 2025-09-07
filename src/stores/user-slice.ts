@@ -4,6 +4,7 @@ import { StateCreator } from 'zustand';
 import { Currency, currencies } from '@/data/currencies';
 import { api } from '@/config';
 import Storage from '@/src/helpers/storage';
+import { OAuthProvider } from '@/src/constants/oauth-provider';
 
 type User = {
   id: string;
@@ -27,6 +28,7 @@ export type UserActions = {
   setCurrency: (currency: string | null) => void;
   getCurrency: () => string;
   login: (email: string, password: string) => Promise<void>;
+  oauth: (token: string, oAuthProvider: OAuthProvider) => Promise<void>;
   signup: (user: Partial<User>) => Promise<void>;
   logout: () => Promise<void>;
   loginFromStorage: () => Promise<string | null>;
@@ -98,6 +100,46 @@ export const createUserSlice: StateCreator<
       };
 
       const req = await fetch(`${api}/users/login`, reqOptions);
+      const jsonResponse = await req.json();
+
+      if (req.status !== 200) {
+        throw jsonResponse;
+      }
+
+      await Storage.setItem('token', jsonResponse.token);
+      await Storage.setItem('user', JSON.stringify(jsonResponse.user));
+
+      setToken(jsonResponse.token);
+      setCurrency(jsonResponse.user.currency);
+      set({ user: jsonResponse.user });
+    } catch (error) {
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  oauth: async (token, oAuthProvider) => {
+    const {
+      setToken,
+      setCurrency,
+    } = get();
+
+    set({ isLoading: true });
+    
+    try {
+      const reqOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token,
+          oAuthProvider,
+        })
+      };
+
+      const req = await fetch(`${api}/users/oauth`, reqOptions);
       const jsonResponse = await req.json();
 
       if (req.status !== 200) {

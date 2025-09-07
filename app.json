@@ -57,6 +57,12 @@
         {
           "fonts": ["node_modules/@ant-design/icons-react-native/fonts/antoutline.ttf"]
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.158086281084-s93mumkllinl93ksnevmbgq36426r7qr"
+        }
       ]
     ],
     "newArchEnabled": true,

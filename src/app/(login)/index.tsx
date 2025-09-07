@@ -15,11 +15,20 @@ import SuccessBox from '@/src/components/success-box';
 import Container from '@/src/components/container';
 import { LoginSchema } from '@/src/validation-schemas/user-schemas';
 import { TextInput } from 'react-native';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  isSuccessResponse,
+  isErrorWithCode,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import { OAuthProvider } from '@/src/constants/oauth-provider';
 
 export default function Login() {
   const router = useRouter();
   const token = useStore((state) => state.token);
   const login = useStore((state) => state.login);
+  const oauth = useStore((state) => state.oauth);
 
   const params = useLocalSearchParams();
   const [email, setEmail] = useState('');
@@ -28,6 +37,13 @@ export default function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const passwordInputRef = useRef<TextInput | null>(null);
   const errorBoundary = useErrorBoundary();
+
+  useEffect(() => {
+    GoogleSignin.configure({
+        webClientId: '158086281084-mu2rkruhk9ak2qda8tcq5mjmvs16are8.apps.googleusercontent.com', 
+        iosClientId: '158086281084-s93mumkllinl93ksnevmbgq36426r7qr.apps.googleusercontent.com',
+      });
+  }, []);
  
   useEffect(() => {
     (async () => {
@@ -69,6 +85,40 @@ export default function Login() {
       }
     };
   }
+
+  const authWithGoogle = async () => {
+    setIsLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+
+      if (isSuccessResponse(response)) {
+        if (
+             !response.data
+          || !response.data.idToken
+        ) {
+          throw new Error('Unable to retrieve required account information from Google. Please check your Google account settings and try again.'); 
+        }
+        await oauth(response.data.idToken, OAuthProvider.GOOGLE);
+        router.navigate('/(tabs)/budget');
+      }
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            errorBoundary(new Error('Google Sign-In requires Google Play Services, which are missing on your device. Please install or update Google Play Services to continue.'));
+            break;
+          default:
+            errorBoundary(new Error('An unexpected error occured while logging in. Please try again later.'));
+        }        
+      }
+      else {
+        errorBoundary(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Container>
@@ -113,6 +163,12 @@ export default function Login() {
           <View>
             <TouchableBox icon="log-in-outline" onPress={formSubmitHandler} color="primary" center={true} isLoading={isLoading}>Login</TouchableBox>
           </View>
+          <GoogleSigninButton
+            style={{width: '100%', height: 60}}
+            color={GoogleSigninButton.Color.Light}
+            onPress={authWithGoogle}
+            disabled={isLoading}
+          />
           <View style={{alignItems: 'center'}}>
             <LinkButton href="/(login)/sign-up">Sign Up</LinkButton>
           </View>
