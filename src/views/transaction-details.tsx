@@ -35,7 +35,7 @@ const getOptionsFromCategoryBudgets = (categoryBudgets?: CategoryBudget[]) => {
   });
 };
 
-type TransactionDetailsProps = Reaonly<{
+type TransactionDetailsProps = Readonly<{
   setTitle: (title: string) => void;
 }>;
 
