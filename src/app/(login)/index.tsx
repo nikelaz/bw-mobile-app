@@ -116,7 +116,7 @@ export default function Login() {
             errorBoundary(new Error('Google Sign-In requires Google Play Services, which are missing on your device. Please install or update Google Play Services to continue.'));
             break;
           default:
-            errorBoundary(new Error('An unexpected error occured while logging in. Please try again later.'));
+            errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
         }        
       }
       else {
@@ -139,7 +139,7 @@ export default function Login() {
         ],
       });
       if (!credential.identityToken) {
-        errorBoundary(new Error('An unexpected error occured while logging in. Please try again later.'));
+        errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
         setIsLoading(false);
         setIsLoadingApple(false);
         return;
@@ -154,7 +154,7 @@ export default function Login() {
       router.navigate('/(tabs)/budget');
     } catch (e: any) {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
-        errorBoundary(new Error('An unexpected error occured while logging in. Please try again later.'));
+        errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
       }
     } finally {
       setIsLoading(false);
