@@ -28,7 +28,8 @@
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -61,9 +62,10 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": "com.googleusercontent.apps.158086281084-s93mumkllinl93ksnevmbgq36426r7qr"
+          "iosUrlScheme": "com.googleusercontent.apps.158086281084-aeh9cjqtu6ea8kqe3eke9fs627hlq7r8"
         }
-      ]
+      ],
+      "expo-apple-authentication"
     ],
     "newArchEnabled": true,
     "experiments": {

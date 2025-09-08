@@ -10,6 +10,7 @@ type User = {
   id: string;
   email: string;
   currency: string;
+  oAuthProvider?: OAuthProvider | null;
   [key: string]: any;
 };
 
@@ -28,7 +29,7 @@ export type UserActions = {
   setCurrency: (currency: string | null) => void;
   getCurrency: () => string;
   login: (email: string, password: string) => Promise<void>;
-  oauth: (token: string, oAuthProvider: OAuthProvider) => Promise<void>;
+  oauth: (token: string, oAuthProvider: OAuthProvider, firstName?: string | null, lastName?: string | null) => Promise<void>;
   signup: (user: Partial<User>) => Promise<void>;
   logout: () => Promise<void>;
   loginFromStorage: () => Promise<string | null>;
@@ -119,12 +120,11 @@ export const createUserSlice: StateCreator<
     }
   },
 
-  oauth: async (token, oAuthProvider) => {
+  oauth: async (token, oAuthProvider, firstName, lastName) => {
     const {
       setToken,
       setCurrency,
     } = get();
-
     set({ isLoading: true });
     
     try {
@@ -136,6 +136,8 @@ export const createUserSlice: StateCreator<
         body: JSON.stringify({
           token,
           oAuthProvider,
+          firstName,
+          lastName,
         })
       };
 

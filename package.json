@@ -45,7 +45,8 @@
     "react-native-svg": "15.11.2",
     "react-native-webview": "13.13.5",
     "zod": "3.24.4",
-    "zustand": "5.0.4"
+    "zustand": "5.0.4",
+    "expo-apple-authentication": "~7.2.4"
   },
   "devDependencies": {
     "@babel/core": "7.27.1",
