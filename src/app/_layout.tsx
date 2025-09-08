@@ -9,8 +9,9 @@ import { Provider } from '@ant-design/react-native';
 import { useEffect } from 'react';
 import LinkButton from '@/src/components/link-button';
 import { StatusBar } from 'expo-status-bar';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useStore } from '@/src/stores/store';
+import { dispatchOutsidePress } from '@/src/helpers/outside-press';
 
 const ErrorFallbackComponent = () => {
   return (
@@ -48,25 +49,33 @@ export default function RootLayout() {
   const isIOS = Platform.OS === 'ios';
   const bgColor = useThemeColor({}, 'background');
 
+  const tapOutsideGesture = Gesture.Tap()
+    .onEnd(dispatchOutsidePress)
+    .runOnJS(true);
+
   return (
     <Provider
       theme={colorScheme === 'dark' ? antDesignDarkTheme : undefined}
     >
       <GestureHandlerRootView>
-        <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            {isIOS ? (
-              <StatusBar style="auto" />
-            ) : (
-                <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
-              )}
-            <Stack>
-              <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </ThemeProvider>
-        </ErrorBoundary>
+        <GestureDetector gesture={tapOutsideGesture}>
+          <View style={{flex: 1}} collapsable={false}>
+            <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+              <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+                {isIOS ? (
+                  <StatusBar style="auto" />
+                ) : (
+                    <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
+                  )}
+                <Stack>
+                  <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </ThemeProvider>
+            </ErrorBoundary>
+          </View>
+        </GestureDetector>
       </GestureHandlerRootView>
     </Provider>
   );

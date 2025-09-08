@@ -140,10 +140,12 @@ export default function Budget() {
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           isLoading={isLoading}
+                          group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.INCOME].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
+                          progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
                         </SwipableTouchableBox>
@@ -179,10 +181,12 @@ export default function Budget() {
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           isLoading={isLoading}
+                          group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.EXPENSE].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
+                          progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
                         </SwipableTouchableBox>
@@ -218,10 +222,12 @@ export default function Budget() {
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           isLoading={isLoading}
+                          group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.SAVINGS].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
+                          progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
                         </SwipableTouchableBox>
@@ -257,10 +263,12 @@ export default function Budget() {
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           isLoading={isLoading}
+                          group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.DEBT].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
+                          progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
                         </SwipableTouchableBox>

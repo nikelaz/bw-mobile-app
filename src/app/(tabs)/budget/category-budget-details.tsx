@@ -153,6 +153,7 @@ export default function CategoryBudgetDetails() {
                       onDelete={() => handleDeleteTransaction(transaction)}
                       onInteractionStart={() => resetOtherItems(transaction.id.toString())}
                       isLoading={isLoading}
+                      group={true}
                       groupFirst={index === 0}
                       groupLast={index === (categoryBudget.transactions?.length || 0) - 1}
                       arrow={true}
