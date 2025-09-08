@@ -1,25 +1,19 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { useState, useImperativeHandle, forwardRef } from 'react';
-import TouchableBox from '@/src/components/touchable-box';
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
+import TouchableBox, { TouchableBoxProps } from '@/src/components/touchable-box';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { Loader } from '@/src/components/loader';
+import { subscribeToOutsidePress } from '@/src/helpers/outside-press';
 
 const SWIPE_THRESHOLD = -75;
 const OVER_SWIPE_THRESHOLD = -100;
 
-type SwipableTouchableBoxProps = Readonly<{
-  children: React.ReactNode;
-  additionalText?: string;
-  arrow?: boolean;
-  onPress: () => void; 
+interface SwipableTouchableBoxProps extends TouchableBoxProps {
   onDelete: () => void; 
   onInteractionStart?: () => void;
-  groupFirst?: boolean;
-  groupLast?: boolean;
-  isLoading?: boolean;
-}>;
+}
 
 export interface SwipableTouchableBoxHandle {
   resetPosition: () => void;
@@ -38,6 +32,14 @@ const SwipableTouchableBox = forwardRef<SwipableTouchableBoxHandle, SwipableTouc
     useImperativeHandle(ref, () => ({
       resetPosition,
     }));
+
+    useEffect(() => {
+      const unsubscribe = subscribeToOutsidePress(() => {
+        resetPosition();
+      });
+
+      return unsubscribe;
+    }, []);
 
     const panGesture = Gesture.Pan()
       .onStart(() => {
@@ -96,11 +98,8 @@ const SwipableTouchableBox = forwardRef<SwipableTouchableBoxHandle, SwipableTouc
       <GestureDetector gesture={panGesture}>
         <Animated.View style={animatedStyle}>
           <TouchableBox
-            group={true}
-            arrow={props.arrow}
-            additionalText={props.additionalText}
+            {...props}
             onPress={onPressProxy(props.onPress)}
-            noSeparator={props.groupLast}
           >
             {props.children}
           </TouchableBox>
@@ -128,8 +127,8 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    width: 100,
-    paddingLeft: 25,
+    width: 120,
+    paddingLeft: 45,
     justifyContent: 'center',
     alignItems: 'center',
   },

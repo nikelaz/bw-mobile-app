@@ -89,6 +89,7 @@ export default function SelectBudget() {
                   onDelete={() => handleDeleteBudget(budget)}
                   onInteractionStart={() => resetOtherItems(budget.id.toString())}
                   isLoading={isLoading}
+                  group={true}
                   groupFirst={index === 0}
                   groupLast={index === budgets.length - 1}
                 >
