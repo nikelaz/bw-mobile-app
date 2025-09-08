@@ -76,7 +76,7 @@ export default function TransactionDetailsView(props: TransactionDetailsProps) {
       if (passedDate) {
         updateObj.date = passedDate.toISOString();
       } else {
-        updateObj.date = date.toISOString()
+        updateObj.date = date.toISOString();
       }
   
       if (category) {
