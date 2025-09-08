@@ -2,14 +2,14 @@ import 'react-native-reanimated';
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { SafeAreaView, View, Text, Platform } from 'react-native';
+import { SafeAreaView, View, Text, Platform, Pressable } from 'react-native';
 import ErrorBoundary from 'react-native-error-boundary';
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { Provider } from '@ant-design/react-native';
 import { useEffect } from 'react';
 import LinkButton from '@/src/components/link-button';
 import { StatusBar } from 'expo-status-bar';
-import { GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useStore } from '@/src/stores/store';
 import { dispatchOutsidePress } from '@/src/helpers/outside-press';
 
@@ -49,33 +49,31 @@ export default function RootLayout() {
   const isIOS = Platform.OS === 'ios';
   const bgColor = useThemeColor({}, 'background');
 
-  const tapOutsideGesture = Gesture.Tap()
-    .onEnd(dispatchOutsidePress)
-    .runOnJS(true);
-
   return (
     <Provider
       theme={colorScheme === 'dark' ? antDesignDarkTheme : undefined}
     >
       <GestureHandlerRootView>
-        <GestureDetector gesture={tapOutsideGesture}>
-          <View style={{flex: 1}} collapsable={false}>
-            <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
-              <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-                {isIOS ? (
-                  <StatusBar style="auto" />
-                ) : (
-                    <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
-                  )}
-                <Stack>
-                  <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-              </ThemeProvider>
-            </ErrorBoundary>
-          </View>
-        </GestureDetector>
+        <Pressable
+          style={{ flex: 1 }}
+          onPress={dispatchOutsidePress}
+          android_disableSound={true}
+        >
+          <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              {isIOS ? (
+                <StatusBar style="auto" />
+              ) : (
+                  <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
+                )}
+              <Stack>
+                <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </ThemeProvider>
+          </ErrorBoundary>
+        </Pressable>
       </GestureHandlerRootView>
     </Provider>
   );
