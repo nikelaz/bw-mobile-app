@@ -30,7 +30,6 @@ export default function Budget() {
   const currentBudget = useStore(state => state.currentBudget);
   const categoryBudgetsByType = useStore(state => state.categoryBudgetsByType);
   const deleteCategoryBudget = useStore(state => state.deleteCategoryBudget);
-  const isLoading = useStore(state => state.isLoading);
   const [amountState, setAmountState] = useState(AmountState.Planned);
   const router = useRouter();
   const currency = getCurrency();
@@ -139,7 +138,6 @@ export default function Budget() {
                           }}
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
-                          isLoading={isLoading}
                           group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.INCOME].length - 1}
@@ -180,7 +178,6 @@ export default function Budget() {
                           }}
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
-                          isLoading={isLoading}
                           group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.EXPENSE].length - 1}
@@ -221,7 +218,6 @@ export default function Budget() {
                           }}
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
-                          isLoading={isLoading}
                           group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.SAVINGS].length - 1}
@@ -262,7 +258,6 @@ export default function Budget() {
                           }}
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
-                          isLoading={isLoading}
                           group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.DEBT].length - 1}
