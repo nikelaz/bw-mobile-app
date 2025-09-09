@@ -140,6 +140,7 @@ export default function Login() {
       });
       if (!credential.identityToken) {
         errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
+        console.log('credential', credential);
         setIsLoading(false);
         setIsLoadingApple(false);
         return;
@@ -155,6 +156,7 @@ export default function Login() {
     } catch (e: any) {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
         errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
+        console.log('error', e);
       }
     } finally {
       setIsLoading(false);

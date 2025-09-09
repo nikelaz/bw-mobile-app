@@ -5,7 +5,6 @@ import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import TouchableBox, { TouchableBoxProps } from '@/src/components/touchable-box';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
 import { Loader } from '@/src/components/loader';
-import { subscribeToOutsidePress } from '@/src/helpers/outside-press';
 
 const SWIPE_THRESHOLD = -75;
 const OVER_SWIPE_THRESHOLD = -100;
@@ -33,14 +32,6 @@ const SwipableTouchableBox = forwardRef<SwipableTouchableBoxHandle, SwipableTouc
       resetPosition,
     }));
 
-    useEffect(() => {
-      const unsubscribe = subscribeToOutsidePress(() => {
-        resetPosition();
-      });
-
-      return unsubscribe;
-    }, []);
-
     const panGesture = Gesture.Pan()
       .onStart(() => {
         'worklet';
@@ -62,7 +53,9 @@ const SwipableTouchableBox = forwardRef<SwipableTouchableBoxHandle, SwipableTouc
           translateX.value = withSpring(0);
         }
         runOnJS(setIsSwiping)(false);
-      });
+      })
+      .activeOffsetX([-10, 10])
+      .failOffsetY([-5, 5]); 
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
