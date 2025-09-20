@@ -1,7 +1,7 @@
 import ColLayout from '@/src/components/col-layout'; import Heading from '@/src/components/heading';
 import { View } from 'react-native';
 import TouchableBox from '@/src/components/touchable-box';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
 import { useStore } from '@/src/stores/store';
 import months from '@/data/months';
@@ -9,6 +9,8 @@ import { Transaction, CurrencyFormatter, debounce } from '@nikelaz/bw-shared-lib
 import LinkButton from '@/src/components/link-button';
 import TextBox from '@/src/components/text-box';
 import Container from '@/src/components/container';
+import SwipableTouchableBox, { SwipableTouchableBoxHandle } from '@/src/components/swipable-touchable-box';
+import Dialog from '@/src/helpers/alert';
 
 export default function Transactions() {
   const currentBudget = useStore(state => state.currentBudget);
@@ -19,10 +21,13 @@ export default function Transactions() {
   const transactionsPage = useStore(state => state.transactionsPage);
   const prevTransactionsPage = useStore(state => state.prevTransactionsPage);
   const nextTransactionsPage = useStore(state => state.nextTransactionsPage);
+  const deleteTransaction = useStore(state => state.deleteTransaction);
+  const isLoading = useStore(state => state.isLoading);
   const currency = getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
   const navigation = useNavigation();
   const router = useRouter();
+  const itemRefs = useRef<Record<string, SwipableTouchableBoxHandle | null>>({});
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
@@ -30,6 +35,29 @@ export default function Transactions() {
 
   const changeHandler = (filter: string) => {
     setTransactionsFilter(filter);
+  };
+
+  const handleDeleteTransaction = (transaction: Transaction) => {
+    Dialog.confirm(
+      'Delete Transaction',
+      `Are you sure you want to delete: ${transaction.title}?`,
+      'Delete',
+      async () => {
+        try {
+          await deleteTransaction(transaction.id);
+        } catch (error) {
+          console.error('Error deleting transaction:', error);
+        }
+      }
+    );
+  };
+
+  const resetOtherItems = (excludeId: string) => {
+    Object.keys(itemRefs.current).forEach(id => {
+      if (id !== excludeId && itemRefs.current[id]) {
+        itemRefs.current[id]?.resetPosition();
+      }
+    });
   };
 
   return (
@@ -58,9 +86,16 @@ export default function Transactions() {
 
         <View>
           {transactions.map((transaction: Transaction, index: number) => (
-            <TouchableBox
+            <SwipableTouchableBox
               key={transaction.id}
-              onPress={() => router.navigate(`/(tabs)/transactions/details?id=${transaction.id}`)}
+              ref={(ref) => { itemRefs.current[transaction.id.toString()] = ref; }}
+              onPress={() => {
+                resetOtherItems(transaction.id.toString());
+                router.navigate(`/(tabs)/transactions/details?id=${transaction.id}`);
+              }}
+              onDelete={() => handleDeleteTransaction(transaction)}
+              onInteractionStart={() => resetOtherItems(transaction.id.toString())}
+              isLoading={isLoading}
               group={true}
               groupFirst={index === 0}
               groupLast={index === transactions.length - 1}
@@ -68,7 +103,7 @@ export default function Transactions() {
               additionalText={currencyFormatter.format(transaction.amount)}
             >
               {transaction.title}
-            </TouchableBox>
+            </SwipableTouchableBox>
           ))}
         </View>
 

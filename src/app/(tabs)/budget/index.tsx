@@ -2,7 +2,7 @@ import ColLayout from '@/src/components/col-layout';
 import Heading from '@/src/components/heading';
 import { View } from 'react-native';
 import TouchableBox from '@/src/components/touchable-box';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import LinkButton from '@/src/components/link-button';
 import GatedView from '@/src/components/gated-view';
 import { useStore } from '@/src/stores/store';
@@ -12,6 +12,8 @@ import { useRouter } from 'expo-router';
 import { LoadingLine } from '@/src/components/loading-line';
 import ConditionalRenderer from '@/src/components/conditional-renderer';
 import Container from '@/src/components/container';
+import SwipableTouchableBox, { SwipableTouchableBoxHandle } from '@/src/components/swipable-touchable-box';
+import Dialog from '@/src/helpers/alert';
 
 enum AmountState {
   Planned = 1,
@@ -27,10 +29,35 @@ export default function Budget() {
   const getCurrency = useStore(state => state.getCurrency);
   const currentBudget = useStore(state => state.currentBudget);
   const categoryBudgetsByType = useStore(state => state.categoryBudgetsByType);
+  const deleteCategoryBudget = useStore(state => state.deleteCategoryBudget);
   const [amountState, setAmountState] = useState(AmountState.Planned);
   const router = useRouter();
   const currency = getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
+  const itemRefs = useRef<Record<string, SwipableTouchableBoxHandle | null>>({});
+
+  const handleDeleteCategoryBudget = (categoryBudget: CategoryBudget) => {
+    Dialog.confirm(
+      'Delete Category',
+      `Are you sure you want to delete: ${categoryBudget.category?.title}?`,
+      'Delete',
+      async () => {
+        try {
+          await deleteCategoryBudget({ id: categoryBudget.id });
+        } catch (error) {
+          console.error('Error deleting category budget:', error);
+        }
+      }
+    );
+  };
+
+  const resetOtherItems = (excludeId: string) => {
+    Object.keys(itemRefs.current).forEach(id => {
+      if (id !== excludeId && itemRefs.current[id]) {
+        itemRefs.current[id]?.resetPosition();
+      }
+    });
+  };
 
   return (
     <GatedView>
@@ -102,18 +129,24 @@ export default function Budget() {
 
                     <View>
                       {categoryBudgetsByType[CategoryType.INCOME].map((categoryBudget: CategoryBudget, index: number) => (
-                        <TouchableBox
+                        <SwipableTouchableBox
+                          key={categoryBudget.id}
+                          ref={(ref) => { itemRefs.current[categoryBudget.id.toString()] = ref; }}
+                          onPress={() => {
+                            resetOtherItems(categoryBudget.id.toString());
+                            router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`);
+                          }}
+                          onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
+                          onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.INCOME].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
-                          key={categoryBudget.id}
-                          onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
                           progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
-                        </TouchableBox>
+                        </SwipableTouchableBox>
                       ))}   
                     </View>
                   </ColLayout>
@@ -136,18 +169,24 @@ export default function Budget() {
                     
                     <View>
                       {categoryBudgetsByType[CategoryType.EXPENSE].map((categoryBudget: CategoryBudget, index: number) => (
-                        <TouchableBox
+                        <SwipableTouchableBox
+                          key={categoryBudget.id}
+                          ref={(ref) => { itemRefs.current[categoryBudget.id.toString()] = ref; }}
+                          onPress={() => {
+                            resetOtherItems(categoryBudget.id.toString());
+                            router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`);
+                          }}
+                          onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
+                          onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.EXPENSE].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
-                          key={categoryBudget.id}
-                          onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
                           progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
-                        </TouchableBox>
+                        </SwipableTouchableBox>
                       ))}   
                     </View>
                   </ColLayout>
@@ -170,18 +209,24 @@ export default function Budget() {
                     
                     <View>
                       {categoryBudgetsByType[CategoryType.SAVINGS].map((categoryBudget: CategoryBudget, index: number) => (
-                        <TouchableBox
+                        <SwipableTouchableBox
+                          key={categoryBudget.id}
+                          ref={(ref) => { itemRefs.current[categoryBudget.id.toString()] = ref; }}
+                          onPress={() => {
+                            resetOtherItems(categoryBudget.id.toString());
+                            router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`);
+                          }}
+                          onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
+                          onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.SAVINGS].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
-                          key={categoryBudget.id}
-                          onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
                           progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
-                        </TouchableBox>
+                        </SwipableTouchableBox>
                       ))}   
                     </View>
                   </ColLayout>
@@ -204,18 +249,24 @@ export default function Budget() {
 
                     <View>
                       {categoryBudgetsByType[CategoryType.DEBT].map((categoryBudget: CategoryBudget, index: number) => (
-                        <TouchableBox
+                        <SwipableTouchableBox
+                          key={categoryBudget.id}
+                          ref={(ref) => { itemRefs.current[categoryBudget.id.toString()] = ref; }}
+                          onPress={() => {
+                            resetOtherItems(categoryBudget.id.toString());
+                            router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`);
+                          }}
+                          onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
+                          onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           group={true}
                           groupFirst={index === 0}
                           groupLast={index === categoryBudgetsByType[CategoryType.DEBT].length - 1}
                           arrow={true}
                           additionalText={currencyFormatter.format(amountState === AmountState.Planned ? categoryBudget.amount : categoryBudget.currentAmount)}
-                          key={categoryBudget.id}
-                          onPress={() => router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`)}
                           progress={categoryBudget.currentAmount / categoryBudget.amount}
                         >
                           {categoryBudget.category?.title}
-                        </TouchableBox>
+                        </SwipableTouchableBox>
                       ))}
                       
                       <ConditionalRenderer isVisible={categoryBudgetsByType[CategoryType.DEBT].length === 0}>

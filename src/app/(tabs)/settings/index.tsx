@@ -13,6 +13,7 @@ import useErrorBoundary from '@/src/hooks/useErrorBoundary';
 import { UserUpdateSchema } from '@/src/validation-schemas/user-schemas';
 import Dialog from '@/src/helpers/alert';
 import Container from '@/src/components/container';
+import { OAuthProvider } from '@/src/constants/oauth-provider';
 
 export default function Settings() {
   const user = useStore(state => state.user);
@@ -105,6 +106,8 @@ export default function Settings() {
     );
   }
 
+  if (user === null) return null;
+
   return (
     <Container>
       <ColLayout>
@@ -141,8 +144,39 @@ export default function Settings() {
               selectedItem={initialCountry || countryItems[0]}
             />
           </View>
+          {user.oAuthProvider === OAuthProvider.GOOGLE ? (
+            <View>
+              <GroupLabel>Authentication Provider</GroupLabel>
+              <TouchableBox
+                icon="logo-google"
+                disabled={true}
+              >
+                Google Account
+              </TouchableBox>
+            </View>
+          ) : null }
+          {user.oAuthProvider === OAuthProvider.APPLE ? (
+            <View>
+              <GroupLabel>Authentication Provider</GroupLabel>
+              <TouchableBox
+                icon="logo-apple"
+                disabled={true}
+              >
+                Apple Account
+              </TouchableBox>
+            </View>
+          ) : null }
           </ColLayout>
-          <TouchableBox onPress={() => router.navigate('/(tabs)/settings/change-password')} icon="lock-closed-outline" arrow={true}>Change Password</TouchableBox>
+          {user.oAuthProvider !== OAuthProvider.GOOGLE && user.oAuthProvider !== OAuthProvider.APPLE ? (
+            <TouchableBox
+              onPress={() => router.navigate('/(tabs)/settings/change-password')}
+              icon="lock-closed-outline"
+              arrow={true}
+            >
+              Change Password
+            </TouchableBox>
+          ) : null}
+
           <TouchableBox onPress={confirmDelete} icon="trash-outline" color="danger" isLoading={isDeleteLoading}>Delete Account</TouchableBox>
           <TouchableBox isLoading={isLogoutLoading} onPress={logoutHandler} icon="log-out-outline">Logout</TouchableBox>   
         </ColLayout>

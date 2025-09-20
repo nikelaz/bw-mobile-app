@@ -9,6 +9,7 @@ import { Provider } from '@ant-design/react-native';
 import { useEffect } from 'react';
 import LinkButton from '@/src/components/link-button';
 import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useStore } from '@/src/stores/store';
 
 const ErrorFallbackComponent = () => {
@@ -51,20 +52,22 @@ export default function RootLayout() {
     <Provider
       theme={colorScheme === 'dark' ? antDesignDarkTheme : undefined}
     >
-      <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          {isIOS ? (
-            <StatusBar style="auto" />
-          ) : (
-              <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
-            )}
-          <Stack>
-            <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </ThemeProvider>
-      </ErrorBoundary>
+      <GestureHandlerRootView>
+        <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            {isIOS ? (
+              <StatusBar style="auto" />
+            ) : (
+                <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
+              )}
+            <Stack>
+              <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </ThemeProvider>
+        </ErrorBoundary>
+      </GestureHandlerRootView>
     </Provider>
   );
 }

@@ -28,6 +28,7 @@ export interface TouchableBoxProps {
   color?: 'primary' | 'danger',
   center?: boolean,
   opaque?: boolean,
+  noSeparator?: boolean,
 }
 
 const TouchableBox = (props: TouchableBoxProps) => {
@@ -134,11 +135,11 @@ const TouchableBox = (props: TouchableBoxProps) => {
         <Ionicons style={{ marginLeft: props.additionalText ? 0 : 'auto', flexShrink: 0 }} name="chevron-forward" size={22} color={arrowColor} />
       ) : null}
 
-      {props.group && !props.groupLast ? (
+      {!props.noSeparator && props.group && !props.groupLast ? (
         <View style={{ ...styles.groupSeparator, backgroundColor: separatorColor }} />
       ) : null}
 
-      {props.rowGroup && !props.rowGroupLast ? (
+      {!props.noSeparator && props.rowGroup && !props.rowGroupLast ? (
         <View style={{ ...styles.rowGroupSeparator, backgroundColor: separatorColor }} />
       ) : null}
 
