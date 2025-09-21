@@ -3,7 +3,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useStore } from '@/src/stores/store';
 import * as LocalAuthentication from 'expo-local-authentication';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
-import { View, Platform, useWindowDimensions, ScrollView, Pressable, TouchableOpacity } from 'react-native';
+import { View, Platform, useWindowDimensions, ScrollView } from 'react-native';
 import Logo from '@/src/components/logo';
 import TouchableBox from '@/src/components/touchable-box';
 import GroupLabel from '@/src/components/group-label';
@@ -312,6 +312,7 @@ export default function Login() {
           </ColLayout>
         </ColLayout>
       </View>
+      {Platform.OS === 'ios' ? (
       <Host style={{ width, pointerEvents: 'box-none'}}>
         <BottomSheet isOpened={isAppleNameModalVisible} onIsOpenedChange={e => setIsAppleNameModalVisible(e)}>
           <View style={{flex: 1, height: 450, padding: 20}}>
@@ -360,6 +361,7 @@ export default function Login() {
           </Button>
         </BottomSheet>
       </Host>
+      ) : null }
     </Container>
   );
 }

@@ -10,8 +10,8 @@ type ContainerProps = Readonly<{
 const Container = (props: ContainerProps) => {
   const insets = useSafeAreaInsets();
   const paddingTop = props.topInset ? insets.top : 0; 
-  const paddingBottom = Platform.OS === 'ios' ? insets.bottom + 40 : insets.bottom; 
-  
+  const paddingBottom = Platform.OS === 'ios' ? insets.bottom + 40 : insets.bottom + 100; 
+ 
   return (
     <View style={{ paddingTop: paddingTop, backgroundColor: useThemeColor({}, 'background') }}>
       <ScrollView automaticallyAdjustKeyboardInsets={true} style={styles.scrollWrapper}>
