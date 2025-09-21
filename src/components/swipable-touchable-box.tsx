@@ -64,10 +64,10 @@ const SwipableTouchableBox = forwardRef<SwipableTouchableBoxHandle, SwipableTouc
   });
 
 
-  const onPressProxy = (fn: () => void) => {
+  const onPressProxy = (fn?: () => void) => {
     return () => {
       if (isSwiping || props.isLoading) return;
-      fn();
+      if (fn) fn();
     };
   }
 
@@ -92,6 +92,7 @@ const SwipableTouchableBox = forwardRef<SwipableTouchableBoxHandle, SwipableTouc
         <Animated.View style={animatedStyle}>
           <TouchableBox
             {...props}
+            isLoading={false}
             onPress={onPressProxy(props.onPress)}
           >
             {props.children}

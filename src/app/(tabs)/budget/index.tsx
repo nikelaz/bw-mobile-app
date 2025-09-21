@@ -2,7 +2,7 @@ import ColLayout from '@/src/components/col-layout';
 import Heading from '@/src/components/heading';
 import { View } from 'react-native';
 import TouchableBox from '@/src/components/touchable-box';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import LinkButton from '@/src/components/link-button';
 import GatedView from '@/src/components/gated-view';
 import { useStore } from '@/src/stores/store';
@@ -32,9 +32,15 @@ export default function Budget() {
   const deleteCategoryBudget = useStore(state => state.deleteCategoryBudget);
   const [amountState, setAmountState] = useState(AmountState.Planned);
   const router = useRouter();
-  const currency = getCurrency();
+  const cachedCurrency = useStore(state => state.cachedCurrency);
+  let currency = getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
   const itemRefs = useRef<Record<string, SwipableTouchableBoxHandle | null>>({});
+  const [isSwipeToDeleteLoading, setIsSwipeToDeleteLoading] = useState(false);
+
+  useEffect(() => {
+    currency = getCurrency();
+  }, [cachedCurrency]);
 
   const handleDeleteCategoryBudget = (categoryBudget: CategoryBudget) => {
     Dialog.confirm(
@@ -42,10 +48,15 @@ export default function Budget() {
       `Are you sure you want to delete: ${categoryBudget.category?.title}?`,
       'Delete',
       async () => {
+        setIsSwipeToDeleteLoading(true);
         try {
           await deleteCategoryBudget({ id: categoryBudget.id });
-        } catch (error) {
+        }
+        catch (error) {
           console.error('Error deleting category budget:', error);
+        }
+        finally {
+          setIsSwipeToDeleteLoading(false);
         }
       }
     );
@@ -61,13 +72,13 @@ export default function Budget() {
 
   return (
     <GatedView>
-      <Container>
+      <Container topInset={true}>
         <ColLayout>
           <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10}}>
             <Heading>Budget</Heading>
 
             <ConditionalRenderer isVisible={Boolean(currentBudget)}>
-              <LinkButton href={`/(tabs)/transactions/create?backText=Budget&backHref=${encodeURIComponent('/(tabs)/budget')}`}>
+              <LinkButton href={'/(tabs)/budget/transaction-create'}>
                 + New Transaction
               </LinkButton>
             </ConditionalRenderer>
@@ -137,6 +148,7 @@ export default function Budget() {
                             router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`);
                           }}
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
+                          isLoading={isSwipeToDeleteLoading}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           group={true}
                           groupFirst={index === 0}
@@ -177,6 +189,7 @@ export default function Budget() {
                             router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`);
                           }}
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
+                          isLoading={isSwipeToDeleteLoading}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           group={true}
                           groupFirst={index === 0}
@@ -217,6 +230,7 @@ export default function Budget() {
                             router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`);
                           }}
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
+                          isLoading={isSwipeToDeleteLoading}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           group={true}
                           groupFirst={index === 0}
@@ -257,6 +271,7 @@ export default function Budget() {
                             router.navigate(`/(tabs)/budget/category-budget-details?id=${categoryBudget.id}`);
                           }}
                           onDelete={() => handleDeleteCategoryBudget(categoryBudget)}
+                          isLoading={isSwipeToDeleteLoading}
                           onInteractionStart={() => resetOtherItems(categoryBudget.id.toString())}
                           group={true}
                           groupFirst={index === 0}

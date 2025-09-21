@@ -3,7 +3,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useStore } from '@/src/stores/store';
 import * as LocalAuthentication from 'expo-local-authentication';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
-import { View, Platform } from 'react-native';
+import { View, Platform, useWindowDimensions, ScrollView, Pressable, TouchableOpacity } from 'react-native';
 import Logo from '@/src/components/logo';
 import TouchableBox from '@/src/components/touchable-box';
 import GroupLabel from '@/src/components/group-label';
@@ -23,6 +23,9 @@ import {
 import { OAuthProvider } from '@/src/constants/oauth-provider';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import Hr from '@/src/components/hr';
+import Heading from '@/src/components/heading';
+import { BottomSheet, Host, Button } from '@expo/ui/swift-ui';
+import { ThemedText } from '@/src/components/themed-text';
 
 export default function Login() {
   const router = useRouter();
@@ -38,9 +41,14 @@ export default function Login() {
   const [isLoadingApple, setIsLoadingApple] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isAppleNameModalVisible, setIsAppleNameModalVisible] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [appleIdToken, setAppleIdToken] = useState('');
 
   const passwordInputRef = useRef<TextInput | null>(null);
   const errorBoundary = useErrorBoundary();
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -129,6 +137,8 @@ export default function Login() {
   };
 
   const authWithApple = async () => {
+    let missingNames = false;
+
     setIsLoading(true);
     setIsLoadingApple(true);
     try {
@@ -140,10 +150,14 @@ export default function Login() {
       });
       if (!credential.identityToken) {
         errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
-        console.log('credential', credential);
         setIsLoading(false);
         setIsLoadingApple(false);
         return;
+      }
+
+      if (!credential.fullName?.givenName || !credential.fullName?.familyName) {
+        missingNames = true;
+        setAppleIdToken(credential.identityToken);
       }
 
       await oauth(
@@ -155,8 +169,13 @@ export default function Login() {
       router.navigate('/(tabs)/budget');
     } catch (e: any) {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
-        errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
-        console.log('error', e);
+        if (missingNames) {      
+          setIsAppleNameModalVisible(true);
+        }
+        else {
+          errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
+          console.log(e);
+        }
       }
     } finally {
       setIsLoading(false);
@@ -164,8 +183,46 @@ export default function Login() {
     }
   };
 
+  const authWithAppleWithDetails = async () => {
+    setIsLoading(true);
+    setIsLoadingApple(true);
+    try {
+      if (!appleIdToken) {
+        errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
+        setIsLoading(false);
+        setIsLoadingApple(false);
+        return;
+      }
+
+      if (!firstName || !lastName) {
+        errorBoundary(new Error('First and last name are required'));
+        setIsLoading(false);
+        setIsLoading(false);
+        return;
+      }
+
+      await oauth(
+        appleIdToken,
+        OAuthProvider.APPLE,
+        firstName,
+        lastName,
+      );
+      setIsAppleNameModalVisible(false);
+      router.navigate('/(tabs)/budget');
+    } catch (e: any) {
+      if (e.code !== 'ERR_REQUEST_CANCELED') {
+        errorBoundary(new Error('An unexpected error occurred while logging in. Please try again later.'));
+        console.log(e);
+      }
+    } finally {
+      setIsLoading(false);
+      setIsLoadingApple(false);
+    }
+
+  }
+
   return (
-    <Container>
+    <Container topInset={true}>
       <View style={{width: '100%', maxWidth: 420, margin: 'auto'}}>
         <ColLayout spacing="l">
           <View style={{ alignItems: 'center', marginTop: 10, marginBottom: 10}}>
@@ -255,6 +312,54 @@ export default function Login() {
           </ColLayout>
         </ColLayout>
       </View>
+      <Host style={{ width, pointerEvents: 'box-none'}}>
+        <BottomSheet isOpened={isAppleNameModalVisible} onIsOpenedChange={e => setIsAppleNameModalVisible(e)}>
+          <View style={{flex: 1, height: 450, padding: 20}}>
+            <ScrollView>
+              <ColLayout>
+                <ColLayout spacing="s">
+                  <Heading level={2}>Additional Details</Heading>
+                  <ThemedText>Please provide your name as we could not retrieve it from Apple.</ThemedText>
+                </ColLayout>
+                <ColLayout>
+                  <View>
+                    <GroupLabel>First Name</GroupLabel>
+                    <TextBox
+                      value={firstName}
+                      onChangeText={setFirstName}
+                      aria-label="first name input"
+                      autoComplete="name-given"
+                      textContentType="givenName"
+                      inputMode="text"
+                      autoCapitalize="words"
+                    />
+                  </View>
+                  <View>
+                    <GroupLabel>Last Name</GroupLabel>
+                    <TextBox
+                      value={lastName}
+                      onChangeText={setLastName}
+                      aria-label="last name input"
+                      autoComplete="name-family"
+                      textContentType="familyName"
+                      inputMode="text"
+                      autoCapitalize="words"
+                    />
+                  </View>
+                </ColLayout>
+              </ColLayout>
+            </ScrollView>
+          </View>
+
+          <Button
+            onPress={authWithAppleWithDetails}
+            variant="borderedProminent"
+            disabled={isLoadingApple}
+          >
+            {isLoadingApple ? 'Loading...' : 'Continue' }
+          </Button>
+        </BottomSheet>
+      </Host>
     </Container>
   );
 }

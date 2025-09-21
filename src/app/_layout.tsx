@@ -49,25 +49,27 @@ export default function RootLayout() {
   const bgColor = useThemeColor({}, 'background');
 
   return (
-    <Provider
-      theme={colorScheme === 'dark' ? antDesignDarkTheme : undefined}
-    >
-      <GestureHandlerRootView>
-        <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            {isIOS ? (
-              <StatusBar style="auto" />
-            ) : (
-                <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
-              )}
-            <Stack>
-              <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-          </ThemeProvider>
-        </ErrorBoundary>
-      </GestureHandlerRootView>
-    </Provider>
+    <View style={{ flex: 1, backgroundColor: bgColor }}>
+      <Provider
+        theme={colorScheme === 'dark' ? antDesignDarkTheme : undefined}
+      >
+        <GestureHandlerRootView>
+          <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              {isIOS ? (
+                <StatusBar style="auto" />
+              ) : (
+                  <StatusBar style="auto" backgroundColor={bgColor} translucent={false} />
+                )}
+              <Stack>
+                <Stack.Screen name="(login)/index" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </ThemeProvider>
+          </ErrorBoundary>
+        </GestureHandlerRootView>
+      </Provider>
+    </View>
   );
 }

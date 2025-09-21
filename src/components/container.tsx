@@ -1,24 +1,36 @@
-import { View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type ContainerProps = Readonly<{
   children: React.ReactNode,
+  topInset?: Boolean,
 }>;
 
-const Container = (props: ContainerProps) => (
-  <SafeAreaView style={{ backgroundColor: useThemeColor({}, 'background') }}>
-    <ScrollView automaticallyAdjustKeyboardInsets={true} style={styles.scrollWrapper}>
-      <View
-        style={{
-          ...styles.container,
-          ...props.style,
-        }}
-      >
-        {props.children}
-      </View>
-    </ScrollView>
-  </SafeAreaView>
-);
+const Container = (props: ContainerProps) => {
+  const insets = useSafeAreaInsets();
+  const paddingTop = props.topInset ? insets.top : 0; 
+  const paddingBottom = Platform.OS === 'ios' ? insets.bottom + 40 : insets.bottom; 
+  
+  return (
+    <View style={{ paddingTop: paddingTop, backgroundColor: useThemeColor({}, 'background') }}>
+      <ScrollView automaticallyAdjustKeyboardInsets={true} style={styles.scrollWrapper}>
+        <View style={{
+          paddingBottom,
+        }}>
+          <View
+            style={{
+              ...styles.container,
+              ...props.style,
+            }}
+          >
+            {props.children}
+          </View>
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

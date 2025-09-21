@@ -1,57 +1,25 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
-import { TabBarIcon } from '@/src/components/tab-bar-icon';
-import { useThemeColor } from '@/src/hooks/useThemeColor';
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
-    <>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            borderTopColor: useThemeColor({}, 'systemGrey2'),
-            backgroundColor: useThemeColor({ light: 'white', dark: 'black' }, 'background')
-          },
-          tabBarActiveTintColor: useThemeColor({}, 'primary'),
-        }}>
-        <Tabs.Screen
-          name="budget"
-          options={{
-            title: 'Budget',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'wallet' : 'wallet-outline'} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="reporting"
-          options={{
-            title: 'Reporting',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'stats-chart' : 'stats-chart-outline'} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="transactions"
-          options={{
-            title: 'Transactions',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'card' : 'card-outline'} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: 'Settings',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
-    </> 
+    <NativeTabs>
+      <NativeTabs.Trigger name="budget">
+        <Label>Budget</Label>
+        <Icon sf="wallet.bifold" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="transactions">
+        <Label>Transactions</Label>
+        <Icon sf="creditcard" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="reporting">
+        <Label>Reporting</Label>
+        <Icon sf="chart.line.uptrend.xyaxis" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Label>Settings</Label>
+        <Icon sf="gear" />
+      </NativeTabs.Trigger>
+    </NativeTabs> 
   );
 }

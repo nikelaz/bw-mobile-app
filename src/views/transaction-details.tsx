@@ -61,6 +61,7 @@ export default function TransactionDetailsView(props: TransactionDetailsProps) {
 
   if (props.setTitle) {
     useEffect(() => {
+      if (!title) return;
       props.setTitle(title);
     }, [title]);
   }

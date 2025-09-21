@@ -21,11 +21,7 @@
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
       "bundleIdentifier": "com.lazarovco.budgetwarden",
-      "icon": {
-        "dark": "./assets/ios-dark.png",
-        "light": "./assets/ios-light.png",
-        "tinted": "./assets/ios-tinted.png"
-      },
+      "icon": "./assets/bw-apple-icon.icon",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },

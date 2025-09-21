@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { CategoryBudget, CategoryType, Transaction, CurrencyFormatter } from '@nikelaz/bw-shared-libraries';
 import GroupLabel from '@/src/components/group-label';
 import TextBox from '@/src/components/text-box';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ColLayout from '@/src/components/col-layout';
 import TouchableBox from '@/src/components/touchable-box';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary';
@@ -29,12 +29,18 @@ export default function CategoryBudgetDetails() {
   const [accAmount, setAccAmount] = useState(categoryBudget?.category?.accAmount?.toString());
   const errorBoundary = useErrorBoundary();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSwipeDeleteLoading, setIsSwipeDeleteLoading] = useState(false);
   const itemRefs = useRef<Record<string, SwipableTouchableBoxHandle | null>>({});
+  const cachedCurrency = useStore(state => state.cachedCurrency);
   const getCurrency = useStore(state => state.getCurrency);
-  const currency = getCurrency();
+  let currency = getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
   
   if (!categoryBudget) return null;
+
+  useEffect(() => {
+    currency = getCurrency();
+  }, [cachedCurrency]);
 
   const updateCategoryBudgetHandler = async () => {
     try {
@@ -85,10 +91,15 @@ export default function CategoryBudgetDetails() {
       `Are you sure you want to delete: ${transaction.title}?`,
       'Delete',
       async () => {
+        setIsSwipeDeleteLoading(true);
         try {
           await deleteTransaction(transaction.id);
-        } catch (error) {
+        }
+        catch (error) {
           console.error('Error deleting transaction:', error);
+        }
+        finally {
+          setIsSwipeDeleteLoading(false);
         }
       }
     );
@@ -152,7 +163,7 @@ export default function CategoryBudgetDetails() {
                       }}
                       onDelete={() => handleDeleteTransaction(transaction)}
                       onInteractionStart={() => resetOtherItems(transaction.id.toString())}
-                      isLoading={isLoading}
+                      isLoading={isSwipeDeleteLoading}
                       group={true}
                       groupFirst={index === 0}
                       groupLast={index === (categoryBudget.transactions?.length || 0) - 1}

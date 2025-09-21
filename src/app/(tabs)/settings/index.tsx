@@ -109,7 +109,7 @@ export default function Settings() {
   if (user === null) return null;
 
   return (
-    <Container>
+    <Container topInset={true}>
       <ColLayout>
         <Heading>Settings</Heading>
 
