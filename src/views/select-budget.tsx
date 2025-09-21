@@ -8,6 +8,7 @@ import months from '@/data/months';
 import LinkBox from '@/src/components/link-box';
 import Dialog from '@/src/helpers/alert';
 import SwipableTouchableBox, { SwipableTouchableBoxHandle } from '@/src/components/swipable-touchable-box';
+import TouchableBox from '@/src/components/touchable-box';
 import { useRef } from 'react';
 import useErrorBoundary from '@/src/hooks/useErrorBoundary'; 
 
@@ -66,24 +67,41 @@ export default function SelectBudgetView() {
                 month: budgetDate,
               };
 
-              return (
-                <SwipableTouchableBox
-                  key={budget.id}
-                  ref={(ref) => { itemRefs.current[budget.id] = ref; }}
-                  onPress={() => {
-                    resetOtherItems(budget.id.toString());
-                    changeBudgetPeriod(budgetWithDate);
-                  }}
-                  onDelete={() => handleDeleteBudget(budget)}
-                  onInteractionStart={() => resetOtherItems(budget.id.toString())}
-                  isLoading={isLoading}
-                  group={true}
-                  groupFirst={index === 0}
-                  groupLast={index === budgets.length - 1}
-                >
-                  {months[budgetDate.getMonth()]} {budgetDate.getFullYear()}
-                </SwipableTouchableBox>
-              )
+              if (budgets.length === 1) {
+                return (
+                  <TouchableBox
+                    key={budget.id}
+                    onPress={() => {
+                      changeBudgetPeriod(budgetWithDate);
+                    }}
+                    group={true}
+                    groupFirst={index === 0}
+                    groupLast={index === budgets.length - 1}
+                  >
+                    {months[budgetDate.getMonth()]} {budgetDate.getFullYear()}
+                  </TouchableBox>
+                )
+              }
+              else {
+                return (
+                  <SwipableTouchableBox
+                    key={budget.id}
+                    ref={(ref) => { itemRefs.current[budget.id] = ref; }}
+                    onPress={() => {
+                      resetOtherItems(budget.id.toString());
+                      changeBudgetPeriod(budgetWithDate);
+                    }}
+                    onDelete={() => handleDeleteBudget(budget)}
+                    onInteractionStart={() => resetOtherItems(budget.id.toString())}
+                    isLoading={isLoading}
+                    group={true}
+                    groupFirst={index === 0}
+                    groupLast={index === budgets.length - 1}
+                  >
+                    {months[budgetDate.getMonth()]} {budgetDate.getFullYear()}
+                  </SwipableTouchableBox>
+                )
+              }
             })}   
           </View>
 
