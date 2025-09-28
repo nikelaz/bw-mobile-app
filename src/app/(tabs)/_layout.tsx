@@ -12,6 +12,7 @@ export default function TabLayout() {
     <NativeTabs
       backgroundColor={bgColor}
       indicatorColor={indicatorBgColor}
+      disableTransparentOnScrollEdge={true}
       iconColor={foregroundColor}
       labelStyle={{
         color: foregroundColor
