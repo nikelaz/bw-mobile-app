@@ -96,7 +96,7 @@ export default function TransactionDetailsView(props: TransactionDetailsProps) {
     setIsLoading(true);
     try {
       await deleteTransaction(id);
-      router.dismissTo('/(tabs)/transactions');
+      router.back();
     } catch (error) {
       errorBoundary(error);
     } finally {

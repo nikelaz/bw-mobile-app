@@ -12,7 +12,7 @@ export default function TransactionDetails() {
         headerBackButtonDisplayMode: 'minimal',
       }} />
 
-      <TransactionDetailsView setTitle={setTitle}/>
+      <TransactionDetailsView setTitle={setTitle} />
     </>      
   );
 };
