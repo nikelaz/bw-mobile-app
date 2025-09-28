@@ -2,7 +2,7 @@
   "expo": {
     "name": "Budget Warden",
     "slug": "budget-warden",
-    "version": "1.4.1",
+    "version": "1.5.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "myapp",
@@ -21,14 +21,11 @@
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
       "bundleIdentifier": "com.lazarovco.budgetwarden",
-      "icon": {
-        "dark": "./assets/ios-dark.png",
-        "light": "./assets/ios-light.png",
-        "tinted": "./assets/ios-tinted.png"
-      },
+      "icon": "./assets/bw-apple-icon.icon",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -57,7 +54,14 @@
         {
           "fonts": ["node_modules/@ant-design/icons-react-native/fonts/antoutline.ttf"]
         }
-      ]
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.158086281084-aeh9cjqtu6ea8kqe3eke9fs627hlq7r8"
+        }
+      ],
+      "expo-apple-authentication"
     ],
     "newArchEnabled": true,
     "experiments": {

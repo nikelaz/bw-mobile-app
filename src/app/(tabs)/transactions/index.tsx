@@ -1,7 +1,7 @@
 import ColLayout from '@/src/components/col-layout'; import Heading from '@/src/components/heading';
 import { View } from 'react-native';
 import TouchableBox from '@/src/components/touchable-box';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
 import { useStore } from '@/src/stores/store';
 import months from '@/data/months';
@@ -22,12 +22,17 @@ export default function Transactions() {
   const prevTransactionsPage = useStore(state => state.prevTransactionsPage);
   const nextTransactionsPage = useStore(state => state.nextTransactionsPage);
   const deleteTransaction = useStore(state => state.deleteTransaction);
-  const isLoading = useStore(state => state.isLoading);
-  const currency = getCurrency();
+  const cachedCurrency = useStore(state => state.cachedCurrency);
+  let currency = getCurrency();
   const currencyFormatter = new CurrencyFormatter(currency);
   const navigation = useNavigation();
   const router = useRouter();
   const itemRefs = useRef<Record<string, SwipableTouchableBoxHandle | null>>({});
+  const [isSwipeToDeleteLoading, setIsSwipeToDeleteLoading] = useState(false);
+
+  useEffect(() => {
+    currency = getCurrency();
+  }, [cachedCurrency]);
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
@@ -43,10 +48,16 @@ export default function Transactions() {
       `Are you sure you want to delete: ${transaction.title}?`,
       'Delete',
       async () => {
+        setIsSwipeToDeleteLoading(true);
+
         try {
           await deleteTransaction(transaction.id);
-        } catch (error) {
+        }
+        catch (error) {
           console.error('Error deleting transaction:', error);
+        }
+        finally {
+          setIsSwipeToDeleteLoading(false);
         }
       }
     );
@@ -61,7 +72,7 @@ export default function Transactions() {
   };
 
   return (
-    <Container>
+    <Container topInset={true}>
       <ColLayout>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
           <Heading>Transactions</Heading>
@@ -72,7 +83,7 @@ export default function Transactions() {
           <TouchableBox
             icon="calendar-outline"
             arrow={true}
-            onPress={() => router.navigate(`/budget/select-budget?backText=Transactions&backHref=${encodeURIComponent('/(tabs)/transactions')}`)}
+            onPress={() => router.navigate('/(tabs)/transactions/select-budget')}
           >
             {months[currentBudget.month.getMonth()]} {currentBudget.month.getFullYear()}
           </TouchableBox>
@@ -95,7 +106,8 @@ export default function Transactions() {
               }}
               onDelete={() => handleDeleteTransaction(transaction)}
               onInteractionStart={() => resetOtherItems(transaction.id.toString())}
-              isLoading={isLoading}
+              isLoading={isSwipeToDeleteLoading}
+              group={true}
               groupFirst={index === 0}
               groupLast={index === transactions.length - 1}
               arrow={true}

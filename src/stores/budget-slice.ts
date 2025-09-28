@@ -185,8 +185,7 @@ export const createBudgetSlice: StateCreator<
 
       await refreshBudgets();
     } catch (error) {
-      console.error('Error deleting budget:', error);
-      throw new Error('An unexpected error occurred while deleting the budget');
+      throw error;
     } finally {
       set({ isLoading: false });
     }

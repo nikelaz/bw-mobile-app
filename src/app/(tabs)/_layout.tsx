@@ -1,57 +1,54 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
-import { TabBarIcon } from '@/src/components/tab-bar-icon';
+import { Platform } from 'react-native';
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
 import { useThemeColor } from '@/src/hooks/useThemeColor';
 
 export default function TabLayout() {
+  const bgColor = Platform.OS === 'android' ? useThemeColor({}, 'systemGrey7') : null;
+  const indicatorBgColor = Platform.OS === 'android' ? useThemeColor({}, 'systemGrey5') : undefined;
+  const foregroundColor = Platform.OS === 'android' ? useThemeColor({}, 'text') : undefined;
+
   return (
-    <>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            borderTopColor: useThemeColor({}, 'systemGrey2'),
-            backgroundColor: useThemeColor({ light: 'white', dark: 'black' }, 'background')
-          },
-          tabBarActiveTintColor: useThemeColor({}, 'primary'),
-        }}>
-        <Tabs.Screen
-          name="budget"
-          options={{
-            title: 'Budget',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'wallet' : 'wallet-outline'} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="reporting"
-          options={{
-            title: 'Reporting',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'stats-chart' : 'stats-chart-outline'} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="transactions"
-          options={{
-            title: 'Transactions',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'card' : 'card-outline'} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: 'Settings',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
-    </> 
+    <NativeTabs
+      backgroundColor={bgColor}
+      indicatorColor={indicatorBgColor}
+      iconColor={foregroundColor}
+      labelStyle={{
+        color: foregroundColor
+      }}
+    >
+      <NativeTabs.Trigger name="budget">
+        <Label>Budget</Label>
+        { Platform.OS === 'ios' ? (
+          <Icon sf="wallet.bifold" />
+        ) : (
+          <Icon src={require('@/assets/wallet.svg')}/>
+        )}
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="transactions">
+        <Label>Transactions</Label>
+        { Platform.OS === 'ios' ? (
+          <Icon sf="creditcard" />
+        ) : (
+          <Icon src={require('@/assets/card.svg')}/>
+        )}
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="reporting">
+        <Label>Reporting</Label>
+        { Platform.OS === 'ios' ? (
+          <Icon sf="chart.line.uptrend.xyaxis" />
+        ) : (
+          <Icon src={require('@/assets/chart.svg')}/>
+        )}
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Label>Settings</Label>
+        { Platform.OS === 'ios' ? (
+          <Icon sf="gear" />
+        ) : (
+          <Icon src={require('@/assets/gear.svg')}/>
+        )}
+      </NativeTabs.Trigger>
+    </NativeTabs> 
   );
 }

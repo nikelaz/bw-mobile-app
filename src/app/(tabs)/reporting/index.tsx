@@ -38,7 +38,7 @@ export default function Reporting() {
   }, [runFirst]);
 
   return (
-    <Container>
+    <Container topInset={true}>
       <ColLayout>
         <Heading>Reporting</Heading>
 
@@ -46,7 +46,7 @@ export default function Reporting() {
           <TouchableBox
             icon="calendar-outline"
             arrow={true}
-            onPress={() => router.navigate(`/budget/select-budget?backText=Reporting&backHref=${encodeURIComponent('/(tabs)/reporting')}`)}
+            onPress={() => router.navigate('/(tabs)/reporting/select-budget')}
           >
             {months[currentBudget.month.getMonth()]} {currentBudget.month.getFullYear()}
           </TouchableBox>

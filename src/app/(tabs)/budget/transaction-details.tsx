@@ -11,7 +11,7 @@ export default function TransactionDetails() {
         title: title,
         headerBackButtonDisplayMode: 'minimal',
       }} />
-      
+
       <TransactionDetailsView setTitle={setTitle}/>
     </>      
   );
